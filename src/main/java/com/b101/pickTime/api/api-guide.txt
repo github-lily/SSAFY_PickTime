@@ -1,0 +1,13 @@
+API 기능별로 package 만들기
+하위 패키지에
+ controller
+ service
+ request(dto)
+ response(dto)
+ 
+ 패키지 생성 후 class 생성
+ 
+ service는 interface 분리 후
+ impl package를 생성하여 
+ 그 위치에는 구현체 생성
+ 

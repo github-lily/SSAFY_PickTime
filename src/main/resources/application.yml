@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: pickTime
+
+  config:
+    import: "optional:classpath:application-secret.yml"
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/testdb?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
+    username: ${datasource.username}
+    password: ${datasource.password}
+    hikari:
+      pool-name: hikari-pool
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+
