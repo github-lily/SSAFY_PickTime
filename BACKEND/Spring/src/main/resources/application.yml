@@ -7,7 +7,7 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/testdb?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
+    url: jdbc:mysql://${datasource.url}/picktime?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
     username: ${datasource.username}
     password: ${datasource.password}
     hikari:
@@ -20,3 +20,11 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    mongodb:
+      host: ${mongodb.host}
+      port: ${mongodb.port}
+      authentication-database: admin
+      username: ${mongodb.username}
+      password: ${mongodb.password}
+      database: ${mongodb.database}
