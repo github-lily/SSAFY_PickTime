@@ -1,11 +1,14 @@
 package com.b101.pickTime.db.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 @Entity
-@Data
 @Table(name = "chords")
+@Getter @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Chord {
 
     @Id

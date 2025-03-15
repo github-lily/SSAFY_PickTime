@@ -2,11 +2,15 @@ package com.b101.pickTime.db.entity;
 
 import com.mongodb.lang.Nullable;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 @Entity
-@Data
 @Table(name = "steps")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Step {
 
     @Id
