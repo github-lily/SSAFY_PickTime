@@ -22,9 +22,11 @@ public class Step {
     private Stage stage;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name =  "song_id")
     private Song song;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name =  "chord_id")
     private Chord chord;
 
     @Column(nullable = false)

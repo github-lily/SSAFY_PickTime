@@ -35,7 +35,7 @@ public class PracticeApplicationServiceImpl implements PracticeApplicationServic
                 }
             }
 
-            stage.setIsClear(isClear);
+            stage.setIsClear(isClear);     // 추후 수정
         }
 
         return new CurriculumResDto(stages, (double)numberOfClearStages/stages.size());
