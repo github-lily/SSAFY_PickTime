@@ -5,12 +5,12 @@ plugins {
 }
 
 android {
-    namespace = "com.example.picktimeapp"
+    namespace = "com.example.picktime"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.picktimeapp"
-        minSdk = 26
+        applicationId = "com.example.picktime"
+        minSdk = 27
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
