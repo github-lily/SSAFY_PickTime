@@ -1,6 +1,7 @@
 package com.b101.pickTime.api.practice.controller;
 
 import com.b101.pickTime.api.ApiResponseDto;
+import com.b101.pickTime.api.practice.request.CompleteStepReqDto;
 import com.b101.pickTime.api.practice.response.CurriculumResDto;
 import com.b101.pickTime.api.practice.service.PracticeApplicationService;
 import lombok.AllArgsConstructor;
@@ -16,8 +17,11 @@ public class PracticeController {
 
     private final PracticeApplicationService practiceApplicationService;
 
+    /*
+        로그인 로직 추가 후 userId는 전부 @AuthenticationPrincipal로 교체
+    */
     @GetMapping("/{userId}")
-    public ResponseEntity<ApiResponseDto< CurriculumResDto>> getCurriculum(@PathVariable("userId") Integer userId){
+    public ResponseEntity<ApiResponseDto<CurriculumResDto>> getCurriculum(@PathVariable("userId") Integer userId){
         CurriculumResDto curriculum = practiceApplicationService.getCurriculum(userId);
 
         return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>(
@@ -28,4 +32,17 @@ public class PracticeController {
 
     }
 
+    @PostMapping("/{stepId}")
+    public ResponseEntity<ApiResponseDto<?>> completeStep(@PathVariable("stepId") Integer stepId,
+                                                          @RequestBody CompleteStepReqDto completeStepReqDto){
+
+        practiceApplicationService.completeStep(completeStepReqDto.getUserId(), stepId, completeStepReqDto.getScore());
+
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>(
+                HttpStatus.OK.value(),
+                "스텝 완료",
+                null
+        ));
+
+    }
 }
