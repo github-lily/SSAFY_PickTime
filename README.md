@@ -1,1 +1,3 @@
-minjeong branch test
+# 피크타임(PickTime)
+## B101
+### 송용인, 김민정, 박성근, 이병조, 이현희, 최국진ㄴ
