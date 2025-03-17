@@ -50,5 +50,10 @@ public class PracticeApplicationServiceImpl implements PracticeApplicationServic
         completedStepService.completeStep(userId, stepId, score);
     }
 
+    @Override
+    public double getProgress(Integer userId) {
+        return completedStepService.getProgress(userId);
+    }
+
 
 }

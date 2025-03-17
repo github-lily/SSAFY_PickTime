@@ -6,5 +6,7 @@ public interface PracticeApplicationService {
 
     public CurriculumResDto getCurriculum(Integer userId);
     public void completeStep(Integer userId, Integer stepId, Integer score);
+    public double getProgress(Integer userId);
+
 
 }

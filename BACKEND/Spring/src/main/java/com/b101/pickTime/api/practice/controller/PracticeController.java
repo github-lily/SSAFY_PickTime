@@ -45,4 +45,16 @@ public class PracticeController {
         ));
 
     }
+
+    @GetMapping("/{userId}/progress")
+    public ResponseEntity<ApiResponseDto<Double>> getProgress(@PathVariable("userId") Integer userId){
+        Double progress = practiceApplicationService.getProgress(userId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>(
+                HttpStatus.OK.value(),
+                "전체 진행률 조회 완료",
+                progress
+        ));
+
+    }
 }

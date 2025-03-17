@@ -36,4 +36,9 @@ public class CompletedStepServceImpl implements CompletedStepService {
                                 .build()
         );
     }
+
+    @Override
+    public double getProgress(Integer userId) {
+        return (double)completedStepRepository.countByUserId(userId)/ stepRepository.count();
+    }
 }
