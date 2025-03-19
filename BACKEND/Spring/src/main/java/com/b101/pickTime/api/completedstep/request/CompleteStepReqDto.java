@@ -1,4 +1,4 @@
-package com.b101.pickTime.api.practice.request;
+package com.b101.pickTime.api.completedstep.request;
 
 import lombok.Getter;
 import lombok.Setter;

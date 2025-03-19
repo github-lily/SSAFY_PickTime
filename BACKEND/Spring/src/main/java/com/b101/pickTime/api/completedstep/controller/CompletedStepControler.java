@@ -1,7 +1,7 @@
 package com.b101.pickTime.api.completedstep.controller;
 
 import com.b101.pickTime.api.completedstep.service.CompletedStepService;
-import com.b101.pickTime.api.practice.request.CompleteStepReqDto;
+import com.b101.pickTime.api.completedstep.request.CompleteStepReqDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
