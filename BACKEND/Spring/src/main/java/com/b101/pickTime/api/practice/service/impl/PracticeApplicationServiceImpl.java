@@ -45,15 +45,4 @@ public class PracticeApplicationServiceImpl implements PracticeApplicationServic
         return new CurriculumResDto(stages, (double)numberOfClearStages/stages.size());
     }
 
-    @Override
-    public void completeStep(Integer userId, Integer stepId, Integer score) {
-        completedStepService.completeStep(userId, stepId, score);
-    }
-
-    @Override
-    public double getProgress(Integer userId) {
-        return completedStepService.getProgress(userId);
-    }
-
-
 }

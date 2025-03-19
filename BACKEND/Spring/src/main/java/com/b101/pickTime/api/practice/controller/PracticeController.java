@@ -27,22 +27,4 @@ public class PracticeController {
         return ResponseEntity.ok(curriculum);
 
     }
-
-    @PostMapping("/{stepId}")
-    public ResponseEntity<String> completeStep(@PathVariable("stepId") Integer stepId,
-                                                          @RequestBody CompleteStepReqDto completeStepReqDto){
-
-        practiceApplicationService.completeStep(completeStepReqDto.getUserId(), stepId, completeStepReqDto.getScore());
-
-        return ResponseEntity.ok("step 로직 완료!");
-
-    }
-
-    @GetMapping("/{userId}/progress")
-    public ResponseEntity<Double> getProgress(@PathVariable("userId") Integer userId){
-        Double progress = practiceApplicationService.getProgress(userId);
-
-        return ResponseEntity.ok(progress);
-
-    }
 }
