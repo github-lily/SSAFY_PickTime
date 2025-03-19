@@ -38,8 +38,8 @@ public class SecurityConfig {
         .httpBasic(auth -> auth.disable())
         .authorizeHttpRequests(auth -> auth
 //				.requestMatchers("/**").permitAll()
-				.requestMatchers("/api/login", "/reissue").permitAll()
-				.requestMatchers(HttpMethod.POST, "/api/user").permitAll()
+				.requestMatchers("/login", "/reissue").permitAll()
+				.requestMatchers(HttpMethod.POST, "/user").permitAll()
 //				.requestMatchers("/admin").hasRole("ADMIN")
 				.anyRequest().authenticated()
         )
