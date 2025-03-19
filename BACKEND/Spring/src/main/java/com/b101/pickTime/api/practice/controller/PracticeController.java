@@ -34,7 +34,7 @@ public class PracticeController {
 
         practiceApplicationService.completeStep(completeStepReqDto.getUserId(), stepId, completeStepReqDto.getScore());
 
-        return ResponseEntity.ok("step 완료");
+        return ResponseEntity.ok("step 로직 완료");
 
     }
 
