@@ -1,8 +1,8 @@
-package com.b101.pickTime.api.completedSong.service.impl;
+package com.b101.pickTime.api.completedsong.service.impl;
 
-import com.b101.pickTime.api.completedSong.service.CompletedSongService;
+import com.b101.pickTime.api.completedactivities.response.CompletedActivitiesResDto;
+import com.b101.pickTime.api.completedsong.service.CompletedSongService;
 import com.b101.pickTime.db.entity.CompletedSong;
-import com.b101.pickTime.db.entity.CompletedStep;
 import com.b101.pickTime.db.entity.Song;
 import com.b101.pickTime.db.entity.User;
 import com.b101.pickTime.db.repository.CompletedSongRepository;
@@ -11,6 +11,8 @@ import com.b101.pickTime.db.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,5 +37,10 @@ public class CompletedSongServiceImpl implements CompletedSongService {
                         .score(score)
                         .build()
         );
+    }
+
+    @Override
+    public List<CompletedActivitiesResDto> getPickDaysOfSong(Integer userId) {
+        return completedSongRepository.countCompletedStepsGroupedByCreatedAt(userId);
     }
 }
