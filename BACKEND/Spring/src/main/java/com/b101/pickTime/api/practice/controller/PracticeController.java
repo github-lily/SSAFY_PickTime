@@ -21,40 +21,28 @@ public class PracticeController {
         로그인 로직 추가 후 userId는 전부 @AuthenticationPrincipal로 교체
     */
     @GetMapping("/{userId}")
-    public ResponseEntity<ApiResponseDto<CurriculumResDto>> getCurriculum(@PathVariable("userId") Integer userId){
+    public ResponseEntity<CurriculumResDto> getCurriculum(@PathVariable("userId") Integer userId){
         CurriculumResDto curriculum = practiceApplicationService.getCurriculum(userId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>(
-                HttpStatus.OK.value(),
-                "전체 커리큘럼 조회 완료",
-                curriculum
-        ));
+        return ResponseEntity.ok(curriculum);
 
     }
 
     @PostMapping("/{stepId}")
-    public ResponseEntity<ApiResponseDto<?>> completeStep(@PathVariable("stepId") Integer stepId,
+    public ResponseEntity<String> completeStep(@PathVariable("stepId") Integer stepId,
                                                           @RequestBody CompleteStepReqDto completeStepReqDto){
 
         practiceApplicationService.completeStep(completeStepReqDto.getUserId(), stepId, completeStepReqDto.getScore());
 
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>(
-                HttpStatus.OK.value(),
-                "스텝 완료",
-                null
-        ));
+        return ResponseEntity.ok("step 완료");
 
     }
 
     @GetMapping("/{userId}/progress")
-    public ResponseEntity<ApiResponseDto<Double>> getProgress(@PathVariable("userId") Integer userId){
+    public ResponseEntity<Double> getProgress(@PathVariable("userId") Integer userId){
         Double progress = practiceApplicationService.getProgress(userId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(new ApiResponseDto<>(
-                HttpStatus.OK.value(),
-                "전체 진행률 조회 완료",
-                progress
-        ));
+        return ResponseEntity.ok(progress);
 
     }
 }
