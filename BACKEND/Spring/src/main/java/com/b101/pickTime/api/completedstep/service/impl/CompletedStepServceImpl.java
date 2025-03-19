@@ -1,5 +1,6 @@
 package com.b101.pickTime.api.completedstep.service.impl;
 
+import com.b101.pickTime.api.completedactivities.response.CompletedActivitiesResDto;
 import com.b101.pickTime.api.completedstep.service.CompletedStepService;
 import com.b101.pickTime.db.entity.CompletedStep;
 import com.b101.pickTime.db.entity.Step;
@@ -10,6 +11,8 @@ import com.b101.pickTime.db.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -40,5 +43,10 @@ public class CompletedStepServceImpl implements CompletedStepService {
     @Override
     public double getProgress(Integer userId) {
         return (double)completedStepRepository.countByUserId(userId)/ stepRepository.count();
+    }
+
+    @Override
+    public List<CompletedActivitiesResDto> getPickDaysOfStep(Integer userId) {
+        return completedStepRepository.countCompletedStepsGroupedByCreatedAt(userId);
     }
 }
