@@ -29,6 +29,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private Role role = Role.ROLE_USER;
 
     @CreationTimestamp
@@ -36,9 +37,11 @@ public class User {
     private LocalDateTime createdAt;
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer level = 1;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean isActive = true;
 
 }
