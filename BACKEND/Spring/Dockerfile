@@ -1,17 +1,30 @@
-# jdk 기본 이미지 사용
-FROM openjdk:17-jdk-alpine
+# 🔹 1단계: 빌드용 이미지 (Gradle 사용하여 JAR 빌드)
+FROM openjdk:17-jdk-alpine AS builder
 
-# 작업 디렉토리 설정 (/app 디렉토리를 컨테이너 내부의 작업 경로로 지정)
+# 작업 디렉토리 설정
 WORKDIR /app
 
-# JAR_FILE이라는 변수를 선언하고 기본값을 build/libs/*.jar로 설정.
-ARG JAR_FILE=build/libs/*.jar
-# 로컬 JAR 파일을 컨테이너 내부로 복사
-# 빌드된 .jar 파일을 컨테이너 내부 /app/app.jar로 복사.
-COPY ${JAR_FILE} app.jar
+# Gradle Wrapper 및 프로젝트 설정 파일 복사
+COPY gradlew gradlew
+COPY gradle gradle
+COPY build.gradle build.gradle
+COPY settings.gradle settings.gradle
 
-# SpringBoot 컨테이너 내부 포트
-EXPOSE 8080
+# 소스 코드 복사
+COPY src src
 
-# SpringBoot 실행 명령어
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# 실행 권한 부여 및 빌드 수행
+RUN chmod +x gradlew
+RUN ./gradlew clean bootJar
+
+# 🔹 2단계: 실행용 이미지 (Spring Boot 실행 환경)
+FROM openjdk:17-jdk-alpine
+
+# 작업 디렉토리 설정
+WORKDIR /app
+
+# 빌드된 JAR 파일 복사
+COPY --from=builder /app/build/libs/*.jar app.jar
+
+# 애플리케이션 실행
+ENTRYPOINT ["java", "-jar", "/app.jar"]
