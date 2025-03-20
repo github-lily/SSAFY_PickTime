@@ -17,6 +17,8 @@ public class JWTUtil {
     public JWTUtil(@Value("${jwt.auth-key}")String secret) {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
+    public static final long ACCESS_TOKEN_VALIDITY_TIME = 1000 * 60 * 60 * 2L;
+    public static final long REFRESH_TOKEN_VALIDITY_TIME = 1000 * 60 * 60 * 3L;
 
     /**
     토큰 Payload에 저장될 정보 :

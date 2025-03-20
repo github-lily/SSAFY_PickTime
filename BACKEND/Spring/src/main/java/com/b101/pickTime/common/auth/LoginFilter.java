@@ -49,8 +49,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Integer userId = customUserDetails.getUserId();
 
         // 토큰 생성하기
-        String access = jwtUtil.createJwt("access", userId, username, role, 1000*60*10L);
-        String refresh = jwtUtil.createJwt("refresh", userId, username, role, 1000*60*60*24*30L);//30일
+        String access = jwtUtil.createJwt("access", userId, username, role, JWTUtil.ACCESS_TOKEN_VALIDITY_TIME);
+        String refresh = jwtUtil.createJwt("refresh", userId, username, role, JWTUtil.REFRESH_TOKEN_VALIDITY_TIME);
 
         // 응답 설정
         response.setHeader("access", access);

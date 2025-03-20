@@ -38,24 +38,14 @@ public class JWTFilter extends OncePerRequestFilter {
         try {
             jwtUtil.isExpired(accessToken);
         } catch (ExpiredJwtException e) {   // 만료 시 에러 발생 -> 다시 refresh 토큰 발급 요청 보내도록 에러를 반환
-            // response body
-            PrintWriter writer = response.getWriter();
-            writer.println("access Token expired");
-
-            // response status code
-//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            responseWrite("access Token expired", response);
         }
 
         // 토큰이 access인지 확인
         String category = jwtUtil.getCategory(accessToken);
 
         if (!category.equals("access")) {
-            // response body
-            PrintWriter writer = response.getWriter();
-            writer.println("Token is not access token");
-            // response status code
-            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            responseWrite("Token is not access token", response);
             return;
         }
     
@@ -71,5 +61,10 @@ public class JWTFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
-
+    private void responseWrite(String message, HttpServletResponse response) throws IOException {
+        PrintWriter writer = response.getWriter();
+        writer.println(message);
+        // response status code
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+    }
 }

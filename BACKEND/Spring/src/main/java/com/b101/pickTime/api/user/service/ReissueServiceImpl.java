@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ReissueServiceImpl implements ReissueService{
     private final JWTUtil jwtUtil;
+
+
     // refresh 확인하여 access토큰 재발급
     @Override
     public String reissue(HttpServletRequest request) {
@@ -48,6 +50,6 @@ public class ReissueServiceImpl implements ReissueService{
         String role = jwtUtil.getRole(refresh);
 
         // 토큰 생성하여 반환
-        return jwtUtil.createJwt("access", userId, username, role, 1000*60*10L);
+        return jwtUtil.createJwt("access", userId, username, role, JWTUtil.ACCESS_TOKEN_VALIDITY_TIME);
     }
 }
