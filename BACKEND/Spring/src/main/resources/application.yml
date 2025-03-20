@@ -32,3 +32,6 @@ spring:
       username: ${MONGO_USER}
       password: ${MONGO_PASSWORD}
       database: ${MONGO_DATABASE}
+
+jwt:
+  auth-key: ${JWT_AUTH_KEY}

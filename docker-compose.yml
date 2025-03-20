@@ -58,6 +58,7 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://picktime-mysql:3306/${MYSQL_DATABASE}
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      JWT_AUTH_KEY: ${JWT_AUTH_KEY}
     networks:
       - app-network
 
