@@ -5,8 +5,5 @@ import lombok.Setter;
 
 @Getter @Setter
 public class CompletedSongReqDto {
-
-    private Integer userId;
     private Integer score;
-
 }
