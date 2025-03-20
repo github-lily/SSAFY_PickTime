@@ -1,4 +1,4 @@
-package com.b101.pickTime.api.practice.request;
+package com.b101.pickTime.api.completedstep.request;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -6,7 +6,6 @@ import lombok.Setter;
 @Getter @Setter
 public class CompleteStepReqDto {
 
-    private Integer userId;
     private Integer score;
 
 }

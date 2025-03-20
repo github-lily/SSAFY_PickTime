@@ -11,9 +11,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${datasource.url}/picktime?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
-    username: ${datasource.username}
-    password: ${datasource.password}
+    url: jdbc:mysql://${MYSQL_CONTAINER_NAME}:${MYSQL_PORT}/${MYSQL_DATABASE}?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
     hikari:
       pool-name: hikari-pool
 
@@ -26,9 +26,9 @@ spring:
 
   data:
     mongodb:
-      host: ${mongodb.host}
-      port: ${mongodb.port}
+      host: ${MONGO_CONTAINER_NAME}
+      port: ${MONGO_PORT}
       authentication-database: admin
-      username: ${mongodb.username}
-      password: ${mongodb.password}
-      database: ${mongodb.database}
+      username: ${MONGO_USER}
+      password: ${MONGO_PASSWORD}
+      database: ${MONGO_DATABASE}

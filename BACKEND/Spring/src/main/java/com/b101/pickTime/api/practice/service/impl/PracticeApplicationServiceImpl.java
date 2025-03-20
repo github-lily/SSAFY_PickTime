@@ -26,7 +26,7 @@ public class PracticeApplicationServiceImpl implements PracticeApplicationServic
     @Override
     public CurriculumResDto getCurriculum(Integer userId){
         List<StageResDto> stages = stageService.getStages();
-        int numberOfClearStages = stages.size();
+        //int numberOfClearStages = stages.size();
         for(StageResDto stage : stages){
             List<StepResDto> steps = stepService.getSteps(stage.getStageId(), userId);
             stage.setSteps(steps);
@@ -34,7 +34,7 @@ public class PracticeApplicationServiceImpl implements PracticeApplicationServic
             for(StepResDto step : steps){
                 if(!step.getIsClear()){
                     isClear = false;
-                    numberOfClearStages--;
+                    //numberOfClearStages--;
                     break;
                 }
             }
@@ -42,18 +42,9 @@ public class PracticeApplicationServiceImpl implements PracticeApplicationServic
             stage.setIsClear(isClear);     // 추후 수정
         }
 
-        return new CurriculumResDto(stages, (double)numberOfClearStages/stages.size());
-    }
+        double clearRate = completedStepService.getProgress(userId);
 
-    @Override
-    public void completeStep(Integer userId, Integer stepId, Integer score) {
-        completedStepService.completeStep(userId, stepId, score);
+        return new CurriculumResDto(stages, clearRate);
     }
-
-    @Override
-    public double getProgress(Integer userId) {
-        return completedStepService.getProgress(userId);
-    }
-
 
 }

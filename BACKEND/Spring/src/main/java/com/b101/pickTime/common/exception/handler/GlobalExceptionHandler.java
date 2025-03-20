@@ -2,8 +2,10 @@ package com.b101.pickTime.common.exception.handler;
 
 import com.b101.pickTime.api.ApiResponseDto;
 import com.b101.pickTime.common.exception.exception.DuplicateEmailException;
+import com.b101.pickTime.common.exception.exception.InvalidRefreshTokenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -18,13 +20,22 @@ public class GlobalExceptionHandler {
 //        );
 //    }
     @ExceptionHandler(DuplicateEmailException.class)
-    public ResponseEntity<ApiResponseDto<?>> handleDuplicateEmailException(DuplicateEmailException ex) {
-        ApiResponseDto<?> response = new ApiResponseDto<>(
-                ex.getStatus(),  // 409 Conflict 상태 코드
-                ex.getMessage(),
-                null
-        );
+    public ResponseEntity<?> handleDuplicateEmailException(DuplicateEmailException ex) {
+        return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
+    }
 
-        return ResponseEntity.status(ex.getStatus()).body(response); // ✅ 실제 HTTP 응답 코드 설정
+    @ExceptionHandler(UsernameNotFoundException.class)
+    public ResponseEntity<?> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+//        ApiResponseDto<?> response = new ApiResponseDto<>(
+//                HttpStatus.NOT_FOUND.value(),  // 404
+//                ex.getMessage(),
+//                null
+//        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidRefreshTokenException.class)
+    public ResponseEntity<?> invalidRefreshTokenException(DuplicateEmailException ex) {
+        return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
     }
 }
