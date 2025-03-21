@@ -25,7 +25,7 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       LANG: C.UTF-8
     ports:
-      - "${MYSQL_PORT}:3306"
+      - "${MYSQL_PORT}:${MYSQL_CONTAINER_PORT}"
     networks:
       - app-network
     volumes:
@@ -39,7 +39,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
     ports:
-      - "${MONGO_PORT}:27017"
+      - "${MONGO_PORT}:${MONGO_CONTAINER_PORT}"
     networks:
       - app-network
     volumes:
@@ -53,11 +53,23 @@ services:
     container_name: ${SPRING_CONTAINER_NAME}
     restart: always
     ports:
-      - "${SPRING_PORT}:8080"
+      - "${SPRING_PORT}:${SPRING_CONTAINER_PORT}"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://picktime-mysql:3306/${MYSQL_DATABASE}
-      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
+      # MySQL
+      MYSQL_CONTAINER_NAME: ${MYSQL_CONTAINER_NAME}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_PORT: ${MYSQL_CONTAINER_PORT}
+
+      # MongoDB
+      MONGO_CONTAINER_NAME: ${MONGO_CONTAINER_NAME}
+      MONGO_USER: ${MONGO_USER}
+      MONGO_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_DATABASE: ${MONGO_DATABASE}
+      MONGO_PORT: ${MONGO_CONTAINER_PORT}
+
+      # JWT
       JWT_AUTH_KEY: ${JWT_AUTH_KEY}
     networks:
       - app-network
