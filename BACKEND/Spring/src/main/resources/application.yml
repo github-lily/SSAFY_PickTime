@@ -9,13 +9,13 @@ spring:
   config:
     import: "optional:classpath:application-secret.yml"
 
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${MYSQL_CONTAINER_NAME}:${MYSQL_PORT}/${MYSQL_DATABASE}?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
-    username: ${MYSQL_USER}
-    password: ${MYSQL_PASSWORD}
-    hikari:
-      pool-name: hikari-pool
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://${MYSQL_CONTAINER_NAME}:${MYSQL_PORT}/${MYSQL_DATABASE}?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
+#    username: ${MYSQL_USER}
+#    password: ${MYSQL_PASSWORD}
+#    hikari:
+#      pool-name: hikari-pool
 
   jpa:
     hibernate:
@@ -24,11 +24,14 @@ spring:
       hibernate:
         format_sql: true
 
-  data:
-    mongodb:
-      host: ${MONGO_CONTAINER_NAME}
-      port: ${MONGO_PORT}
-      authentication-database: admin
-      username: ${MONGO_USER}
-      password: ${MONGO_PASSWORD}
-      database: ${MONGO_DATABASE}
+#  data:
+#    mongodb:
+#      host: ${MONGO_CONTAINER_NAME}
+#      port: ${MONGO_PORT}
+#      authentication-database: admin
+#      username: ${MONGO_USER}
+#      password: ${MONGO_PASSWORD}
+#      database: ${MONGO_DATABASE}
+#
+#jwt:
+#  auth-key: ${JWT_AUTH_KEYa}
