@@ -24,14 +24,14 @@ spring:
       hibernate:
         format_sql: true
 
-#  data:
-#    mongodb:
-#      host: ${MONGO_CONTAINER_NAME}
-#      port: ${MONGO_PORT}
-#      authentication-database: admin
-#      username: ${MONGO_USER}
-#      password: ${MONGO_PASSWORD}
-#      database: ${MONGO_DATABASE}
-#
-#jwt:
-#  auth-key: ${JWT_AUTH_KEYa}
+  data:
+    mongodb:
+      host: ${MONGO_CONTAINER_NAME}
+      port: ${MONGO_PORT}
+      authentication-database: admin
+      username: ${MONGO_USER}
+      password: ${MONGO_PASSWORD}
+      database: ${MONGO_DATABASE}
+
+jwt:
+  auth-key: ${JWT_AUTH_KEY}
