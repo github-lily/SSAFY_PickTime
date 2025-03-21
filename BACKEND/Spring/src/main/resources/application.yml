@@ -9,13 +9,13 @@ spring:
   config:
     import: "optional:classpath:application-secret.yml"
 
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${MYSQL_CONTAINER_NAME}:${MYSQL_PORT}/${MYSQL_DATABASE}?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
-    username: ${MYSQL_USER}
-    password: ${MYSQL_PASSWORD}
-    hikari:
-      pool-name: hikari-pool
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://${MYSQL_CONTAINER_NAME}:${MYSQL_PORT}/${MYSQL_DATABASE}?serverTimezone=UTC&useUnicode=true&characterEncoding=UTF-8
+#    username: ${MYSQL_USER}
+#    password: ${MYSQL_PASSWORD}
+#    hikari:
+#      pool-name: hikari-pool
 
   jpa:
     hibernate:
