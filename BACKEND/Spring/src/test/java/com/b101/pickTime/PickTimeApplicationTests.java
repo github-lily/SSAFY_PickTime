@@ -8,7 +8,6 @@ class PickTimeApplicationTests {
 
 	@Test
 	void contextLoads() {
-		int i;
 	}
 
 }
