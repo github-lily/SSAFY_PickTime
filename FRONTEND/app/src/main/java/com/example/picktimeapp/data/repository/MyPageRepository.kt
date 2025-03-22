@@ -20,6 +20,13 @@ class MyPageRepository {
             PickDay("2025-02-12", 0),
             PickDay("2025-02-13", 2),
             PickDay("2025-02-14", 1),
+            PickDay("2025-02-15", 2),
+            PickDay("2025-02-16", 1),
+            PickDay("2025-02-17", 0),
+            PickDay("2025-02-18", 3),
+            PickDay("2025-02-19", 2),
+            PickDay("2025-02-20", 1),
+            PickDay("2025-02-21", 0),
         )
         return PickDayResponse(
             continued = 30,
