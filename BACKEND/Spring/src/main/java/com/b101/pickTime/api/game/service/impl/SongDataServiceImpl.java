@@ -1,7 +1,8 @@
-package com.b101.pickTime.api.songdata.service.impl;
+package com.b101.pickTime.api.game.service.impl;
 
-import com.b101.pickTime.api.songdata.response.SongDataResDto;
-import com.b101.pickTime.api.songdata.service.SongDataService;
+import com.b101.pickTime.api.game.response.SongDataResDto;
+import com.b101.pickTime.api.game.response.SongGameResDto;
+import com.b101.pickTime.api.game.service.SongDataService;
 import com.b101.pickTime.db.document.SongData;
 import com.b101.pickTime.db.repository.SongDataRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class SongDataServiceImpl implements SongDataService {
     private final SongDataRepository songDataRepository;
 
     @Override
-    public List<SongDataResDto> findAllSongs(){
+    public List<SongDataResDto> getAllSongs(){
         List<SongDataResDto> songs = new ArrayList<>();
 
         List<SongData> songDatas = songDataRepository.findAll();
@@ -30,6 +31,11 @@ public class SongDataServiceImpl implements SongDataService {
 
         return songs;
 
+    }
+
+    @Override
+    public SongGameResDto getSong(Integer songId) {
+        return songDataRepository.findSongGameResDtoBySongDataId(songId);
     }
 
     private SongDataResDto songDataToDto(SongData songData){
