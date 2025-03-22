@@ -8,6 +8,7 @@ import com.example.picktimeapp.data.repository.MyPageRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.time.LocalDate
 
 // ViewModel - 리액트의 useEffect + useState, 데이터를 가져와서 상태를 설정하고 관리하는 중간 관리자 역할
 class MyPageViewModel: ViewModel() {
@@ -42,4 +43,23 @@ class MyPageViewModel: ViewModel() {
     private fun loadPickDays(){
         _pickDayData.value = repository.getPickDays()
     }
+
+    //잔디 105개로 만들기
+    fun getFullPickDayList(): List<PickDay> {
+        val realData = pickDayData.value?.pickDays ?: emptyList()
+
+        val today = LocalDate.now()
+        val startDate = today.minusDays(104)
+
+        return (0..104).map { i ->
+            val date = startDate.plusDays(i.toLong())
+            val dataForDate = realData.find { it.completedDate == date.toString() }
+
+            PickDay(
+                completedDate = date.toString(),
+                pickCount = dataForDate?.pickCount ?: 0
+            )
+        }
+    }
 }
+
