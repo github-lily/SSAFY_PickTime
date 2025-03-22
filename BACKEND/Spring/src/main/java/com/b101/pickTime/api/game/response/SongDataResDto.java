@@ -1,4 +1,4 @@
-package com.b101.pickTime.api.songdata.response;
+package com.b101.pickTime.api.game.response;
 
 import lombok.*;
 
