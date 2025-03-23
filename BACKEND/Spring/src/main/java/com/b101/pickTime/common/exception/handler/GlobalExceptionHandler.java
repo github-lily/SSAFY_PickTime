@@ -1,9 +1,6 @@
 package com.b101.pickTime.common.exception.handler;
 
-import com.b101.pickTime.common.exception.exception.DuplicateEmailException;
-import com.b101.pickTime.common.exception.exception.FailedSendEmailException;
-import com.b101.pickTime.common.exception.exception.InvalidRefreshTokenException;
-import com.b101.pickTime.common.exception.exception.NotFoundUsernameException;
+import com.b101.pickTime.common.exception.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -36,15 +33,19 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidRefreshTokenException.class)
-    public ResponseEntity<?> invalidRefreshTokenException(DuplicateEmailException ex) {
+    public ResponseEntity<?> invalidRefreshTokenException(InvalidRefreshTokenException ex) {
         return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
     }
     @ExceptionHandler(FailedSendEmailException.class)
-    public ResponseEntity<?> failedSendEmailException(DuplicateEmailException ex) {
+    public ResponseEntity<?> failedSendEmailException(FailedSendEmailException ex) {
         return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
     }
     @ExceptionHandler(NotFoundUsernameException.class)
     public ResponseEntity<?> notFoundUsernameException(NotFoundUsernameException ex) {
+        return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
+    }
+    @ExceptionHandler(PasswordNotMatchedException.class)
+    public ResponseEntity<?> passwordNotMatchedException(PasswordNotMatchedException ex) {
         return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
     }
 

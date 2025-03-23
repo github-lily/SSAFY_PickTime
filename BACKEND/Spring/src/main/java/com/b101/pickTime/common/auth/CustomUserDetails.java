@@ -33,6 +33,10 @@ public class CustomUserDetails implements UserDetails {
 
         return collection;
     }
+//    @Override
+//    public Collection<? extends GrantedAuthority> getAuthorities() {
+//        return List.of(new SimpleGrantedAuthority(role));
+//    }
 
     @Override
     public String getPassword() {

@@ -39,6 +39,7 @@ public class JWTFilter extends OncePerRequestFilter {
             jwtUtil.isExpired(accessToken);
         } catch (ExpiredJwtException e) {   // 만료 시 에러 발생 -> 다시 refresh 토큰 발급 요청 보내도록 에러를 반환
             responseWrite("access Token expired", response);
+            return;
         }
 
         // 토큰이 access인지 확인
