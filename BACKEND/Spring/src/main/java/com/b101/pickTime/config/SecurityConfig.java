@@ -1,5 +1,6 @@
 package com.b101.pickTime.config;
 
+import com.b101.pickTime.common.auth.JWTFilter;
 import com.b101.pickTime.common.auth.LoginFilter;
 import com.b101.pickTime.common.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,7 @@ public class SecurityConfig {
 //				.requestMatchers("/admin").hasRole("ADMIN")
 				.anyRequest().authenticated()
         )
+				.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class)
 				.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class)
 		.sessionManagement((session)->session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

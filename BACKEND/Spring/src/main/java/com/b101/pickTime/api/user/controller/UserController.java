@@ -2,13 +2,16 @@ package com.b101.pickTime.api.user.controller;
 
 import com.b101.pickTime.api.user.request.CheckVerificationReq;
 import com.b101.pickTime.api.user.request.EmailVerificationReq;
+import com.b101.pickTime.api.user.request.PasswordCheckReq;
 import com.b101.pickTime.api.user.request.UserRegisterReq;
 import com.b101.pickTime.api.user.service.UserApplicationService;
 import com.b101.pickTime.api.user.service.UserService;
 import com.b101.pickTime.api.user.service.VerificationService;
+import com.b101.pickTime.common.auth.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,4 +54,14 @@ public class UserController {
             return new ResponseEntity<>("failed to verify email",HttpStatus.UNAUTHORIZED);
         }
     }
+    // 비밀번호 확인
+    @PostMapping("/password")
+    public ResponseEntity<?> checkPassword(@RequestBody PasswordCheckReq passwordCheckReq, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        userService.checkPassword(passwordCheckReq, customUserDetails);
+
+        return ResponseEntity.ok("password is correct");
+    }
+    
+    // 비밀번호 수정
+
 }
