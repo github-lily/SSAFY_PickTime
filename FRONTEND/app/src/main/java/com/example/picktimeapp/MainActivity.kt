@@ -54,12 +54,18 @@ import dagger.hilt.android.AndroidEntryPoint
 //color 관련
 import com.example.picktimeapp.ui.theme.*
 
+//user 관련
+import com.example.picktimeapp.ui.login.LoginScreen
+import com.example.picktimeapp.ui.signup.SignupScreen
+//import androidx.lifecycle.viewmodel.compose.viewModel
+
 
 // font 관련
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+//import com.example.picktimeapp.ui.login.LoginViewModel
 
 //font
 val TitleFont = FontFamily(
@@ -87,114 +93,130 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen() {
     var showMyPage by remember { mutableStateOf(false) }
+    var showLogin by remember { mutableStateOf(false) }
+    var showSignup by remember { mutableStateOf(false) }
 
-    if (showMyPage) {
-        val viewModel = MyPageViewModel()
-        MyPageScreen(viewModel = viewModel)
-    } else  {
-        // 좌우로 나누는 Row
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(44.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // 왼쪽 영역
-            Column(
+    when {
+        showLogin -> {
+            LoginScreen()
+//            val viewModel = LoginViewModel()
+//            LoginScreen(viewModel = viewModel())
+        }
+
+        showMyPage -> {
+            val viewModel = MyPageViewModel()
+            MyPageScreen(viewModel = viewModel)
+        }
+
+        showSignup -> {
+            SignupScreen()
+        }
+
+        else -> {
+            // 좌우로 나누는 Row
+            Row(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                    .fillMaxSize()
+                    .padding(44.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // 타이틀 + 서브타이틀 묶기
-                Box(
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "피크 타임",
-                        fontFamily = TitleFont,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 110.sp,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-
-                    Text(
-                        text = "즐겁고 재미있는 기타 학습",
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(end = 4.dp)
-                            .offset(y = 30.dp) // 상하 간격
-                    )
-                }
-
-
-                Spacer(modifier = Modifier.height(150.dp))
-
-                // 공통 버튼 Modifier
-                val buttonModifier = Modifier
-                    .fillMaxWidth(0.5f)
-                    .height(60.dp)
-
-                // 로그인 버튼
-                Button(
-                    onClick = { /* TODO */ },
-                    modifier = buttonModifier,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Brown40,
-                        contentColor = DarkGreen10,
-                    ),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Text("로그인", fontSize = 24.sp, fontWeight = FontWeight.Medium)
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // 회원가입 버튼
-                Button(
-                    onClick = { /* TODO */ },
-                    modifier = buttonModifier,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Brown40,
-                        contentColor = DarkGreen10
-                    ),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Text("회원가입", fontSize = 24.sp, fontWeight = FontWeight.Medium)
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // 마이페이지 버튼
-                Button(
-                    onClick = { showMyPage = true },
-                    modifier = buttonModifier,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Brown40,
-                        contentColor = DarkGreen10
-                    ),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Text("마이페이지 확인용", fontSize = 24.sp, fontWeight = FontWeight.Medium)
-                }
-            }
-
-            // 오른쪽 이미지 영역
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                contentAlignment = Alignment.BottomEnd
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.girinduo),
-                    contentDescription = "기타 치는 기린들",
+                // 왼쪽 영역
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth(0.8f)
-                        .padding(end = 80.dp)
-                )
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    // 타이틀 + 서브타이틀 묶기
+                    Box(
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "피크 타임",
+                            fontFamily = TitleFont,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 110.sp,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+
+                        Text(
+                            text = "즐겁고 재미있는 기타 학습",
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(end = 4.dp)
+                                .offset(y = 30.dp) // 상하 간격
+                        )
+                    }
+
+
+                    Spacer(modifier = Modifier.height(150.dp))
+
+                    // 공통 버튼 Modifier
+                    val buttonModifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .height(60.dp)
+
+                    // 로그인 버튼
+                    Button(
+                        onClick = { showLogin = true },
+                        modifier = buttonModifier,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Brown40,
+                            contentColor = DarkGreen10,
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text("로그인", fontSize = 24.sp, fontWeight = FontWeight.Medium)
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // 회원가입 버튼
+                    Button(
+                        onClick = { showSignup = true },
+                        modifier = buttonModifier,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Brown40,
+                            contentColor = DarkGreen10
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text("회원가입", fontSize = 24.sp, fontWeight = FontWeight.Medium)
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // 마이페이지 버튼
+                    Button(
+                        onClick = { showMyPage = true },
+                        modifier = buttonModifier,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Brown40,
+                            contentColor = DarkGreen10
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text("마이페이지 확인용", fontSize = 24.sp, fontWeight = FontWeight.Medium)
+                    }
+                }
+
+                // 오른쪽 이미지 영역
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    contentAlignment = Alignment.BottomEnd
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.girinduo),
+                        contentDescription = "기타 치는 기린들",
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                            .padding(end = 80.dp)
+                    )
+                }
             }
         }
     }
