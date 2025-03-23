@@ -1,8 +1,10 @@
 package com.example.picktimeapp.ui
 
+//기본
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,28 +18,47 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.picktimeapp.ui.mypage.MyPageScreen
-import com.example.picktimeapp.ui.mypage.MyPageViewModel
-import com.example.picktimeapp.ui.theme.PickTimeAppTheme
-import dagger.hilt.android.AndroidEntryPoint
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+
+
+// 레이아웃
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.shape.RoundedCornerShape
 
 //image 관련
 import androidx.compose.ui.res.painterResource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.Image
+import androidx.compose.material3.ButtonDefaults
 
+// 앱 관련
+import com.example.picktimeapp.R
+import com.example.picktimeapp.ui.mypage.MyPageScreen
+import com.example.picktimeapp.ui.mypage.MyPageViewModel
+import com.example.picktimeapp.ui.theme.PickTimeAppTheme
+
+// DI 관련
+import dagger.hilt.android.AndroidEntryPoint
+
+//color 관련
+import com.example.picktimeapp.ui.theme.*
 
 
 // font 관련
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import com.example.picktimeapp.R
 import androidx.compose.ui.unit.sp
 
 //font
@@ -70,61 +91,78 @@ fun MainScreen() {
     if (showMyPage) {
         val viewModel = MyPageViewModel()
         MyPageScreen(viewModel = viewModel)
-    } else {
-        // 전체 화면을 좌우로 나누는 Row
-        androidx.compose.foundation.layout.Row(
+    } else  {
+        // 좌우로 나누는 Row
+        Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(32.dp),
+                .padding(44.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 좌측: 텍스트 + 버튼 Column
+            // 왼쪽 영역
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = 16.dp),
-                horizontalAlignment = Alignment.Start
+                    .fillMaxHeight(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
             ) {
-                // 타이틀
-                Text(
-                    text = "피크 타임",
-                    fontFamily = TitleFont,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 130.sp
-                )
+                // 타이틀 + 서브타이틀 묶기
+                Box(
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "피크 타임",
+                        fontFamily = TitleFont,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 110.sp,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "즐겁고 재미있는 기타 학습",
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(end = 4.dp)
+                            .offset(y = 30.dp) // 상하 간격
+                    )
+                }
 
-                // 서브타이틀
-                Text(
-                    text = "즐겁고 재미있는 기타 학습",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.End
-                )
 
-                Spacer(modifier = Modifier.height(48.dp))
+                Spacer(modifier = Modifier.height(150.dp))
+
+                // 공통 버튼 Modifier
+                val buttonModifier = Modifier
+                    .fillMaxWidth(0.5f)
+                    .height(60.dp)
 
                 // 로그인 버튼
                 Button(
-                    onClick = { /* TODO: 로그인 화면 이동 */ },
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                        .height(60.dp)
+                    onClick = { /* TODO */ },
+                    modifier = buttonModifier,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Brown40,
+                        contentColor = DarkGreen10,
+                    ),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text("로그인")
+                    Text("로그인", fontSize = 24.sp, fontWeight = FontWeight.Medium)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // 회원가입 버튼
                 Button(
-                    onClick = { /* TODO: 회원가입 화면 이동 */ },
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                        .height(60.dp)
+                    onClick = { /* TODO */ },
+                    modifier = buttonModifier,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Brown40,
+                        contentColor = DarkGreen10
+                    ),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text("회원가입")
+                    Text("회원가입", fontSize = 24.sp, fontWeight = FontWeight.Medium)
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -132,22 +170,32 @@ fun MainScreen() {
                 // 마이페이지 버튼
                 Button(
                     onClick = { showMyPage = true },
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                        .height(60.dp)
+                    modifier = buttonModifier,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Brown40,
+                        contentColor = DarkGreen10
+                    ),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
-                    Text("마이페이지 확인용")
+                    Text("마이페이지 확인용", fontSize = 24.sp, fontWeight = FontWeight.Medium)
                 }
             }
 
-            // 우측: 기린 이미지
-            androidx.compose.foundation.Image(
-                painter = androidx.compose.ui.res.painterResource(id = R.drawable.girinduo),
-                contentDescription = "기타 치는 기린들",
+            // 오른쪽 이미지 영역
+            Box(
                 modifier = Modifier
                     .weight(1f)
-                    .align(Alignment.Bottom)
-            )
+                    .fillMaxHeight(),
+                contentAlignment = Alignment.BottomEnd
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.girinduo),
+                    contentDescription = "기타 치는 기린들",
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .padding(end = 80.dp)
+                )
+            }
         }
     }
 }
