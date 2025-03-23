@@ -26,7 +26,6 @@ public class EmailSender {
 
             javaMailSender.send(message);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new FailedSendEmailException("Failed to send email");
         }
     }

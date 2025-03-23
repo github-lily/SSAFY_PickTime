@@ -1,13 +1,11 @@
 package com.b101.pickTime.api.user.service.impl;
 
-import com.b101.pickTime.api.user.request.CheckVerificationReq;
 import com.b101.pickTime.api.user.request.EmailVerificationReq;
 import com.b101.pickTime.api.user.service.UserApplicationService;
 import com.b101.pickTime.api.user.service.UserService;
 import com.b101.pickTime.api.user.service.VerificationService;
 import com.b101.pickTime.common.email.EmailSender;
 import com.b101.pickTime.common.exception.exception.NotFoundUsernameException;
-import com.b101.pickTime.db.entity.Verification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
