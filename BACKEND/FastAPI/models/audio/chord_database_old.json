@@ -1,0 +1,1010 @@
+{
+  "C": {
+    "notes": [
+      "C",
+      "E",
+      "G"
+    ],
+    "root": "C",
+    "type": "major"
+  },
+  "Cminor": {
+    "notes": [
+      "C",
+      "D#",
+      "G"
+    ],
+    "root": "C",
+    "type": "minor"
+  },
+  "Cdominant7": {
+    "notes": [
+      "C",
+      "E",
+      "G",
+      "A#"
+    ],
+    "root": "C",
+    "type": "dominant7"
+  },
+  "Cmajor7": {
+    "notes": [
+      "C",
+      "E",
+      "G",
+      "B"
+    ],
+    "root": "C",
+    "type": "major7"
+  },
+  "Cminor7": {
+    "notes": [
+      "C",
+      "D#",
+      "G",
+      "A#"
+    ],
+    "root": "C",
+    "type": "minor7"
+  },
+  "Cdim": {
+    "notes": [
+      "C",
+      "D#",
+      "F#"
+    ],
+    "root": "C",
+    "type": "dim"
+  },
+  "Caug": {
+    "notes": [
+      "C",
+      "E",
+      "G#"
+    ],
+    "root": "C",
+    "type": "aug"
+  },
+  "Csus2": {
+    "notes": [
+      "C",
+      "D",
+      "G"
+    ],
+    "root": "C",
+    "type": "sus2"
+  },
+  "Csus4": {
+    "notes": [
+      "C",
+      "F",
+      "G"
+    ],
+    "root": "C",
+    "type": "sus4"
+  },
+  "C#": {
+    "notes": [
+      "C#",
+      "F",
+      "G#"
+    ],
+    "root": "C#",
+    "type": "major"
+  },
+  "C#minor": {
+    "notes": [
+      "C#",
+      "E",
+      "G#"
+    ],
+    "root": "C#",
+    "type": "minor"
+  },
+  "C#dominant7": {
+    "notes": [
+      "C#",
+      "F",
+      "G#",
+      "B"
+    ],
+    "root": "C#",
+    "type": "dominant7"
+  },
+  "C#major7": {
+    "notes": [
+      "C#",
+      "F",
+      "G#",
+      "C"
+    ],
+    "root": "C#",
+    "type": "major7"
+  },
+  "C#minor7": {
+    "notes": [
+      "C#",
+      "E",
+      "G#",
+      "B"
+    ],
+    "root": "C#",
+    "type": "minor7"
+  },
+  "C#dim": {
+    "notes": [
+      "C#",
+      "E",
+      "G"
+    ],
+    "root": "C#",
+    "type": "dim"
+  },
+  "C#aug": {
+    "notes": [
+      "C#",
+      "F",
+      "A"
+    ],
+    "root": "C#",
+    "type": "aug"
+  },
+  "C#sus2": {
+    "notes": [
+      "C#",
+      "D#",
+      "G#"
+    ],
+    "root": "C#",
+    "type": "sus2"
+  },
+  "C#sus4": {
+    "notes": [
+      "C#",
+      "F#",
+      "G#"
+    ],
+    "root": "C#",
+    "type": "sus4"
+  },
+  "D": {
+    "notes": [
+      "D",
+      "F#",
+      "A"
+    ],
+    "root": "D",
+    "type": "major"
+  },
+  "Dminor": {
+    "notes": [
+      "D",
+      "F",
+      "A"
+    ],
+    "root": "D",
+    "type": "minor"
+  },
+  "Ddominant7": {
+    "notes": [
+      "D",
+      "F#",
+      "A",
+      "C"
+    ],
+    "root": "D",
+    "type": "dominant7"
+  },
+  "Dmajor7": {
+    "notes": [
+      "D",
+      "F#",
+      "A",
+      "C#"
+    ],
+    "root": "D",
+    "type": "major7"
+  },
+  "Dminor7": {
+    "notes": [
+      "D",
+      "F",
+      "A",
+      "C"
+    ],
+    "root": "D",
+    "type": "minor7"
+  },
+  "Ddim": {
+    "notes": [
+      "D",
+      "F",
+      "G#"
+    ],
+    "root": "D",
+    "type": "dim"
+  },
+  "Daug": {
+    "notes": [
+      "D",
+      "F#",
+      "A#"
+    ],
+    "root": "D",
+    "type": "aug"
+  },
+  "Dsus2": {
+    "notes": [
+      "D",
+      "E",
+      "A"
+    ],
+    "root": "D",
+    "type": "sus2"
+  },
+  "Dsus4": {
+    "notes": [
+      "D",
+      "G",
+      "A"
+    ],
+    "root": "D",
+    "type": "sus4"
+  },
+  "D#": {
+    "notes": [
+      "D#",
+      "G",
+      "A#"
+    ],
+    "root": "D#",
+    "type": "major"
+  },
+  "D#minor": {
+    "notes": [
+      "D#",
+      "F#",
+      "A#"
+    ],
+    "root": "D#",
+    "type": "minor"
+  },
+  "D#dominant7": {
+    "notes": [
+      "D#",
+      "G",
+      "A#",
+      "C#"
+    ],
+    "root": "D#",
+    "type": "dominant7"
+  },
+  "D#major7": {
+    "notes": [
+      "D#",
+      "G",
+      "A#",
+      "D"
+    ],
+    "root": "D#",
+    "type": "major7"
+  },
+  "D#minor7": {
+    "notes": [
+      "D#",
+      "F#",
+      "A#",
+      "C#"
+    ],
+    "root": "D#",
+    "type": "minor7"
+  },
+  "D#dim": {
+    "notes": [
+      "D#",
+      "F#",
+      "A"
+    ],
+    "root": "D#",
+    "type": "dim"
+  },
+  "D#aug": {
+    "notes": [
+      "D#",
+      "G",
+      "B"
+    ],
+    "root": "D#",
+    "type": "aug"
+  },
+  "D#sus2": {
+    "notes": [
+      "D#",
+      "F",
+      "A#"
+    ],
+    "root": "D#",
+    "type": "sus2"
+  },
+  "D#sus4": {
+    "notes": [
+      "D#",
+      "G#",
+      "A#"
+    ],
+    "root": "D#",
+    "type": "sus4"
+  },
+  "E": {
+    "notes": [
+      "E",
+      "G#",
+      "B"
+    ],
+    "root": "E",
+    "type": "major"
+  },
+  "Eminor": {
+    "notes": [
+      "E",
+      "G",
+      "B"
+    ],
+    "root": "E",
+    "type": "minor"
+  },
+  "Edominant7": {
+    "notes": [
+      "E",
+      "G#",
+      "B",
+      "D"
+    ],
+    "root": "E",
+    "type": "dominant7"
+  },
+  "Emajor7": {
+    "notes": [
+      "E",
+      "G#",
+      "B",
+      "D#"
+    ],
+    "root": "E",
+    "type": "major7"
+  },
+  "Eminor7": {
+    "notes": [
+      "E",
+      "G",
+      "B",
+      "D"
+    ],
+    "root": "E",
+    "type": "minor7"
+  },
+  "Edim": {
+    "notes": [
+      "E",
+      "G",
+      "A#"
+    ],
+    "root": "E",
+    "type": "dim"
+  },
+  "Eaug": {
+    "notes": [
+      "E",
+      "G#",
+      "C"
+    ],
+    "root": "E",
+    "type": "aug"
+  },
+  "Esus2": {
+    "notes": [
+      "E",
+      "F#",
+      "B"
+    ],
+    "root": "E",
+    "type": "sus2"
+  },
+  "Esus4": {
+    "notes": [
+      "E",
+      "A",
+      "B"
+    ],
+    "root": "E",
+    "type": "sus4"
+  },
+  "F": {
+    "notes": [
+      "F",
+      "A",
+      "C"
+    ],
+    "root": "F",
+    "type": "major"
+  },
+  "Fminor": {
+    "notes": [
+      "F",
+      "G#",
+      "C"
+    ],
+    "root": "F",
+    "type": "minor"
+  },
+  "Fdominant7": {
+    "notes": [
+      "F",
+      "A",
+      "C",
+      "D#"
+    ],
+    "root": "F",
+    "type": "dominant7"
+  },
+  "Fmajor7": {
+    "notes": [
+      "F",
+      "A",
+      "C",
+      "E"
+    ],
+    "root": "F",
+    "type": "major7"
+  },
+  "Fminor7": {
+    "notes": [
+      "F",
+      "G#",
+      "C",
+      "D#"
+    ],
+    "root": "F",
+    "type": "minor7"
+  },
+  "Fdim": {
+    "notes": [
+      "F",
+      "G#",
+      "B"
+    ],
+    "root": "F",
+    "type": "dim"
+  },
+  "Faug": {
+    "notes": [
+      "F",
+      "A",
+      "C#"
+    ],
+    "root": "F",
+    "type": "aug"
+  },
+  "Fsus2": {
+    "notes": [
+      "F",
+      "G",
+      "C"
+    ],
+    "root": "F",
+    "type": "sus2"
+  },
+  "Fsus4": {
+    "notes": [
+      "F",
+      "A#",
+      "C"
+    ],
+    "root": "F",
+    "type": "sus4"
+  },
+  "F#": {
+    "notes": [
+      "F#",
+      "A#",
+      "C#"
+    ],
+    "root": "F#",
+    "type": "major"
+  },
+  "F#minor": {
+    "notes": [
+      "F#",
+      "A",
+      "C#"
+    ],
+    "root": "F#",
+    "type": "minor"
+  },
+  "F#dominant7": {
+    "notes": [
+      "F#",
+      "A#",
+      "C#",
+      "E"
+    ],
+    "root": "F#",
+    "type": "dominant7"
+  },
+  "F#major7": {
+    "notes": [
+      "F#",
+      "A#",
+      "C#",
+      "F"
+    ],
+    "root": "F#",
+    "type": "major7"
+  },
+  "F#minor7": {
+    "notes": [
+      "F#",
+      "A",
+      "C#",
+      "E"
+    ],
+    "root": "F#",
+    "type": "minor7"
+  },
+  "F#dim": {
+    "notes": [
+      "F#",
+      "A",
+      "C"
+    ],
+    "root": "F#",
+    "type": "dim"
+  },
+  "F#aug": {
+    "notes": [
+      "F#",
+      "A#",
+      "D"
+    ],
+    "root": "F#",
+    "type": "aug"
+  },
+  "F#sus2": {
+    "notes": [
+      "F#",
+      "G#",
+      "C#"
+    ],
+    "root": "F#",
+    "type": "sus2"
+  },
+  "F#sus4": {
+    "notes": [
+      "F#",
+      "B",
+      "C#"
+    ],
+    "root": "F#",
+    "type": "sus4"
+  },
+  "G": {
+    "notes": [
+      "G",
+      "B",
+      "D"
+    ],
+    "root": "G",
+    "type": "major"
+  },
+  "Gminor": {
+    "notes": [
+      "G",
+      "A#",
+      "D"
+    ],
+    "root": "G",
+    "type": "minor"
+  },
+  "Gdominant7": {
+    "notes": [
+      "G",
+      "B",
+      "D",
+      "F"
+    ],
+    "root": "G",
+    "type": "dominant7"
+  },
+  "Gmajor7": {
+    "notes": [
+      "G",
+      "B",
+      "D",
+      "F#"
+    ],
+    "root": "G",
+    "type": "major7"
+  },
+  "Gminor7": {
+    "notes": [
+      "G",
+      "A#",
+      "D",
+      "F"
+    ],
+    "root": "G",
+    "type": "minor7"
+  },
+  "Gdim": {
+    "notes": [
+      "G",
+      "A#",
+      "C#"
+    ],
+    "root": "G",
+    "type": "dim"
+  },
+  "Gaug": {
+    "notes": [
+      "G",
+      "B",
+      "D#"
+    ],
+    "root": "G",
+    "type": "aug"
+  },
+  "Gsus2": {
+    "notes": [
+      "G",
+      "A",
+      "D"
+    ],
+    "root": "G",
+    "type": "sus2"
+  },
+  "Gsus4": {
+    "notes": [
+      "G",
+      "C",
+      "D"
+    ],
+    "root": "G",
+    "type": "sus4"
+  },
+  "G#": {
+    "notes": [
+      "G#",
+      "C",
+      "D#"
+    ],
+    "root": "G#",
+    "type": "major"
+  },
+  "G#minor": {
+    "notes": [
+      "G#",
+      "B",
+      "D#"
+    ],
+    "root": "G#",
+    "type": "minor"
+  },
+  "G#dominant7": {
+    "notes": [
+      "G#",
+      "C",
+      "D#",
+      "F#"
+    ],
+    "root": "G#",
+    "type": "dominant7"
+  },
+  "G#major7": {
+    "notes": [
+      "G#",
+      "C",
+      "D#",
+      "G"
+    ],
+    "root": "G#",
+    "type": "major7"
+  },
+  "G#minor7": {
+    "notes": [
+      "G#",
+      "B",
+      "D#",
+      "F#"
+    ],
+    "root": "G#",
+    "type": "minor7"
+  },
+  "G#dim": {
+    "notes": [
+      "G#",
+      "B",
+      "D"
+    ],
+    "root": "G#",
+    "type": "dim"
+  },
+  "G#aug": {
+    "notes": [
+      "G#",
+      "C",
+      "E"
+    ],
+    "root": "G#",
+    "type": "aug"
+  },
+  "G#sus2": {
+    "notes": [
+      "G#",
+      "A#",
+      "D#"
+    ],
+    "root": "G#",
+    "type": "sus2"
+  },
+  "G#sus4": {
+    "notes": [
+      "G#",
+      "C#",
+      "D#"
+    ],
+    "root": "G#",
+    "type": "sus4"
+  },
+  "A": {
+    "notes": [
+      "A",
+      "C#",
+      "E"
+    ],
+    "root": "A",
+    "type": "major"
+  },
+  "Aminor": {
+    "notes": [
+      "A",
+      "C",
+      "E"
+    ],
+    "root": "A",
+    "type": "minor"
+  },
+  "Adominant7": {
+    "notes": [
+      "A",
+      "C#",
+      "E",
+      "G"
+    ],
+    "root": "A",
+    "type": "dominant7"
+  },
+  "Amajor7": {
+    "notes": [
+      "A",
+      "C#",
+      "E",
+      "G#"
+    ],
+    "root": "A",
+    "type": "major7"
+  },
+  "Aminor7": {
+    "notes": [
+      "A",
+      "C",
+      "E",
+      "G"
+    ],
+    "root": "A",
+    "type": "minor7"
+  },
+  "Adim": {
+    "notes": [
+      "A",
+      "C",
+      "D#"
+    ],
+    "root": "A",
+    "type": "dim"
+  },
+  "Aaug": {
+    "notes": [
+      "A",
+      "C#",
+      "F"
+    ],
+    "root": "A",
+    "type": "aug"
+  },
+  "Asus2": {
+    "notes": [
+      "A",
+      "B",
+      "E"
+    ],
+    "root": "A",
+    "type": "sus2"
+  },
+  "Asus4": {
+    "notes": [
+      "A",
+      "D",
+      "E"
+    ],
+    "root": "A",
+    "type": "sus4"
+  },
+  "A#": {
+    "notes": [
+      "A#",
+      "D",
+      "F"
+    ],
+    "root": "A#",
+    "type": "major"
+  },
+  "A#minor": {
+    "notes": [
+      "A#",
+      "C#",
+      "F"
+    ],
+    "root": "A#",
+    "type": "minor"
+  },
+  "A#dominant7": {
+    "notes": [
+      "A#",
+      "D",
+      "F",
+      "G#"
+    ],
+    "root": "A#",
+    "type": "dominant7"
+  },
+  "A#major7": {
+    "notes": [
+      "A#",
+      "D",
+      "F",
+      "A"
+    ],
+    "root": "A#",
+    "type": "major7"
+  },
+  "A#minor7": {
+    "notes": [
+      "A#",
+      "C#",
+      "F",
+      "G#"
+    ],
+    "root": "A#",
+    "type": "minor7"
+  },
+  "A#dim": {
+    "notes": [
+      "A#",
+      "C#",
+      "E"
+    ],
+    "root": "A#",
+    "type": "dim"
+  },
+  "A#aug": {
+    "notes": [
+      "A#",
+      "D",
+      "F#"
+    ],
+    "root": "A#",
+    "type": "aug"
+  },
+  "A#sus2": {
+    "notes": [
+      "A#",
+      "C",
+      "F"
+    ],
+    "root": "A#",
+    "type": "sus2"
+  },
+  "A#sus4": {
+    "notes": [
+      "A#",
+      "D#",
+      "F"
+    ],
+    "root": "A#",
+    "type": "sus4"
+  },
+  "B": {
+    "notes": [
+      "B",
+      "D#",
+      "F#"
+    ],
+    "root": "B",
+    "type": "major"
+  },
+  "Bminor": {
+    "notes": [
+      "B",
+      "D",
+      "F#"
+    ],
+    "root": "B",
+    "type": "minor"
+  },
+  "Bdominant7": {
+    "notes": [
+      "B",
+      "D#",
+      "F#",
+      "A"
+    ],
+    "root": "B",
+    "type": "dominant7"
+  },
+  "Bmajor7": {
+    "notes": [
+      "B",
+      "D#",
+      "F#",
+      "A#"
+    ],
+    "root": "B",
+    "type": "major7"
+  },
+  "Bminor7": {
+    "notes": [
+      "B",
+      "D",
+      "F#",
+      "A"
+    ],
+    "root": "B",
+    "type": "minor7"
+  },
+  "Bdim": {
+    "notes": [
+      "B",
+      "D",
+      "F"
+    ],
+    "root": "B",
+    "type": "dim"
+  },
+  "Baug": {
+    "notes": [
+      "B",
+      "D#",
+      "G"
+    ],
+    "root": "B",
+    "type": "aug"
+  },
+  "Bsus2": {
+    "notes": [
+      "B",
+      "C#",
+      "F#"
+    ],
+    "root": "B",
+    "type": "sus2"
+  },
+  "Bsus4": {
+    "notes": [
+      "B",
+      "E",
+      "F#"
+    ],
+    "root": "B",
+    "type": "sus4"
+  }
+}
