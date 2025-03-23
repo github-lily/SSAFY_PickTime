@@ -74,15 +74,17 @@ services:
     networks:
       - app-network
 
-#  fastapi-app:
-#    build:
-#      context: ./BACKEND/FastAPI
-#      dockerfile: Dockerfile
-#    image: ${FASTAPI_IMAGE_NAME}:latest
-#    container_name: ${FASTAPI_CONTAINER_NAME}
-#    restart: always
-#    networks:
-#      - app-network
+  fastapi-app:
+    build:
+      context: ./BACKEND/FastAPI
+      dockerfile: Dockerfile
+    image: ${FASTAPI_IMAGE_NAME}:latest
+    container_name: ${FASTAPI_CONTAINER_NAME}
+    ports:
+      - "${FASTAPI_PORT}:${FASTAPI_CONTAINER_PORT}"
+    restart: always
+    networks:
+      - app-network
 
 networks:
   app-network:

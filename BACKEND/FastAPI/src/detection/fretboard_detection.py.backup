@@ -1,0 +1,780 @@
+"""
+Fretboard detection module for guitar chord recognition.
+
+This module provides functions to detect guitar strings and frets,
+and to create a virtual fretboard model for chord analysis.
+"""
+
+import os
+import cv2 as cv
+import numpy as np
+import math
+import torch
+
+from src.processing.image_processing import frei_and_chen_edges
+from src.processing.geometric_transform import detect_lines, filter_lines, line_points
+
+# Default temporary directory for debug images
+TMP_DIR = os.path.join("temp", "")
+
+
+def ensure_temp_dir():
+    """Ensure temporary directory exists."""
+    if not os.path.exists(TMP_DIR):
+        print(f"Creating temporary directory at {TMP_DIR}...")
+        os.makedirs(TMP_DIR, exist_ok=True)
+
+
+def detect_strings_and_frets(neck_image, string_threshold=250, fret_threshold=200,
+                             verbose=False, save_debug=False, yolo_detector=None):
+    """
+    Detect guitar strings and frets in a neck image.
+
+    Args:
+        neck_image: Image of guitar neck (numpy array or torch tensor)
+        string_threshold: Threshold for string detection
+        fret_threshold: Threshold for fret detection
+        verbose: If True, print detailed information
+        save_debug: If True, save debug images
+        yolo_detector: Optional YOLO model for string/fret detection
+
+    Returns:
+        Dictionary with 'strings' and 'frets' keys containing detected lines
+    """
+    # Create temp directory if needed
+    if save_debug:
+        ensure_temp_dir()
+
+    # Convert to numpy if needed
+    if isinstance(neck_image, torch.Tensor):
+        neck_image = neck_image.numpy()
+
+    # 이미지 크기 가져오기
+    height, width = neck_image.shape[:2]
+
+    # Try YOLO detection first if model is provided
+    if yolo_detector is not None:
+        try:
+            if verbose:
+                print("Using YOLO model for string and fret detection")
+
+            detection_result = yolo_detector.detect(neck_image, save_debug=save_debug)
+            horizontal_lines = detection_result['strings']
+            vertical_lines = detection_result['frets']
+
+            if verbose:
+                string_count = 0 if horizontal_lines is None else len(horizontal_lines)
+                fret_count = 0 if vertical_lines is None else len(vertical_lines)
+                print(f"YOLO detected {string_count} strings and {fret_count} frets")
+
+            # If YOLO detection fails to find enough lines, fall back to Hough transform
+            if (horizontal_lines is None or len(horizontal_lines) < 3 or
+                    vertical_lines is None or len(vertical_lines) < 3):
+                if verbose:
+                    print("Insufficient YOLO detections, falling back to Hough transform")
+            else:
+                # YOLO detection was successful
+                return {
+                    'strings': horizontal_lines,
+                    'frets': vertical_lines
+                }
+        except Exception as e:
+            if verbose:
+                print(f"Error in YOLO detection: {str(e)}, falling back to Hough transform")
+
+    # Fallback to traditional Hough transform method
+    if verbose:
+        print("Using Hough transform for string and fret detection")
+
+    # Get edges for line detection
+    edge_image = frei_and_chen_edges(torch.from_numpy(neck_image)).numpy()
+
+    # Detect lines with Hough transform
+    lines = cv.HoughLines(edge_image, 1, np.pi / 180, min(string_threshold, fret_threshold))
+
+    # Process detected lines
+    horizontal_lines = []
+    vertical_lines = []
+
+    if lines is not None:
+        for line in lines:
+            rho, theta = line[0]
+            # Convert to degrees for easier interpretation
+            angle_deg = (theta * 180 / np.pi) - 90
+
+            # Identify string candidates (roughly horizontal lines)
+            if -45 <= angle_deg <= 45:  # 확장된 각도 범위
+                horizontal_lines.append(line)
+            # Identify fret candidates (roughly vertical lines)
+            elif 45 <= abs(angle_deg) <= 90:
+                vertical_lines.append(line)
+
+    horizontal_lines = np.array(horizontal_lines) if horizontal_lines else None
+    vertical_lines = np.array(vertical_lines) if vertical_lines else None
+
+    # Filter out spurious detections based on consistent angles
+    if horizontal_lines is not None and len(horizontal_lines) > 3:
+        horizontal_lines = filter_lines_by_angle(horizontal_lines)
+
+    if vertical_lines is not None and len(vertical_lines) > 3:
+        vertical_lines = filter_lines_by_angle(vertical_lines)
+
+    if verbose:
+        string_count = 0 if horizontal_lines is None else len(horizontal_lines)
+        fret_count = 0 if vertical_lines is None else len(vertical_lines)
+        print(f"Hough transform detected {string_count} strings and {fret_count} frets")
+
+    # Draw debug image
+    if save_debug and (horizontal_lines is not None or vertical_lines is not None):
+        debug_image = neck_image.copy()
+        max_length = math.sqrt(neck_image.shape[0] ** 2 + neck_image.shape[1] ** 2)
+
+        # Draw strings
+        if horizontal_lines is not None:
+            for line in horizontal_lines:
+                p1, p2 = line_points(line, max_length)
+                cv.line(debug_image, p1, p2, (0, 255, 0), 2)  # Green for strings
+
+                # 디버그: 각도 표시
+                rho, theta = line[0]
+                angle_deg = (theta * 180 / np.pi) - 90
+                mid_point = ((p1[0] + p2[0]) // 2, (p1[1] + p2[1]) // 2)
+                cv.putText(debug_image, f"{angle_deg:.1f}°", mid_point,
+                           cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+
+        # Draw frets
+        if vertical_lines is not None:
+            for line in vertical_lines:
+                p1, p2 = line_points(line, max_length)
+                cv.line(debug_image, p1, p2, (0, 0, 255), 2)  # Red for frets
+
+                # 디버그: 각도 표시
+                rho, theta = line[0]
+                angle_deg = (theta * 180 / np.pi) - 90
+                mid_point = ((p1[0] + p2[0]) // 2, (p1[1] + p2[1]) // 2)
+                cv.putText(debug_image, f"{angle_deg:.1f}°", mid_point,
+                           cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+
+        cv.imwrite(os.path.join(TMP_DIR, 'fretboard_detection.jpg'), debug_image)
+
+    return {
+        'strings': horizontal_lines,
+        'frets': vertical_lines
+    }
+
+
+def filter_lines_by_angle(lines, angle_tolerance=10):
+    """
+    Filter lines to keep only those with similar angles.
+
+    Args:
+        lines: Array of lines from HoughLines
+        angle_tolerance: Maximum angle difference in degrees
+
+    Returns:
+        Filtered array of lines
+    """
+    if lines is None or len(lines) <= 3:
+        return lines
+
+    # 각도들을 추출
+    angles = []
+    for line in lines:
+        _, theta = line[0]
+        angle_deg = (theta * 180 / np.pi) - 90
+        angles.append(angle_deg)
+
+    # 중앙값 각도 계산
+    median_angle = np.median(angles)
+
+    # 중앙값과 비슷한 각도의 선들만 유지
+    filtered_lines = []
+    for i, line in enumerate(lines):
+        if abs(angles[i] - median_angle) <= angle_tolerance:
+            filtered_lines.append(line)
+
+    return np.array(filtered_lines)
+
+
+def optimize_string_detection(strings, expected_count=6, height=None):
+    """
+    Optimize string detection results to find the most likely 6 strings.
+
+    Args:
+        strings: Detected horizontal lines
+        expected_count: Expected number of strings (default 6)
+        height: Height of the image (for spacing estimation)
+
+    Returns:
+        Optimized array of string lines
+    """
+    if strings is None or len(strings) == 0:
+        return None
+
+    # If we have exactly the expected number, return as is
+    if len(strings) == expected_count:
+        return strings
+
+    # If we have fewer than expected, we'll need to interpolate
+    if len(strings) < expected_count:
+        return interpolate_missing_strings(strings, expected_count, height)
+
+    # If we have more than expected, we need to select the most likely ones
+    # Sort by rho value (y-position)
+    strings_sorted = sorted(strings, key=lambda line: line[0][0])
+
+    # For guitar, the 6 strings should be roughly equally spaced
+    # Try different combinations of 6 strings and find the one with most regular spacing
+
+    # Simple approach: take strings at regular intervals
+    indices = np.linspace(0, len(strings_sorted) - 1, expected_count).astype(int)
+    selected_strings = [strings_sorted[i] for i in indices]
+
+    return np.array(selected_strings)
+
+
+def interpolate_missing_strings(strings, expected_count, height):
+    """
+    Interpolate missing strings when fewer than expected are detected.
+
+    Args:
+        strings: Detected string lines
+        expected_count: Expected number of strings
+        height: Height of the image
+
+    Returns:
+        Array with interpolated strings
+    """
+    if strings is None or len(strings) == 0:
+        # No strings detected, create evenly spaced strings
+        if height is None:
+            return None
+
+        # Create evenly spaced strings across the height
+        step = height / (expected_count + 1)
+        synthetic_strings = []
+
+        for i in range(1, expected_count + 1):
+            rho = i * step
+            theta = np.pi / 2  # Horizontal line
+            synthetic_strings.append(np.array([[rho, theta]]))
+
+        return np.array(synthetic_strings)
+
+    # Sort by rho value (position)
+    strings_sorted = sorted(strings, key=lambda line: line[0][0])
+
+    # Extract rho values
+    rhos = [line[0][0] for line in strings_sorted]
+    thetas = [line[0][1] for line in strings_sorted]
+
+    # Calculate average theta
+    avg_theta = sum(thetas) / len(thetas)
+
+    # If only one string detected, estimate spacing based on image height
+    if len(strings) == 1:
+        if height is None:
+            return strings
+
+        rho = rhos[0]
+        # Estimate position in the string set (middle string?)
+        position = 3
+        step = height / (expected_count + 1)
+
+        synthetic_strings = []
+        for i in range(1, expected_count + 1):
+            new_rho = i * step
+            synthetic_strings.append(np.array([[new_rho, avg_theta]]))
+
+        return np.array(synthetic_strings)
+
+    # Multiple strings detected, interpolate between them
+    min_rho, max_rho = min(rhos), max(rhos)
+
+    # Estimate spacing for missing strings
+    if height is not None:
+        # Use image height as a constraint
+        total_span = height
+    else:
+        # Use detected string span
+        total_span = max_rho - min_rho
+
+    step = total_span / (expected_count - 1)
+
+    # Generate new strings at regular intervals
+    synthetic_strings = []
+    for i in range(expected_count):
+        new_rho = min_rho + i * step
+        synthetic_strings.append(np.array([[new_rho, avg_theta]]))
+
+    return np.array(synthetic_strings)
+
+
+def optimize_fret_detection(frets, expected_min=3, width=None):
+    """
+    Optimize fret detection results.
+
+    Args:
+        frets: Detected vertical lines (frets)
+        expected_min: Minimum expected number of frets
+        width: Width of the image
+
+    Returns:
+        Optimized array of fret lines
+    """
+    if frets is None or len(frets) == 0:
+        return generate_synthetic_frets(width) if width is not None else None
+
+    # If we have fewer than minimum expected, try to extrapolate
+    if len(frets) < expected_min:
+        return extrapolate_frets(frets, expected_min, width)
+
+    # Sort by rho value (x-position)
+    frets_sorted = sorted(frets, key=lambda line: abs(line[0][0]))
+
+    return np.array(frets_sorted)
+
+
+def extrapolate_frets(frets, expected_min, width):
+    """
+    Extrapolate frets when fewer than expected are detected.
+
+    Frets follow a logarithmic spacing pattern based on the 12-tone equal temperament system.
+    Each fret position is calculated as a fraction of the previous fret-to-bridge distance.
+
+    Args:
+        frets: Detected fret lines
+        expected_min: Minimum expected number of frets
+        width: Width of the image
+
+    Returns:
+        Array with extrapolated frets
+    """
+    if frets is None or len(frets) == 0:
+        return generate_synthetic_frets(width) if width is not None else None
+
+    # Sort by absolute rho value (position)
+    frets_sorted = sorted(frets, key=lambda line: abs(line[0][0]))
+
+    # Extract rho values (x positions)
+    rhos = [line[0][0] for line in frets_sorted]
+    thetas = [line[0][1] for line in frets_sorted]
+
+    # Calculate average theta
+    avg_theta = sum(thetas) / len(thetas)
+
+    # If only one fret detected, cannot extrapolate accurately
+    if len(frets) < 2:
+        if width is None:
+            return frets
+
+        # Generate synthetic frets
+        return generate_synthetic_frets(width)
+
+    # For multiple frets, try to estimate the pattern
+    # In guitars, fret spacing follows a logarithmic pattern
+    # The ratio between consecutive fret distances is approximately 0.944
+
+    # If we have at least two frets, we can estimate the scale length
+    positions = sorted([abs(rho) for rho in rhos])
+
+    # Direction might be inverted, check direction
+    increasing = positions[-1] > positions[0]
+
+    # Calculate scale length based on first two frets
+    # Using 12-tone equal temperament formula
+    fret_ratio = 0.944  # Approximate fret distance ratio
+
+    extrapolated_frets = []
+
+    # Add detected frets first
+    for i, fret in enumerate(frets_sorted):
+        extrapolated_frets.append(fret)
+
+    # Need to extrapolate in both directions
+
+    # Extrapolate toward nut (left/start)
+    if len(positions) >= 2:
+        f1, f2 = positions[:2]
+        distance = f2 - f1
+
+        # Extrapolate to the left/beginning
+        next_pos = f1 - distance / fret_ratio
+
+        while next_pos > 0 and len(extrapolated_frets) < expected_min:
+            # Add a new fret
+            extrapolated_frets.append(np.array([[next_pos if increasing else -next_pos, avg_theta]]))
+
+            # Calculate next position
+            distance = distance / fret_ratio
+            next_pos = next_pos - distance
+
+    # Extrapolate toward bridge (right/end)
+    if len(positions) >= 2:
+        f1, f2 = positions[-2:]
+        distance = f2 - f1
+
+        # Extrapolate to the right/end
+        next_pos = f2 + distance * fret_ratio
+
+        while next_pos < (width if width is not None else 10000) and len(extrapolated_frets) < expected_min:
+            # Add a new fret
+            extrapolated_frets.append(np.array([[next_pos if increasing else -next_pos, avg_theta]]))
+
+            # Calculate next position
+            distance = distance * fret_ratio
+            next_pos = next_pos + distance
+
+    # Sort the extrapolated frets
+    extrapolated_frets = sorted(extrapolated_frets, key=lambda line: abs(line[0][0]))
+
+    return np.array(extrapolated_frets)
+
+
+def generate_synthetic_frets(width, fret_count=12):
+    """
+    Generate synthetic frets based on standard guitar dimensions.
+
+    Args:
+        width: Width of the neck image
+        fret_count: Number of frets to generate
+
+    Returns:
+        Array of synthetic fret lines
+    """
+    if width is None:
+        return None
+
+    # Assume the width covers 12 frets
+    scale_length = width * 1.2  # Estimate scale length
+
+    # 12-tone equal temperament formula for fret positions
+    fret_positions = []
+    for i in range(1, fret_count + 1):
+        # Calculate position from nut
+        position = scale_length * (1 - 1 / (2 ** (i / 12)))
+
+        # Adjust to make nut at position 0
+        # This gives position from left edge of image
+        adjusted_position = position
+
+        # Create fret line with vertical orientation
+        theta = 0  # Vertical line
+        fret_positions.append(np.array([[adjusted_position, theta]]))
+
+    return np.array(fret_positions)
+
+
+def create_virtual_fretboard(strings, frets, image_shape, save_debug=False, max_frets=24):
+    """
+    Create a virtual fretboard model from detected strings and frets.
+
+    Args:
+        strings: Detected string lines
+        frets: Detected fret lines
+        image_shape: Shape of the original image (height, width)
+        save_debug: If True, save debug visualization
+
+    Returns:
+        Dictionary with virtual fretboard model
+    """
+    height, width = image_shape[:2]
+
+    # Optimize string and fret detection
+    optimized_strings = optimize_string_detection(strings, expected_count=6, height=height)
+    optimized_frets = optimize_fret_detection(frets, expected_min=5, width=width)
+
+    # 스트링과 프렛의 평균 각도 계산
+    string_angle = 0
+    if optimized_strings is not None and len(optimized_strings) > 0:
+        string_angles = [((line[0][1] * 180 / np.pi) - 90) for line in optimized_strings]
+        string_angle = np.median(string_angles)
+
+    fret_angle = 90  # 기본값은 수직(90도)
+    if optimized_frets is not None and len(optimized_frets) > 0:
+        fret_angles = [((line[0][1] * 180 / np.pi) - 90) for line in optimized_frets]
+        fret_angle = np.median(fret_angles)
+        if abs(fret_angle) > 90:  # 범위 조정
+            fret_angle = 180 - abs(fret_angle)
+            if fret_angle > 0: fret_angle *= -1
+
+    # Extract line endpoints for accurate visualization
+    string_endpoints = []
+    if optimized_strings is not None:
+        max_length = math.sqrt(width ** 2 + height ** 2)
+        for line in optimized_strings:
+            p1, p2 = line_points(line, max_length)
+            # Clip to image boundaries
+            p1 = (max(0, min(width - 1, p1[0])), max(0, min(height - 1, p1[1])))
+            p2 = (max(0, min(width - 1, p2[0])), max(0, min(height - 1, p2[1])))
+            string_endpoints.append((p1, p2))
+
+    fret_endpoints = []
+    if optimized_frets is not None:
+        max_length = math.sqrt(width ** 2 + height ** 2)
+        for line in optimized_frets:
+            p1, p2 = line_points(line, max_length)
+            # Clip to image boundaries
+            p1 = (max(0, min(width - 1, p1[0])), max(0, min(height - 1, p1[1])))
+            p2 = (max(0, min(width - 1, p2[0])), max(0, min(height - 1, p2[1])))
+            fret_endpoints.append((p1, p2))
+
+    # Create virtual fretboard model
+    virtual_fretboard = {
+        'string_lines': optimized_strings,
+        'fret_lines': optimized_frets,
+        'string_endpoints': string_endpoints,
+        'fret_endpoints': fret_endpoints,
+        'string_angle': string_angle,
+        'fret_angle': fret_angle,
+        'image_shape': image_shape
+    }
+
+    # Create visualization if requested
+    if save_debug:
+        ensure_temp_dir()
+        debug_image = np.zeros((height, width, 3), dtype=np.uint8)
+
+        # Draw strings using endpoints
+        for i, (p1, p2) in enumerate(string_endpoints):
+            cv.line(debug_image, p1, p2, (0, 255, 0), 2)
+            # Add label
+            mid_x = (p1[0] + p2[0]) // 2
+            mid_y = (p1[1] + p2[1]) // 2
+            cv.putText(debug_image, f"String {i + 1}", (mid_x, mid_y - 5),
+                       cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+
+        # Draw frets using endpoints
+        for i, (p1, p2) in enumerate(fret_endpoints):
+            cv.line(debug_image, p1, p2, (0, 0, 255), 2)
+            # Add label
+            mid_x = (p1[0] + p2[0]) // 2
+            mid_y = (p1[1] + p2[1]) // 2
+            cv.putText(debug_image, f"Fret {i}", (mid_x + 5, mid_y),
+                       cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+
+        # Add angle information
+        cv.putText(debug_image, f"String Angle: {string_angle:.1f}°", (10, height - 40),
+                   cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+        cv.putText(debug_image, f"Fret Angle: {fret_angle:.1f}°", (10, height - 10),
+                   cv.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 255), 2)
+
+        cv.imwrite(os.path.join(TMP_DIR, 'virtual_fretboard.jpg'), debug_image)
+
+    return virtual_fretboard
+
+
+def filter_lines_by_angle(lines, angle_tolerance=10):
+    """
+    Filter lines to keep only those with similar angles.
+
+    Args:
+        lines: Array of lines from HoughLines
+        angle_tolerance: Maximum angle difference in degrees
+
+    Returns:
+        Filtered array of lines
+    """
+    if lines is None or len(lines) <= 3:
+        return lines
+
+    # 각도들을 추출
+    angles = []
+    for line in lines:
+        _, theta = line[0]
+        angle_deg = (theta * 180 / np.pi) - 90
+        angles.append(angle_deg)
+
+    # 중앙값 각도 계산
+    median_angle = np.median(angles)
+
+    # 중앙값과 비슷한 각도의 선들만 유지
+    filtered_lines = []
+    for i, line in enumerate(lines):
+        if abs(angles[i] - median_angle) <= angle_tolerance:
+            filtered_lines.append(line)
+
+    return np.array(filtered_lines)
+
+
+def is_valid_fretboard(fretboard):
+    """
+    Check if a detected fretboard is valid.
+
+    Args:
+        fretboard: Virtual fretboard model
+
+    Returns:
+        True if the fretboard is valid, False otherwise
+    """
+    if fretboard is None:
+        return False
+
+    # Check if we have enough strings
+    if 'string_positions' not in fretboard or len(fretboard['string_positions']) < 4:
+        return False
+
+    # Check if we have enough frets
+    if 'fret_positions' not in fretboard or len(fretboard['fret_positions']) < 3:
+        return False
+
+    return True
+
+
+def fretboard_position_to_pixel(string_idx, fret_idx, fretboard):
+    """
+    Convert fretboard position (string, fret) to pixel coordinates.
+
+    Args:
+        string_idx: String index (0-5 for standard guitar)
+        fret_idx: Fret index (0 is open string, 1 is first fret, etc.)
+        fretboard: Virtual fretboard model
+
+    Returns:
+        Tuple (x, y) representing the pixel position
+    """
+    if not is_valid_fretboard(fretboard):
+        return None
+
+    string_positions = fretboard['string_positions']
+    fret_positions = fretboard['fret_positions']
+
+    if string_idx < 0 or string_idx >= len(string_positions):
+        return None
+
+    if fret_idx < 0 or fret_idx >= len(fret_positions):
+        return None
+
+    y = string_positions[string_idx]
+    x = fret_positions[fret_idx]
+
+    return (x, y)
+
+
+def visualize_fretboard(image, fretboard, finger_positions=None):
+    """
+    Visualize fretboard with optional finger positions.
+
+    Args:
+        image: Original image
+        fretboard: Virtual fretboard model
+        finger_positions: Optional dictionary mapping fingers to (string, fret) positions
+
+    Returns:
+        Visualized image
+    """
+    # 디버깅 출력 추가
+    print("Fretboard keys:", fretboard.keys())
+    if 'string_endpoints' in fretboard:
+        print("String endpoints count:", len(fretboard['string_endpoints']))
+    if 'fret_endpoints' in fretboard:
+        print("Fret endpoints count:", len(fretboard['fret_endpoints']))
+
+    if image is None or not is_valid_fretboard(fretboard):
+        return image if image is not None else None
+
+    visualization = image.copy()
+    height, width = visualization.shape[:2]
+
+    # 각도 정보가 있는 새 버전의 fretboard인지 확인
+    use_endpoints = 'string_endpoints' in fretboard and 'fret_endpoints' in fretboard and len(
+        fretboard['string_endpoints']) > 0
+
+    if use_endpoints:
+        # 각도가 반영된 실제 선분들 사용
+        # Draw strings using endpoints
+        for p1, p2 in fretboard['string_endpoints']:
+            cv.line(visualization, p1, p2, (0, 255, 0), 1)
+
+        # Draw frets using endpoints
+        for p1, p2 in fretboard['fret_endpoints']:
+            cv.line(visualization, p1, p2, (0, 0, 255), 1)
+    else:
+        # 기존 방식 (수직/수평선 가정)
+        # Draw strings
+        for y in fretboard.get('string_positions', []):
+            cv.line(visualization, (0, y), (width, y), (0, 255, 0), 1)
+
+        # Draw frets
+        for x in fretboard.get('fret_positions', []):
+            cv.line(visualization, (x, 0), (x, height), (0, 0, 255), 1)
+
+    # Draw finger positions if provided
+    if finger_positions:
+        for finger, (string_idx, fret_idx) in finger_positions.items():
+            # 교차점 찾기
+            if use_endpoints and string_idx < len(fretboard['string_endpoints']) and fret_idx < len(
+                    fretboard['fret_endpoints']):
+                # 기울어진 프렛보드에서의 포지션 계산
+                string_p1, string_p2 = fretboard['string_endpoints'][string_idx]
+                fret_p1, fret_p2 = fretboard['fret_endpoints'][fret_idx]
+
+                # 두 선의 교차점 계산
+                intersection = line_intersection(string_p1, string_p2, fret_p1, fret_p2)
+
+                if intersection:
+                    x, y = intersection
+                    cv.circle(visualization, (int(x), int(y)), 10, (255, 0, 255), -1)
+                    cv.putText(visualization, finger[:1], (int(x) - 3, int(y) + 3),
+                               cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+            else:
+                # 기존 방식
+                position = fretboard_position_to_pixel(string_idx, fret_idx, fretboard)
+                if position:
+                    x, y = position
+                    cv.circle(visualization, (x, y), 10, (255, 0, 255), -1)
+                    cv.putText(visualization, finger[:1], (x - 3, y + 3),
+                               cv.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+
+    return visualization
+
+
+def line_intersection(line1_p1, line1_p2, line2_p1, line2_p2):
+    """
+    Find intersection point of two lines defined by their endpoints.
+
+    Args:
+        line1_p1, line1_p2: Endpoints of first line
+        line2_p1, line2_p2: Endpoints of second line
+
+    Returns:
+        (x, y) intersection point or None if lines are parallel
+    """
+    # Convert to numpy arrays for calculation
+    p1 = np.array(line1_p1)
+    p2 = np.array(line1_p2)
+    p3 = np.array(line2_p1)
+    p4 = np.array(line2_p2)
+
+    # Line segments as vectors
+    v1 = p2 - p1
+    v2 = p4 - p3
+
+    # Cross product to test for parallel lines
+    cross_product = np.cross(v1, v2)
+
+    if abs(cross_product) < 1e-10:  # Parallel or coincident lines
+        return None
+
+    # Compute intersection using determinants
+    # See: https://en.wikipedia.org/wiki/Line–line_intersection
+    x1, y1 = p1
+    x2, y2 = p2
+    x3, y3 = p3
+    x4, y4 = p4
+
+    d = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+    if abs(d) < 1e-10:
+        return None
+
+    px = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / d
+    py = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / d
+
+    # Check if intersection is within both line segments
+    if (min(x1, x2) <= px <= max(x1, x2) and
+            min(y1, y2) <= py <= max(y1, y2) and
+            min(x3, x4) <= px <= max(x3, x4) and
+            min(y3, y4) <= py <= max(y3, y4)):
+        return (px, py)
+
+    return None
