@@ -44,4 +44,7 @@ public class User {
     @Builder.Default
     private Boolean isActive = true;
 
+    public void updatePassword(String password) {
+        this.password = password;
+    }
 }

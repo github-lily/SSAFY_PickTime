@@ -1,9 +1,6 @@
 package com.b101.pickTime.api.user.controller;
 
-import com.b101.pickTime.api.user.request.CheckVerificationReq;
-import com.b101.pickTime.api.user.request.EmailVerificationReq;
-import com.b101.pickTime.api.user.request.PasswordCheckReq;
-import com.b101.pickTime.api.user.request.UserRegisterReq;
+import com.b101.pickTime.api.user.request.*;
 import com.b101.pickTime.api.user.service.UserApplicationService;
 import com.b101.pickTime.api.user.service.UserService;
 import com.b101.pickTime.api.user.service.VerificationService;
@@ -12,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -63,5 +57,10 @@ public class UserController {
     }
     
     // 비밀번호 수정
+    @PatchMapping("/password")
+    public ResponseEntity<?> checkPassword(@RequestBody PasswordUpdateReq passwordCheckReq, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        userService.modifyPassword(passwordCheckReq, customUserDetails);
 
+        return ResponseEntity.ok("password is updated");
+    }
 }

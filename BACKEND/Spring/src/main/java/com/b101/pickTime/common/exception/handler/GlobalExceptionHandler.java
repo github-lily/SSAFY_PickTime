@@ -48,5 +48,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> passwordNotMatchedException(PasswordNotMatchedException ex) {
         return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
     }
+    @ExceptionHandler(PasswordNotChangedException.class)
+    public ResponseEntity<?> passwordNotChangedException(PasswordNotChangedException ex) {
+        return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
+    }
 
 }
