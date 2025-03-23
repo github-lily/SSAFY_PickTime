@@ -2,10 +2,12 @@ package com.b101.pickTime.api.user.service.impl;
 
 
 import com.b101.pickTime.api.user.request.PasswordCheckReq;
+import com.b101.pickTime.api.user.request.PasswordUpdateReq;
 import com.b101.pickTime.api.user.request.UserRegisterReq;
 import com.b101.pickTime.api.user.service.UserService;
 import com.b101.pickTime.common.auth.CustomUserDetails;
 import com.b101.pickTime.common.exception.exception.DuplicateEmailException;
+import com.b101.pickTime.common.exception.exception.PasswordNotChangedException;
 import com.b101.pickTime.common.exception.exception.PasswordNotMatchedException;
 import com.b101.pickTime.db.entity.User;
 import com.b101.pickTime.db.repository.UserRepository;
@@ -44,6 +46,15 @@ public class UserServiceImpl implements UserService {
         if (!passwordEncoder.matches(passwordCheckReq.getPassword(), user.getPassword())) {
             throw new PasswordNotMatchedException("password is not matched");
         }
+    }
+    public void modifyPassword(PasswordUpdateReq passwordUpdateReq, CustomUserDetails customUserDetails) {
+        User user = userRepository.findById(customUserDetails.getUserId()).orElseThrow();
+        // 이전 패스워드와 동일한가
+        if (passwordEncoder.matches(passwordUpdateReq.getPassword(), user.getPassword())) {
+            throw new PasswordNotChangedException("password is same compared with previous password");
+        }
+        user.updatePassword(passwordEncoder.encode(passwordUpdateReq.getPassword()));
+        userRepository.save(user);
     }
     public boolean isExistUsername(String username) {
         return userRepository.existsByUsername(username);
