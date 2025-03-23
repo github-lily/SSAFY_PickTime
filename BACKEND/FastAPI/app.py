@@ -57,7 +57,7 @@ app.add_middleware(
 )
 
 # Create main router with prefix
-ai_router = APIRouter(prefix="/api/ai")
+ai_router = APIRouter(prefix="/ai")
 
 # Global detector instances
 guitar_detector = None
