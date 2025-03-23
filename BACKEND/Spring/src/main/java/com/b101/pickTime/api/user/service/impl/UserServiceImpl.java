@@ -1,7 +1,8 @@
-package com.b101.pickTime.api.user.service;
+package com.b101.pickTime.api.user.service.impl;
 
 
 import com.b101.pickTime.api.user.request.UserRegisterReq;
+import com.b101.pickTime.api.user.service.UserService;
 import com.b101.pickTime.common.exception.exception.DuplicateEmailException;
 import com.b101.pickTime.db.entity.User;
 import com.b101.pickTime.db.repository.UserRepository;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     // 실구현체(BCryptPasswordEncoder)가 아닌 인터페이스(PasswordEncoder)를 주입해야 함
     private final PasswordEncoder passwordEncoder;
@@ -19,7 +20,7 @@ public class UserServiceImpl implements UserService{
     public void createUser(UserRegisterReq userRegisterReq) {
         String username = userRegisterReq.getUsername();
         // 이미 존재하는 이메일인지 확인
-        if(userRepository.existsByUsername(username)) {
+        if(isExistUsername(username)) {
             throw new DuplicateEmailException();
         }
         
@@ -33,5 +34,9 @@ public class UserServiceImpl implements UserService{
                 .build();
 
         userRepository.save(user);
+    }
+
+    public boolean isExistUsername(String username) {
+        return userRepository.existsByUsername(username);
     }
 }
