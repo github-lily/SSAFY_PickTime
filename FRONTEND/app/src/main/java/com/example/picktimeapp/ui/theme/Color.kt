@@ -13,7 +13,7 @@ val Yellow50 = Color(0xFFF9D952)
 val Yellow100 = Color(0xFFF0B53F)
 
 // DarkGreen
-val DarkGreen10 = Color(0xFFFDFFF2)
+val DarkGreen10 = Color(0xFFFFFDF8)
 val DarkGreen30 = Color(0xFFEEF1D9)
 
 // Gray
