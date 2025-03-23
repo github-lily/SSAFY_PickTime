@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter @Setter
 @ToString
-@Document(collection = "song_datas")
+@Document(collection = "song_data")
 public class SongData {
 
     @Id
