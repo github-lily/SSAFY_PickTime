@@ -1,7 +1,6 @@
 package com.b101.pickTime.api.user.controller;
 
 import com.b101.pickTime.api.user.service.ReissueService;
-import com.b101.pickTime.api.user.service.ReissueServiceImpl;
 import com.b101.pickTime.common.util.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

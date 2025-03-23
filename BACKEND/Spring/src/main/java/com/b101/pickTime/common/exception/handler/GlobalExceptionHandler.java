@@ -1,8 +1,9 @@
 package com.b101.pickTime.common.exception.handler;
 
-import com.b101.pickTime.api.ApiResponseDto;
 import com.b101.pickTime.common.exception.exception.DuplicateEmailException;
+import com.b101.pickTime.common.exception.exception.FailedSendEmailException;
 import com.b101.pickTime.common.exception.exception.InvalidRefreshTokenException;
+import com.b101.pickTime.common.exception.exception.NotFoundUsernameException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -38,4 +39,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> invalidRefreshTokenException(DuplicateEmailException ex) {
         return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
     }
+    @ExceptionHandler(FailedSendEmailException.class)
+    public ResponseEntity<?> failedSendEmailException(DuplicateEmailException ex) {
+        return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
+    }
+    @ExceptionHandler(NotFoundUsernameException.class)
+    public ResponseEntity<?> notFoundUsernameException(NotFoundUsernameException ex) {
+        return ResponseEntity.status(ex.getStatus()).body(ex.getMessage());
+    }
+
 }
