@@ -1,9 +1,12 @@
 package com.b101.pickTime.api.user.service.impl;
 
 
+import com.b101.pickTime.api.user.request.PasswordCheckReq;
 import com.b101.pickTime.api.user.request.UserRegisterReq;
 import com.b101.pickTime.api.user.service.UserService;
+import com.b101.pickTime.common.auth.CustomUserDetails;
 import com.b101.pickTime.common.exception.exception.DuplicateEmailException;
+import com.b101.pickTime.common.exception.exception.PasswordNotMatchedException;
 import com.b101.pickTime.db.entity.User;
 import com.b101.pickTime.db.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +38,13 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
     }
-
+    public void checkPassword(PasswordCheckReq passwordCheckReq, CustomUserDetails customUserDetails) {
+        // DB에서 조회하여 비교 <= customerUserDetails에서 바로 비교 X
+        User user = userRepository.findById(customUserDetails.getUserId()).orElseThrow();
+        if (!passwordEncoder.matches(passwordCheckReq.getPassword(), user.getPassword())) {
+            throw new PasswordNotMatchedException("password is not matched");
+        }
+    }
     public boolean isExistUsername(String username) {
         return userRepository.existsByUsername(username);
     }
