@@ -15,15 +15,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.example.picktimeapp.ui.mypage.MyPageScreen
 import com.example.picktimeapp.ui.mypage.MyPageViewModel
 import com.example.picktimeapp.ui.theme.PickTimeAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -69,6 +70,7 @@ fun MainScreen() {
 
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
