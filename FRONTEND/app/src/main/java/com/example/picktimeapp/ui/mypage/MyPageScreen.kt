@@ -4,9 +4,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,6 +35,7 @@ import com.example.picktimeapp.R
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun MyPageScreen(viewModel: MyPageViewModel) {
@@ -47,25 +50,38 @@ fun MyPageScreen(viewModel: MyPageViewModel) {
         modifier = Modifier.fillMaxSize(),
         color =  Color(0xFFFFFDF8)
     ) {
-        Box(
+        //BoxWithConstraints - 화면의 최대 너비 / 높이 값을 알아낼 수 있게 해주는 컴포저블
+        BoxWithConstraints (
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 48.dp, vertical = 24.dp),
             contentAlignment = Alignment.TopCenter
-        ) {
+        ){
+            val screenWidth = maxWidth
+            val screenHeight = maxHeight
+
+            //텍스트는 sp 형태라서 Float.sp로 바꿔주는 value를 붙여야함
+            val textSizeLarge = screenWidth.value * 0.04f // 약 6%
+            val textSizeSmall = screenWidth.value * 0.02f
+            val buttonWidth = screenWidth * 0.15f
+            val buttonHeight = screenHeight * 0.06f
+            val buttonFontSize = screenWidth.value * 0.015f
+
             Column (
-                modifier = Modifier
-                    .widthIn(max = 1000.dp)
-                    .fillMaxSize()
-                    .padding(24.dp)
-            ){
+                modifier = Modifier.fillMaxSize(),
+//                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // 상단영역
                 Row (
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
+
+                    // 이미지 영역
                     Box(
                         modifier = Modifier
-                            .size(160.dp)
+                            .weight(0.3f) // 전체의 30%차지
+                            .aspectRatio(1f) //정사각형 비율을 유지한다.
                             .background(color = Color.White, shape = CircleShape)
                             .border(width = 4.dp, color = Color(0xFFA57145), shape = CircleShape),
                         contentAlignment = Alignment.Center
@@ -93,27 +109,37 @@ fun MyPageScreen(viewModel: MyPageViewModel) {
                         )
 
                     }
-                    Spacer(modifier = Modifier.width(24.dp))
 
+                    // 이미지와 오른쪽 텍스트 영역의 간격
+//                Spacer(modifier = Modifier.width(24.dp))
+
+                    // 사진 오른쪽 영역
                     Column(
-                        modifier = Modifier.align(Alignment.CenterVertically),
+                        modifier = Modifier
+                            .weight(0.7f),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
                             text = "피크타임",
-                            style = MaterialTheme.typography.titleLarge
+                            fontSize = textSizeLarge.sp,
+                            modifier = Modifier.padding(top = 4.dp)
                         )
                         Text(
                             text = "${pickDayData?.continued ?: 30}일 연속 유지중",
-                            style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.padding(top = 4.dp)
+                            fontSize = textSizeLarge.sp,
                         )
+
+                        Spacer(modifier = Modifier.height(screenHeight * 0.05f))
+
                         // 유저 정보 출력하기
                         userInfo?.let {
                             Text(
                                 text = it.name,
-                                style = MaterialTheme.typography.titleSmall,
-                                modifier = Modifier.padding(top = 4.dp)
+                                fontSize = textSizeSmall.sp,
+                                modifier = Modifier
+                                    .padding(top = 4.dp)
+
+
                             )
                         }
 
@@ -123,30 +149,40 @@ fun MyPageScreen(viewModel: MyPageViewModel) {
                                 containerColor = Color(0x33E0CDA8),
                                 contentColor = Color(0xFF66656C)
                             ),
-                            modifier = Modifier.padding(top = 16.dp)
+                            modifier = Modifier
+                                .padding(top = 16.dp)
+                                .width(buttonWidth)
+                                .height(buttonHeight)
                         ){
-                            Text(text = "회원정보 수정")
+                            Text(
+                                text = "회원정보 수정",
+                                fontSize = buttonFontSize.sp,
+                            )
                         }
                     }
+
                 }
-                // 피크데이 잔디심기
-                Spacer(modifier = Modifier.height(48.dp))
+                // 피크데이와 프로필 사이 간격
+                Spacer(modifier = Modifier.height(screenHeight * 0.08f))
 
                 Text(
                     text = "PickDays",
-                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = textSizeSmall.sp,
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
                 PickDaysGrid(
                     pickDays = fullpickDays,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .height(240.dp)
+                        .fillMaxWidth()
+                        .height(screenHeight * 0.25f)
                 )
-
             }
+
+
+
         }
+
     }
 }
 

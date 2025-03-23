@@ -49,9 +49,9 @@ class MyPageViewModel: ViewModel() {
         val realData = pickDayData.value?.pickDays ?: emptyList()
 
         val today = LocalDate.now()
-        val startDate = today.minusDays(104)
+        val startDate = today.minusDays(314)
 
-        return (0..104).map { i ->
+        return (0..315).map { i ->
             val date = startDate.plusDays(i.toLong())
             val dataForDate = realData.find { it.completedDate == date.toString() }
 
