@@ -28,7 +28,7 @@ fun PickDaysGrid(
         .padding(top = 16.dp, start = 8.dp)
 ) {
     Row (
-        modifier = modifier
+        modifier = Modifier
             .horizontalScroll(rememberScrollState()),
         verticalAlignment = Alignment.Top
     ){
