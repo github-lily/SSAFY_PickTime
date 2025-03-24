@@ -4,12 +4,9 @@ import com.b101.pickTime.api.user.request.UserModiftReqDto;
 import com.b101.pickTime.api.user.request.UserRegisterReq;
 import com.b101.pickTime.api.user.response.UserInfoDto;
 import com.b101.pickTime.api.user.request.*;
-import com.b101.pickTime.api.user.service.UserApplicationService;
 import com.b101.pickTime.api.user.service.UserService;
-import com.b101.pickTime.api.user.service.VerificationService;
 import com.b101.pickTime.common.auth.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
-    private final UserApplicationService userApplicationService;
-    private final VerificationService verificationService;
 
     // 회원가입
     @PostMapping
@@ -37,12 +32,6 @@ public class UserController {
 //        ));
     }
 
-    @PostMapping("/email-verification")
-    public ResponseEntity<String> sendVerificationEmail(@RequestBody EmailVerificationReq emailVerificationReq) {
-        userApplicationService.sendVerificationEmail(emailVerificationReq);
-        return ResponseEntity.ok("Verification email sent success");
-
-    }
 
     @GetMapping
     public ResponseEntity<UserInfoDto> getUserInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails){
@@ -63,18 +52,10 @@ public class UserController {
         return ResponseEntity.ok("회원 탈퇴 완료");
     }
 
-    @PostMapping("/check-verification")
-    public ResponseEntity<?> checkVerificationNumber(@RequestBody CheckVerificationReq checkVerificationReq) {
-        if (verificationService.checkVerificationNumber(checkVerificationReq)) {
-            return ResponseEntity.ok("email verified successfully");
-        } else {
-            return new ResponseEntity<>("failed to verify email",HttpStatus.UNAUTHORIZED);
-        }
-    }
     // 비밀번호 확인
     @PostMapping("/password")
     public ResponseEntity<?> checkPassword(@RequestBody PasswordCheckReq passwordCheckReq, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        userService.checkPassword(passwordCheckReq, customUserDetails);
+        userService.checkPassword(passwordCheckReq, customUserDetails.getUserId());
 
         return ResponseEntity.ok("password is correct");
     }
@@ -82,7 +63,7 @@ public class UserController {
     // 비밀번호 수정
     @PatchMapping("/password")
     public ResponseEntity<?> checkPassword(@RequestBody PasswordUpdateReq passwordCheckReq, @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        userService.modifyPassword(passwordCheckReq, customUserDetails);
+        userService.modifyPassword(passwordCheckReq, customUserDetails.getUserId());
 
         return ResponseEntity.ok("password is updated");
     }

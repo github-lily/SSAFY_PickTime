@@ -10,8 +10,8 @@ import com.b101.pickTime.common.auth.CustomUserDetails;
 public interface UserService {
     void createUser(UserRegisterReq userRegisterReq);
     boolean isExistUsername(String username);
-    void checkPassword(PasswordCheckReq passwordCheckReq, CustomUserDetails customUserDetails);
-    void modifyPassword(PasswordUpdateReq passwordUpdateReq, CustomUserDetails customUserDetails);
+    void checkPassword(PasswordCheckReq passwordCheckReq, Integer userId);
+    void modifyPassword(PasswordUpdateReq passwordUpdateReq, Integer userId);
 
     UserInfoDto getUser(int userId);
     UserInfoDto modifyUser(int userId, UserModiftReqDto userModiftReqDto);
