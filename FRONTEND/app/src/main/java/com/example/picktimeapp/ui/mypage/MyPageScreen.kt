@@ -35,7 +35,13 @@ import com.example.picktimeapp.R
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.picktimeapp.ui.theme.Brown40
+import com.example.picktimeapp.ui.theme.DarkGreen10
+import com.example.picktimeapp.ui.theme.Gray70
+import com.example.picktimeapp.ui.theme.Pretendard
+import com.example.picktimeapp.ui.theme.TitleFont
 
 @Composable
 fun MyPageScreen(viewModel: MyPageViewModel) {
@@ -48,42 +54,44 @@ fun MyPageScreen(viewModel: MyPageViewModel) {
 
     Surface (
         modifier = Modifier.fillMaxSize(),
-        color =  Color(0xFFFFFDF8)
+        color = DarkGreen10
     ) {
         //BoxWithConstraints - 화면의 최대 너비 / 높이 값을 알아낼 수 있게 해주는 컴포저블
         BoxWithConstraints (
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 48.dp, vertical = 24.dp),
+                .padding(start = 400.dp, top = 130.dp, end = 32.dp, bottom = 24.dp),
             contentAlignment = Alignment.TopCenter
         ){
             val screenWidth = maxWidth
             val screenHeight = maxHeight
 
             //텍스트는 sp 형태라서 Float.sp로 바꿔주는 value를 붙여야함
-            val textSizeLarge = screenWidth.value * 0.04f // 약 6%
-            val textSizeSmall = screenWidth.value * 0.02f
+            val textSizeLarge = screenWidth.value * 0.05f // 약 5%
+            val textSizeSmall = screenWidth.value * 0.025f
             val buttonWidth = screenWidth * 0.15f
             val buttonHeight = screenHeight * 0.06f
             val buttonFontSize = screenWidth.value * 0.015f
 
             Column (
                 modifier = Modifier.fillMaxSize(),
-//                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // 상단영역
                 Row (
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .padding(start = 100.dp, end = 100.dp)
+                        .fillMaxWidth()
                 ) {
 
                     // 이미지 영역
                     Box(
                         modifier = Modifier
-                            .weight(0.3f) // 전체의 30%차지
+                            .weight(0.38f) // 전체의 35%차지
                             .aspectRatio(1f) //정사각형 비율을 유지한다.
                             .background(color = Color.White, shape = CircleShape)
-                            .border(width = 4.dp, color = Color(0xFFA57145), shape = CircleShape),
+                            .border(width = 8.dp, color = Brown40, shape = CircleShape),
                         contentAlignment = Alignment.Center
                     ){
                         //Painter - 이미지를 화면에 그릴 준비를 하는 타입
@@ -111,35 +119,36 @@ fun MyPageScreen(viewModel: MyPageViewModel) {
                     }
 
                     // 이미지와 오른쪽 텍스트 영역의 간격
-//                Spacer(modifier = Modifier.width(24.dp))
+                Spacer(modifier = Modifier.width(10.dp))
 
                     // 사진 오른쪽 영역
                     Column(
                         modifier = Modifier
-                            .weight(0.7f),
+                            .weight(0.6f),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
                             text = "피크타임",
                             fontSize = textSizeLarge.sp,
+                            fontFamily = TitleFont,
                             modifier = Modifier.padding(top = 4.dp)
                         )
                         Text(
                             text = "${pickDayData?.continued ?: 30}일 연속 유지중",
+                            fontFamily = TitleFont,
                             fontSize = textSizeLarge.sp,
                         )
 
-                        Spacer(modifier = Modifier.height(screenHeight * 0.05f))
+                        Spacer(modifier = Modifier.height(screenHeight * 0.07f))
 
                         // 유저 정보 출력하기
                         userInfo?.let {
                             Text(
                                 text = it.name,
+                                fontFamily = TitleFont,
                                 fontSize = textSizeSmall.sp,
                                 modifier = Modifier
                                     .padding(top = 4.dp)
-
-
                             )
                         }
 
@@ -147,7 +156,7 @@ fun MyPageScreen(viewModel: MyPageViewModel) {
                             onClick = {},
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color(0x33E0CDA8),
-                                contentColor = Color(0xFF66656C)
+                                contentColor = Gray70
                             ),
                             modifier = Modifier
                                 .padding(top = 16.dp)
@@ -157,26 +166,45 @@ fun MyPageScreen(viewModel: MyPageViewModel) {
                             Text(
                                 text = "회원정보 수정",
                                 fontSize = buttonFontSize.sp,
+                                fontFamily = Pretendard,
+                                fontWeight = FontWeight.Medium
                             )
                         }
                     }
 
                 }
+
                 // 피크데이와 프로필 사이 간격
-                Spacer(modifier = Modifier.height(screenHeight * 0.08f))
+                Spacer(modifier = Modifier.height(screenHeight * 0.1f))
 
-                Text(
-                    text = "PickDays",
-                    fontSize = textSizeSmall.sp,
-                    modifier = Modifier.padding(bottom = 8.dp)
-                )
-
-                PickDaysGrid(
-                    pickDays = fullpickDays,
+                // 프크데이
+                Box (
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(screenHeight * 0.25f)
-                )
+                ) {
+                    Column (
+                        modifier = Modifier
+                            .padding(start = 24.dp)
+                            .align(Alignment.CenterStart),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            text = "PickDays",
+                            fontFamily = TitleFont,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = (screenWidth.value * 0.025f).sp,
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        )
+                        Spacer(modifier = Modifier.height(screenHeight * 0.02f))
+
+                        PickDaysGrid(
+                            pickDays = fullpickDays,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(screenHeight * 0.25f)
+                        )
+                    }
+                }
             }
 
 
