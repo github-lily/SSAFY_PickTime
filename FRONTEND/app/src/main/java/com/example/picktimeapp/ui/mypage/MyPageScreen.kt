@@ -37,6 +37,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.picktimeapp.ui.theme.Brown40
 import com.example.picktimeapp.ui.theme.DarkGreen10
 import com.example.picktimeapp.ui.theme.Gray70
@@ -44,7 +46,7 @@ import com.example.picktimeapp.ui.theme.Pretendard
 import com.example.picktimeapp.ui.theme.TitleFont
 
 @Composable
-fun MyPageScreen(viewModel: MyPageViewModel) {
+fun MyPageScreen(viewModel: MyPageViewModel, navController: NavController) {
 
     // collectAsState (StateFlow를 UI와 연결하는 방법)
     // - StateFlow를 실시간으로 구독해서 값이 바뀌면 자동으로 업데이트 됨, 리액트의 useState + useEffect
@@ -153,7 +155,9 @@ fun MyPageScreen(viewModel: MyPageViewModel) {
                         }
 
                         Button(
-                            onClick = {},
+                            onClick = {
+                                navController.navigate("passwordCheck")
+                            },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color(0x33E0CDA8),
                                 contentColor = Gray70
@@ -218,5 +222,7 @@ fun MyPageScreen(viewModel: MyPageViewModel) {
 @Composable
 fun MyPageScreenPreview(){
     val previewViewModel = MyPageViewModel()
-    MyPageScreen(viewModel = previewViewModel)
+    val navController = rememberNavController()
+
+    MyPageScreen(viewModel = previewViewModel,navController = navController )
 }

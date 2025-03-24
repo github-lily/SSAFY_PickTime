@@ -69,6 +69,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.rememberNavController
 
 
 
@@ -116,8 +117,10 @@ fun MainScreen() {
         }
 
         showMyPage -> {
-            val viewModel = MyPageViewModel()
-            MyPageScreen(viewModel = viewModel)
+            com.example.picktimeapp.ui.nav.MyNavGraph()
+//            val viewModel = MyPageViewModel()
+//            val navController = rememberNavController()
+//            MyPageScreen(viewModel = viewModel,navController = navController)
         }
 
         showSignup -> {
