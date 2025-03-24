@@ -20,6 +20,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewmodel.compose.viewModel
+
 
 
 // 레이아웃
@@ -56,8 +58,9 @@ import com.example.picktimeapp.ui.theme.*
 
 //user 관련
 import com.example.picktimeapp.ui.login.LoginScreen
+import com.example.picktimeapp.ui.login.LoginViewModel
 import com.example.picktimeapp.ui.signup.SignupScreen
-//import androidx.lifecycle.viewmodel.compose.viewModel
+
 
 
 // font 관련
@@ -65,7 +68,8 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-//import com.example.picktimeapp.ui.login.LoginViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+
 
 //font
 val TitleFont = FontFamily(
@@ -98,9 +102,16 @@ fun MainScreen() {
 
     when {
         showLogin -> {
-            LoginScreen()
-//            val viewModel = LoginViewModel()
-//            LoginScreen(viewModel = viewModel())
+            val viewModel: LoginViewModel = hiltViewModel()
+            LoginScreen(
+                viewModel = viewModel,
+                onLoginClick = { /* 로그인 */ },
+                onFindPasswordClick = { showLogin = false },
+                onSignUpClick = {
+                    showLogin = false
+                    showSignup = true
+                }
+            )
         }
 
         showMyPage -> {
