@@ -9,6 +9,7 @@ val Green60 = Color(0xFFADD5A3)
 val Green90 = Color(0xFF72C865)
 
 // Yellow
+val Yellow0 = Color(0xFFFCE683)
 val Yellow50 = Color(0xFFF9D952)
 val Yellow100 = Color(0xFFF0B53F)
 

@@ -9,19 +9,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.picktimeapp.ui.theme.Gray10
+import com.example.picktimeapp.ui.theme.Yellow0
+import com.example.picktimeapp.ui.theme.Yellow100
+import com.example.picktimeapp.ui.theme.Yellow50
 
 @Composable
 fun PickDayBox(pickCount: Int) {
     val color = when(pickCount) {
-        0 -> Color(0xFFF4F4F6)
-        1 -> Color(0xFFFFF176)
-        2 -> Color(0xFFFFD54F)
-        else -> Color(0xFFFFA000)
+        0 -> Gray10
+        1 -> Yellow0
+        2 -> Yellow50
+        else -> Yellow100
     }
     Box(
         modifier = Modifier
-            .size(18.dp)
-//            .padding(1.dp)
+            .size(26.dp)
             .background(color = color)
     )
 }
