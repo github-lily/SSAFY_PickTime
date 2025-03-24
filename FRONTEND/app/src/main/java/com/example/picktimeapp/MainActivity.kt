@@ -69,6 +69,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.picktimeapp.ui.signup.SignupViewModel
 import androidx.navigation.compose.rememberNavController
 
 
@@ -107,11 +108,14 @@ fun MainScreen() {
             val viewModel: LoginViewModel = hiltViewModel()
             LoginScreen(
                 viewModel = viewModel,
-                onLoginClick = { /* 로그인 */ },
+                onLoginClick = {
+                    showLogin = false
+                    showMyPage = true
+                },
                 onFindPasswordClick = { showLogin = false },
                 onSignUpClick = {
                     showLogin = false
-                    showSignup = true
+                    showSignup = true // 회원가입 화면으로 이동
                 }
             )
         }
@@ -124,7 +128,19 @@ fun MainScreen() {
         }
 
         showSignup -> {
-            SignupScreen()
+            val viewModel: SignupViewModel = hiltViewModel()
+            SignupScreen(
+                viewModel = viewModel,
+                onLoginClick = {
+                    showSignup = false
+                    showLogin = true
+                },
+                onSignUpClick = {
+                    // 회원가입 완료 후 원하는 화면으로 전환 가능
+                    showSignup = false
+                    showLogin = true  // 로그인 화면으로
+                }
+            )
         }
 
         else -> {
