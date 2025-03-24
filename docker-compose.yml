@@ -71,6 +71,13 @@ services:
 
       # JWT
       JWT_AUTH_KEY: ${JWT_AUTH_KEY}
+
+      # Mail
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+
     networks:
       - app-network
 
