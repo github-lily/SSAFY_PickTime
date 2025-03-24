@@ -19,6 +19,7 @@ import com.example.picktimeapp.data.model.PickDay
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.sp
+import com.example.picktimeapp.ui.theme.Pretendard
 
 @Composable
 fun PickDaysGrid(
@@ -42,8 +43,9 @@ fun PickDaysGrid(
             daysOfWeek.forEach {day ->
                 Text(
                     text = day,
-                    fontSize = 8.sp,
-                    modifier = Modifier.height(20.dp)
+                    fontSize = 18.sp,
+                    fontFamily = Pretendard,
+                    modifier = Modifier.height(27.dp)
 
                 )
             }
