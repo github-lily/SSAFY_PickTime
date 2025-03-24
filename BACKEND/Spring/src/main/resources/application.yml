@@ -33,5 +33,20 @@ spring:
       password: ${MONGO_PASSWORD}
       database: ${MONGO_DATABASE}
 
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000  # SMTP서버 연결 시 최대 대기시간(초과 시 실패 처리)
+          timeout: 5000 # SMTP서버와 연결 후 응답 최대 대기시간
+          writetimeout: 5000 # 메일 내용 작성 시 최대 작성시간
+
 jwt:
   auth-key: ${JWT_AUTH_KEY}
