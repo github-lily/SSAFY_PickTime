@@ -1,27 +1,30 @@
 package com.example.picktimeapp.ui.login
-
-import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
+import androidx.compose.runtime.mutableStateOf
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
+
 @HiltViewModel
 class LoginViewModel @Inject constructor() : ViewModel() {
-    var email by mutableStateOf("")
+    var email = mutableStateOf("")
         private set
 
-    var password by mutableStateOf("")
+    var password = mutableStateOf("")
         private set
 
-    fun onEmailChange(newEmail: String) {
-        email = newEmail
+    var isPasswordVisible = mutableStateOf(false)
+        private set
+
+    fun onEmailChanged(newEmail: String) {
+        email.value = newEmail
     }
 
-    fun onPasswordChange(newPassword: String) {
-        password = newPassword
+    fun onPasswordChanged(newPassword: String) {
+        password.value = newPassword
     }
 
-    fun login() {
-        // 로그인 처리 로직 나중에 추가
+    fun togglePasswordVisibility() {
+        isPasswordVisible.value = !isPasswordVisible.value
     }
 }
