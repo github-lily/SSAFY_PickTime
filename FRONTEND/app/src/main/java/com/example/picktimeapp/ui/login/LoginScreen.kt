@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import com.example.picktimeapp.ui.login.LoginViewModel
 
@@ -123,7 +124,9 @@ fun EmailInputField(
                 focusedBorderColor = Brown40,
                 cursorColor = Brown40,
                 unfocusedTextColor = Gray90,
-                focusedTextColor = Gray90
+                focusedTextColor = Gray90,
+                unfocusedContainerColor = Color.White,
+                focusedContainerColor = Color.White
             ),
             placeholder = {
                 Text(
@@ -176,7 +179,9 @@ fun PasswordInputField(
                 focusedBorderColor = Brown40,
                 cursorColor = Brown40,
                 unfocusedTextColor = Gray90,
-                focusedTextColor = Gray90
+                focusedTextColor = Gray90,
+                unfocusedContainerColor = Color.White,
+                focusedContainerColor = Color.White
             ),
             placeholder = {
                 Text(
