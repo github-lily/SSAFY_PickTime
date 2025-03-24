@@ -78,7 +78,10 @@ fun LoginScreen(
 
         // 👉 로그인 버튼
         LoginButton(
-            onClick = onLoginClick,
+            onClick = {
+                viewModel.login()
+                onLoginClick() // 성공 시 다음 화면으로 전환하고 싶다면 여기에 조건 추가
+            },
             enabled = email.isNotBlank() && password.isNotBlank()
         )
 

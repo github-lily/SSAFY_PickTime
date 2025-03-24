@@ -71,6 +71,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 
 
+
 //font
 val TitleFont = FontFamily(
     Font(R.font.hakgyoansimalrimche_regular, FontWeight.Normal),
