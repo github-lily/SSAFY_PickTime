@@ -70,15 +70,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Transactional(readOnly = true)
-    public void checkPassword(PasswordCheckReq passwordCheckReq, CustomUserDetails customUserDetails) {
+    public void checkPassword(PasswordCheckReq passwordCheckReq, Integer userId) {
         // DB에서 조회하여 비교 <= customerUserDetails에서 바로 비교 X
-        User user = userRepository.findById(customUserDetails.getUserId()).orElseThrow();
+        User user = userRepository.findById(userId).orElseThrow();
         if (!passwordEncoder.matches(passwordCheckReq.getPassword(), user.getPassword())) {
             throw new PasswordNotMatchedException("password is not matched");
         }
     }
-    public void modifyPassword(PasswordUpdateReq passwordUpdateReq, CustomUserDetails customUserDetails) {
-        User user = userRepository.findById(customUserDetails.getUserId()).orElseThrow();
+    public void modifyPassword(PasswordUpdateReq passwordUpdateReq, Integer userId) {
+        User user = userRepository.findById(userId).orElseThrow();
         // 이전 패스워드와 동일한가
         if (passwordEncoder.matches(passwordUpdateReq.getPassword(), user.getPassword())) {
             throw new PasswordNotChangedException("password is same compared with previous password");
