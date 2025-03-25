@@ -1026,7 +1026,7 @@ def run_api_server(models, host="0.0.0.0", port=8000):
         host: Host to bind the server to
         port: Port to bind the server to
     """
-    from fastapi_integration import app
+    import app
     import uvicorn
 
     # Store models in app state
