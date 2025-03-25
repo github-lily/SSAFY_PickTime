@@ -280,7 +280,7 @@ fun PasswordInputField(
             ),
             placeholder = {
                 Text(
-                    text = "비밀번호를 입력하세요",
+                    text = "8자 이상, 숫자 + 영어 조합",
                     color = Gray50,
                     style = MaterialTheme.typography.bodySmall
                 )

@@ -29,7 +29,7 @@ class SignupViewModel @Inject constructor(private val signUpApi : SignUpApi) : V
     var passwordcheck = mutableStateOf("")
         private set
 
-    // 닉네임 점검
+    // 닉네임 검증
     private fun isAllKorean(text: String): Boolean {
         return text.matches(Regex("^[가-힣]*$"))
     }
@@ -39,10 +39,18 @@ class SignupViewModel @Inject constructor(private val signUpApi : SignUpApi) : V
     }
 
 
-    // 이메일 형식 점검
+    // 이메일 형식 검증
     private fun isValidEmail(email: String): Boolean {
         return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
+
+    // 비밀번호 형식 검증
+    private fun isValidPassword(password: String): Boolean {
+        val hasLetter = password.any { it.isLetter() }
+        val hasDigit = password.any { it.isDigit() }
+        return password.length >= 8 && hasLetter && hasDigit
+    }
+
 
     // 비밀번호 암호화 설정
     var isPasswordVisible = mutableStateOf(false)
@@ -72,9 +80,15 @@ class SignupViewModel @Inject constructor(private val signUpApi : SignUpApi) : V
     }
 
 
+
     fun onPasswordChanged(newPassword: String) {
+
         password.value = newPassword
         if (errorMessage.value == "비밀번호가 일치하지 않습니다." && newPassword == passwordcheck.value) {
+            errorMessage.value = null
+        }
+
+        if (errorMessage.value == "비밀번호는 8자 이상, 영문+숫자 조합이어야 합니다." && isValidPassword(newPassword)) {
             errorMessage.value = null
         }
     }
@@ -103,6 +117,12 @@ class SignupViewModel @Inject constructor(private val signUpApi : SignUpApi) : V
         // 👇 이메일 형식이 올바른지 하는지 체크
         if (!isValidEmail(email.value)) {
             errorMessage.value = "올바른 이메일 형식을 입력해주세요."
+            return
+        }
+
+
+        if (!isValidPassword(password.value)) {
+            errorMessage.value = "비밀번호는 8자 이상, 영문+숫자 조합이어야 합니다."
             return
         }
 
