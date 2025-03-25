@@ -63,7 +63,7 @@ fun PasswordCheckScreen(
                 Spacer(modifier = Modifier.width(30.dp))
                 PasswordSubmitButton(
                     password = password,
-                    onSuccess = { navController.navigate("editUserInfo")},
+                    onSuccess = { navController.navigate("editPassword")},
                     onError = { errorMessage = it}
                 )
             }
@@ -102,7 +102,7 @@ fun PasswordInputField(password: String, onValueChange: (String) -> Unit) {
         onValueChange = onValueChange, //비밀번호 값 변경 시 호출되는 콜백 함수
         placeholder = {
             Text(
-                text = "현재 비밀번호 입력 picktime",
+                text = "현재 비밀번호 입력 qq",
                 fontSize = 40.sp,
                 color = Gray50
             ) },
@@ -156,7 +156,7 @@ fun PasswordSubmitButton(
 ){
     Button(
         onClick = {
-            if (password == "picktime") {
+            if (password == "qq") {
                 onError(null)
                 onSuccess()
             } else {
