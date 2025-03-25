@@ -17,8 +17,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -34,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.example.picktimeapp.R
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
@@ -144,16 +149,35 @@ fun MyPageScreen(viewModel: MyPageViewModel, navController: NavController) {
                         Spacer(modifier = Modifier.height(screenHeight * 0.07f))
 
                         // 유저 정보 출력하기
-                        userInfo?.let {
-                            Text(
-                                text = it.name,
-                                fontFamily = TitleFont,
-                                fontSize = textSizeSmall.sp,
-                                modifier = Modifier
-                                    .padding(top = 4.dp)
-                            )
+                        Row (
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            userInfo?.let {
+                                Text(
+                                    text = it.name,
+                                    fontFamily = TitleFont,
+                                    fontSize = textSizeSmall.sp,
+                                    modifier = Modifier
+                                        .padding(top = 4.dp)
+                                )
+                                IconButton(
+                                    onClick = {
+                                        navController.navigate("editNickname")
+                                    },
+                                    modifier = Modifier
+                                        .padding(start = 15.dp)
+                                        .size(30.dp)
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.edit),
+//                                        imageVector = Icons.Default.Edit,
+                                        contentDescription = "Edit Nickname",
+                                    )
+                                }
+                            }
                         }
 
+                        // 비밀번호 수정 버튼
                         Button(
                             onClick = {
                                 navController.navigate("passwordCheck")
@@ -168,7 +192,7 @@ fun MyPageScreen(viewModel: MyPageViewModel, navController: NavController) {
                                 .height(buttonHeight)
                         ){
                             Text(
-                                text = "회원정보 수정",
+                                text = "비밀번호 수정",
                                 fontSize = buttonFontSize.sp,
                                 fontFamily = Pretendard,
                                 fontWeight = FontWeight.Medium
