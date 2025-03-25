@@ -4,6 +4,7 @@ package com.example.picktimeapp.network
 
 import retrofit2.http.Body
 import retrofit2.http.POST
+import retrofit2.Response
 
 data class LoginRequest(
     val username: String,
@@ -17,6 +18,6 @@ data class LoginResponse(
 )
 
 interface LoginApi {
-    @POST("login")  // 예: "auth/login"
-    suspend fun login(@Body request: LoginRequest): LoginResponse
+    @POST("login")
+    suspend fun login(@Body request: LoginRequest): Response<LoginResponse>
 }

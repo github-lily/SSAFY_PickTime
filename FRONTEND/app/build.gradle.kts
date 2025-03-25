@@ -67,6 +67,7 @@ dependencies {
 
     // Hilt
     implementation(libs.hilt.android)
+
 //    implementation(libs.androidx.navigation.runtime.android)
     kapt(libs.hilt.compiler)
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0") // jetpack 전용 hilt 연동 라이브러리
@@ -79,6 +80,9 @@ dependencies {
 
     // Icon
     implementation(libs.androidx.material.icons.extended)
+
+    // DataStore
+    implementation(libs.androidx.datastore.preferences)
 
 
     // Retrofit & OkHttp
