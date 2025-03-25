@@ -1,7 +1,9 @@
+import librosa
 import numpy as np
 import json
 import os
 from collections import Counter
+from scipy import signal
 from typing import Dict, List, Tuple, Optional, Any, Union, Set
 
 # 음 이름과 주파수 매핑 (플랫 노트 포함)
@@ -24,7 +26,7 @@ ENHARMONIC_MAP = {
 class GuitarChordRecognizer:
     """기타 코드 인식 및 교육 피드백을 제공하는 클래스"""
 
-    def __init__(self, chord_db_path="chord_database.json"):
+    def __init__(self, chord_db_path="models/audio/chord_database.json"):
         """
         기타 코드 인식 초기화
 
@@ -141,83 +143,37 @@ class GuitarChordRecognizer:
 
         return chord_db
 
-    def _get_chord_notes(self, root: str, chord_type: str) -> List[str]:
+    def _get_chord_notes(self, chord_name=None, root=None, chord_type=None, include_full_name=True):
         """
-        주어진 루트와 코드 유형에 대한 구성음 생성
+        코드의 구성음 목록 반환
 
         Args:
-            root: 루트 음 이름 (예: "C", "D#")
-            chord_type: 코드 유형 (예: "maj", "m7")
+            chord_name: 코드 이름 (예: "Cmaj7")
+            root: 루트 음 (chord_name이 None일 때 사용)
+            chord_type: 코드 유형 (chord_name이 None일 때 사용)
+            include_full_name: 완전한 노트 이름 포함 여부 (옥타브 정보 포함)
 
         Returns:
             List[str]: 코드 구성음 목록
         """
-        # 루트 음의 인덱스 찾기 (샵이나 플랫 기준)
-        root_idx = -1
-        if root in NOTE_NAMES:
-            root_idx = NOTE_NAMES.index(root)
-            note_names = NOTE_NAMES
-        elif root in FLAT_NAMES:
-            root_idx = FLAT_NAMES.index(root)
-            note_names = FLAT_NAMES
-        else:
-            # 알 수 없는 루트 음인 경우 기본값
-            return [root]
+        # 코드 이름이 제공된 경우 루트와 타입 추출
+        if chord_name:
+            if len(chord_name) > 1 and chord_name[1] in ['#', 'b']:
+                root = chord_name[:2]
+                chord_type = chord_name[2:] if len(chord_name) > 2 else "maj"
+            else:
+                root = chord_name[:1]
+                chord_type = chord_name[1:] if len(chord_name) > 1 else "maj"
 
-        # 코드 유형별 간격 매핑
-        intervals = {
-            'maj': [0, 4, 7],  # 메이저
-            'm': [0, 3, 7],  # 마이너
-            '7': [0, 4, 7, 10],  # 도미넌트 7
-            'm7': [0, 3, 7, 10],  # 마이너 7
-            'maj7': [0, 4, 7, 11],  # 메이저 7
-            'dim': [0, 3, 6],  # 디미니쉬드
-            'dim7': [0, 3, 6, 9],  # 디미니쉬드 7
-            'aug': [0, 4, 8],  # 어그멘티드
-            'sus2': [0, 2, 7],  # 서스펜디드 2
-            'sus4': [0, 5, 7],  # 서스펜디드 4
-            '6': [0, 4, 7, 9],  # 메이저 6
-            'm6': [0, 3, 7, 9],  # 마이너 6
-            '9': [0, 4, 7, 10, 14],  # 도미넌트 9
-            'm9': [0, 3, 7, 10, 14],  # 마이너 9
-            'maj9': [0, 4, 7, 11, 14],  # 메이저 9
-            '11': [0, 4, 7, 10, 14, 17],  # 11
-            'm11': [0, 3, 7, 10, 14, 17],  # 마이너 11
-            '13': [0, 4, 7, 10, 14, 17, 21],  # 13
-            'm13': [0, 3, 7, 10, 14, 17, 21],  # 마이너 13
-            '7b5': [0, 4, 6, 10],  # 7 플랫 5
-            '7(#5)': [0, 4, 8, 10],  # 7 샵 5 (augmented 7)
-            '7(b9)': [0, 4, 7, 10, 13],  # 7 플랫 9
-            '7(#9)': [0, 4, 7, 10, 15],  # 7 샵 9
-            '7(#11)': [0, 4, 7, 10, 18],  # 7 샵 11
-            '9b5': [0, 4, 6, 10, 14],  # 9 플랫 5
-            '6/9': [0, 4, 7, 9, 14],  # 6/9
-            'm7b5': [0, 3, 6, 10],  # 마이너 7 플랫 5 (half-diminished)
-            'm(maj7)': [0, 3, 7, 11],  # 마이너 메이저 7
-            'm(maj9)': [0, 3, 7, 11, 14],  # 마이너 메이저 9
-            'add9': [0, 4, 7, 14],  # 애드 9
-            '7(b13)': [0, 4, 7, 10, 20],  # 7 플랫 13
-            '13(#11)': [0, 4, 7, 10, 14, 18, 21],  # 13 샵 11
-            '13(#9)': [0, 4, 7, 10, 15, 17, 21],  # 13 샵 9
-            '13(b9)': [0, 4, 7, 10, 13, 17, 21],  # 13 플랫 9
-            'maj13': [0, 4, 7, 11, 14, 17, 21],  # 메이저 13
-            '9(#11)': [0, 4, 7, 10, 14, 18],  # 9 샵 11
-            '9(#5)': [0, 4, 8, 10, 14],  # 9 샵 5
-            '6(#11)': [0, 4, 7, 9, 18],  # 6 샵 11
-            '+(#11)': [0, 4, 8, 18]  # 어그멘티드 샵 11
-        }
+        # 코드 데이터베이스에서 정보 찾기
+        if root in self.chord_db and chord_type in self.chord_db[root]:
+            variations = self.chord_db[root][chord_type]
+            if variations and "notes" in variations[0]:
+                notes = variations[0]["notes"]
+                return notes
 
-        # 해당 코드 유형의 간격이 없으면 기본 메이저 코드 반환
-        if chord_type not in intervals:
-            chord_type = 'maj'
-
-        # 코드 구성음 생성
-        notes = []
-        for interval in intervals[chord_type]:
-            note_idx = (root_idx + interval) % 12
-            notes.append(note_names[note_idx])
-
-        return notes
+        # 데이터베이스에 없으면 기본 간격 사용
+        return self._generate_chord_notes(root, chord_type)
 
     def _get_chord_structure(self, chord_type: str) -> List[str]:
         """
@@ -1054,6 +1010,438 @@ class GuitarChordRecognizer:
 
         # 최종 코드 이름 반환
         return chord_root + final_quality
+
+    def extract_chroma_features(self, audio, sr):
+        """
+        개선된 크로마그램 특성 추출
+        """
+        # 노이즈 제거 (대역 통과 필터 적용)
+        # 기타 주파수 범위인 82Hz(E2)~1318Hz(E6) 범위로 필터링
+        nyquist = sr // 2
+        filter_low = 80 / nyquist
+        filter_high = 1400 / nyquist
+        b, a = signal.butter(6, [filter_low, filter_high], btype='band')
+        filtered_audio = signal.filtfilt(b, a, audio)
+
+        # 하모닉 추출 (보다 강력한 하모닉 분리)
+        harmonic = librosa.effects.harmonic(filtered_audio, margin=8.0)
+
+        # 스펙트럼 대비 향상을 위한 전력 정규화
+        harmonic = librosa.util.normalize(harmonic, norm=2)
+
+        # 피크 강화를 위한 크로마그램 계산
+        hop_length = 512
+        n_fft = 8192  # 더 높은 주파수 해상도를 위해 늘림
+
+        chromagram = librosa.feature.chroma_stft(
+            y=harmonic, sr=sr, hop_length=hop_length, n_fft=n_fft,
+            tuning=0, norm=None
+        )
+
+        # 현재 프레임을 기준으로 일정 시간 이동 평균 - 시간적 평활화
+        # 기타 코드는 일정 시간 지속되므로 시간적 평활화가 유용
+        smooth_span = 5  # 프레임 수 조정 가능
+        smoothed_chromagram = np.zeros_like(chromagram)
+
+        for i in range(chromagram.shape[1]):
+            start = max(0, i - smooth_span)
+            end = min(chromagram.shape[1], i + smooth_span + 1)
+            smoothed_chromagram[:, i] = np.mean(chromagram[:, start:end], axis=1)
+
+        # 중앙 부분만 선택 (시작과 끝 부분의 불안정성 회피)
+        if smoothed_chromagram.shape[1] > 10:
+            middle_start = smoothed_chromagram.shape[1] // 4
+            middle_end = 3 * smoothed_chromagram.shape[1] // 4
+            selected_chromagram = smoothed_chromagram[:, middle_start:middle_end]
+        else:
+            selected_chromagram = smoothed_chromagram
+
+        # 시간 축으로 중앙값 계산 (이상치에 강인함)
+        chord_vector = np.median(selected_chromagram, axis=1)
+
+        # 임계값 기반 노이즈 제거
+        threshold = 0.1 * np.max(chord_vector)
+        chord_vector[chord_vector < threshold] = 0
+
+        # 재정규화
+        if np.sum(chord_vector) > 0:
+            chord_vector = chord_vector / np.sum(chord_vector)
+
+        return chord_vector, smoothed_chromagram
+
+    def identify_chord_from_chroma(self, chord_vector):
+        """
+        크로마 벡터에서 코드 식별
+
+        Args:
+            chord_vector: 12차원 크로마 벡터
+
+        Returns:
+            Tuple[str, float]: (식별된 코드 이름, 유사도 점수)
+        """
+        best_match = None
+        best_similarity = 0.0
+
+        # 모든 가능한 코드와 비교
+        for chord_name, chord_info in self.simple_chord_db.items():
+            # 코드의 이론적 크로마 벡터 생성
+            theoretical_vector = self.create_theoretical_chroma(chord_info["notes"])
+
+            # 코사인 유사도 계산
+            if np.sum(chord_vector) > 0 and np.sum(theoretical_vector) > 0:
+                similarity = np.dot(chord_vector, theoretical_vector) / (
+                        np.linalg.norm(chord_vector) * np.linalg.norm(theoretical_vector))
+            else:
+                similarity = 0.0
+
+            # 루트 음에 추가 가중치
+            root = chord_info["root"]
+            if root in NOTE_NAMES:
+                root_idx = NOTE_NAMES.index(root)
+            elif root in FLAT_NAMES:
+                root_idx = FLAT_NAMES.index(root)
+            else:
+                root_idx = -1
+
+            if root_idx >= 0 and chord_vector[root_idx] > np.mean(chord_vector):
+                similarity += 0.1
+                similarity = min(similarity, 1.0)
+
+            if similarity > best_similarity:
+                best_similarity = similarity
+                best_match = chord_name
+
+        return best_match if best_match else "Unknown", best_similarity
+
+    def _detect_chroma_peaks(self, chroma_vector, min_peak_ratio=0.75):
+        """
+        크로마그램에서 주요 피크(노트) 감지
+
+        Args:
+            chroma_vector: 크로마 벡터
+            min_peak_ratio: 최소 피크 비율 (최대값 대비)
+
+        Returns:
+            np.ndarray: 피크 인덱스 배열
+        """
+        if np.max(chroma_vector) == 0:
+            return np.array([])
+
+        # 최대값 대비 임계값
+        threshold = min_peak_ratio * np.max(chroma_vector)
+
+        # 임계값 이상인 인덱스 추출
+        peak_indices = np.where(chroma_vector >= threshold)[0]
+
+        # 강도에 따라 정렬
+        peak_indices = peak_indices[np.argsort(chroma_vector[peak_indices])[::-1]]
+
+        return peak_indices
+
+    def extract_cqt_chroma_features(self, audio, sr):
+        """
+        CQT 기반 크로마그램 특성 추출 (더 나은 하모닉 구조 포착)
+
+        Args:
+            audio: 오디오 데이터 (numpy array)
+            sr: 샘플링 레이트
+
+        Returns:
+            chord_vector: 12차원 크로마 벡터
+            cqt_chromagram: CQT 기반 크로마그램
+        """
+        # 하모닉 컴포넌트 추출
+        harmonic = librosa.effects.harmonic(audio, margin=4.0)
+
+        # CQT 기반 크로마그램 추출
+        cqt_chromagram = librosa.feature.chroma_cqt(
+            y=harmonic, sr=sr, hop_length=512,
+            bins_per_octave=36,  # 높은 해상도를 위해 옥타브당 빈 수 증가
+            n_octaves=7
+        )
+
+        # 시간 축으로 평균 계산
+        chord_vector = np.mean(cqt_chromagram, axis=1)
+
+        # 정규화
+        if np.sum(chord_vector) > 0:
+            chord_vector = chord_vector / np.sum(chord_vector)
+
+        return chord_vector, cqt_chromagram
+
+    def identify_chord_from_chroma(self, chord_vector):
+        """
+        개선된 코드 인식 로직
+        """
+        best_match = None
+        best_similarity = 0.0
+
+        # 노트 피크 감지
+        peak_indices = self._detect_chroma_peaks(chord_vector)
+        detected_notes = [NOTE_NAMES[i] for i in peak_indices]
+
+        # 실제 검출된 노트가 너무 적으면 낮은 값도 포함
+        if len(peak_indices) < 3:
+            # 두 번째 임계값으로 더 많은 노트 포함
+            secondary_threshold = 0.5 * np.max(chord_vector)
+            secondary_indices = np.where(chord_vector > secondary_threshold)[0]
+            for idx in secondary_indices:
+                if idx not in peak_indices:
+                    peak_indices = np.append(peak_indices, idx)
+                    detected_notes.append(NOTE_NAMES[idx])
+
+        # 피크 노트에 가중치를 둔 비교
+        for chord_name, chord_info in self.simple_chord_db.items():
+            # 코드의 이론적 크로마 벡터 생성
+            theoretical_vector = self.create_theoretical_chroma(chord_info["notes"])
+
+            # 완전 매치 계산 (실제 음표와 이론적 음표가 얼마나 일치하는지)
+            actual_notes_set = set(detected_notes)
+            theoretical_notes_set = set(chord_info["notes"])
+
+            # 노트 매칭 점수 계산 (Jaccard 유사도)
+            if theoretical_notes_set and actual_notes_set:
+                notes_intersection = len(actual_notes_set.intersection(theoretical_notes_set))
+                notes_union = len(actual_notes_set.union(theoretical_notes_set))
+                notes_similarity = notes_intersection / notes_union
+            else:
+                notes_similarity = 0
+
+            # 크로마 벡터 코사인 유사도
+            if np.sum(chord_vector) > 0 and np.sum(theoretical_vector) > 0:
+                vector_similarity = np.dot(chord_vector, theoretical_vector) / (
+                        np.linalg.norm(chord_vector) * np.linalg.norm(theoretical_vector))
+            else:
+                vector_similarity = 0
+
+            # 루트 중요도
+            root = chord_info["root"]
+            root_importance = 0
+
+            if root in NOTE_NAMES:
+                root_idx = NOTE_NAMES.index(root)
+            elif root in FLAT_NAMES:
+                root_idx = FLAT_NAMES.index(root)
+            else:
+                root_idx = -1
+
+            if root_idx >= 0:
+                # 루트 음이 가장 강한 피크인지 확인
+                if peak_indices.size > 0 and root_idx == peak_indices[0]:
+                    root_importance = 0.2
+                # 또는 상위 3개 피크 안에 포함되는지
+                elif peak_indices.size > 2 and root_idx in peak_indices[:3]:
+                    root_importance = 0.1
+
+            # 최종 유사도 점수 (가중 조합)
+            similarity = (0.4 * notes_similarity +
+                          0.4 * vector_similarity +
+                          0.2 * root_importance)
+
+            if similarity > best_similarity:
+                best_similarity = similarity
+                best_match = chord_name
+
+        return best_match if best_match else "Unknown", best_similarity
+
+    def create_theoretical_chroma(self, notes):
+        """
+        코드 구성음으로부터 이론적 크로마 벡터 생성 (가중치 적용)
+        """
+        chroma = np.zeros(12)
+
+        # 루트 음 찾기 (첫 번째 음)
+        root_idx = -1
+        fifth_idx = -1
+
+        if notes:
+            if notes[0] in NOTE_NAMES:
+                root_idx = NOTE_NAMES.index(notes[0])
+                fifth_idx = (root_idx + 7) % 12  # 5도 위
+            elif notes[0] in FLAT_NAMES:
+                root_idx = FLAT_NAMES.index(notes[0])
+                fifth_idx = (root_idx + 7) % 12  # 5도 위
+
+        # 각 음에 대해 크로마 벡터 업데이트
+        for note in notes:
+            # 노트 이름에서 피치 클래스 인덱스 추출
+            if note in NOTE_NAMES:
+                pitch_idx = NOTE_NAMES.index(note)
+            elif note in FLAT_NAMES:
+                pitch_idx = FLAT_NAMES.index(note)
+            else:
+                # 알 수 없는 노트는 건너뜀
+                continue
+
+            # 기본 가중치
+            weight = 1.0
+
+            # 루트에 더 높은 가중치
+            if pitch_idx == root_idx:
+                weight = 1.5
+            # 5도에 약간 더 높은 가중치
+            elif pitch_idx == fifth_idx:
+                weight = 1.2
+
+            # 해당 피치 클래스에 가중치 추가
+            chroma[pitch_idx] = weight
+
+        # 정규화
+        if np.sum(chroma) > 0:
+            chroma = chroma / np.sum(chroma)
+
+        return chroma
+
+    def identify_chord_with_ensemble(self, audio, sr):
+        """
+        개선된 앙상블 코드 인식
+        """
+        # 1. 다양한 크로마그램 추출
+        # 1.1 기본 STFT 크로마그램
+        stft_chroma, _ = self.extract_chroma_features(audio, sr)
+
+        # 1.2 CQT 크로마그램
+        cqt_chroma, _ = self.extract_cqt_chroma_features(audio, sr)
+
+        # 1.3 하모닉/타악기 분리 전처리
+        harmonic, percussive = librosa.effects.hpss(audio)
+        harm_chroma, _ = self.extract_chroma_features(harmonic, sr)
+
+        # 1.4 다양한 윈도우 크기 적용 (시간-주파수 해상도 교환)
+        # 짧은 윈도우 (시간 해상도 향상)
+        stft_short = librosa.feature.chroma_stft(
+            y=audio, sr=sr, n_fft=1024, hop_length=256
+        )
+        short_chroma = np.mean(stft_short, axis=1)
+        if np.sum(short_chroma) > 0:
+            short_chroma = short_chroma / np.sum(short_chroma)
+
+        # 2. 각 크로마그램에서 코드 인식
+        stft_chord, stft_similarity = self.identify_chord_from_chroma(stft_chroma)
+        cqt_chord, cqt_similarity = self.identify_chord_from_chroma(cqt_chroma)
+        harm_chord, harm_similarity = self.identify_chord_from_chroma(harm_chroma)
+        short_chord, short_similarity = self.identify_chord_from_chroma(short_chroma)
+
+        # 3. 가중 투표 시스템
+        chord_votes = {}
+
+        # 기본 투표 가중치 설정
+        weights = {
+            'stft': 1.0,
+            'cqt': 1.2,  # CQT가 일반적으로 화음에 더 좋음
+            'harm': 1.1,  # 하모닉 성분은 코드 식별에 중요
+            'short': 0.8  # 짧은 윈도우는 일부 정보 누락 가능성
+        }
+
+        # 임계값 이상 결과만 고려
+        threshold = 0.4
+
+        if stft_similarity > threshold:
+            chord_votes[stft_chord] = chord_votes.get(stft_chord, 0) + (stft_similarity * weights['stft'])
+
+        if cqt_similarity > threshold:
+            chord_votes[cqt_chord] = chord_votes.get(cqt_chord, 0) + (cqt_similarity * weights['cqt'])
+
+        if harm_similarity > threshold:
+            chord_votes[harm_chord] = chord_votes.get(harm_chord, 0) + (harm_similarity * weights['harm'])
+
+        if short_similarity > threshold:
+            chord_votes[short_chord] = chord_votes.get(short_chord, 0) + (short_similarity * weights['short'])
+
+        # 4. 최종 결과 결정
+        best_chord = "Unknown"
+        best_score = 0.0
+
+        for chord, score in chord_votes.items():
+            if score > best_score:
+                best_chord = chord
+                best_score = score
+
+        # 5. 신뢰도 계산
+        # 총 가중치로 나누어 정규화
+        total_weight = sum(weights.values())
+        confidence = best_score / total_weight if best_score > 0 else 0.0
+
+        # 6. 상세 결과
+        details = {
+            "stft_result": {"chord": stft_chord, "similarity": stft_similarity},
+            "cqt_result": {"chord": cqt_chord, "similarity": cqt_similarity},
+            "harmonic_result": {"chord": harm_chord, "similarity": harm_similarity},
+            "short_window_result": {"chord": short_chord, "similarity": short_similarity},
+            "ensemble_score": best_score,
+            "normalized_confidence": confidence
+        }
+
+        return best_chord, confidence, details
+
+    # GuitarChordRecognizer 클래스 내에 추가
+    def post_process_chord_detection(self, chord_name, chord_vector):
+        """
+        음악 이론 기반 코드 인식 후처리
+
+        Args:
+            chord_name: 기본 알고리즘으로 감지된 코드
+            chord_vector: 크로마 벡터
+
+        Returns:
+            str: 수정된 코드 이름
+        """
+        # 감지된 코드가 없으면 후처리 필요 없음
+        if chord_name == "Unknown":
+            return chord_name
+
+        # 코드의 루트 및 유형 추출
+        if len(chord_name) > 1 and chord_name[1] in ['#', 'b']:
+            root = chord_name[:2]
+            chord_type = chord_name[2:] if len(chord_name) > 2 else "maj"
+        else:
+            root = chord_name[:1]
+            chord_type = chord_name[1:] if len(chord_name) > 1 else "maj"
+
+        # 피크 노트 감지
+        peak_indices = self._detect_chroma_peaks(chord_vector)
+
+        # 규칙 1: 메이저 코드와 마이너 코드 구분
+        # 메이저 3rd와 마이너 3rd 확인
+        if root in NOTE_NAMES:
+            root_idx = NOTE_NAMES.index(root)
+        elif root in FLAT_NAMES:
+            root_idx = FLAT_NAMES.index(root)
+        else:
+            return chord_name  # 알 수 없는 루트는 그대로 반환
+
+        major_third_idx = (root_idx + 4) % 12  # 메이저 3도
+        minor_third_idx = (root_idx + 3) % 12  # 마이너 3도
+
+        # 3도 음이 분명하면 코드 유형 수정
+        if chord_vector[major_third_idx] > 1.5 * chord_vector[minor_third_idx]:
+            # 메이저 코드로 수정 (m7, m9 등은 유지)
+            if chord_type == "m" or chord_type == "":
+                chord_type = "" if chord_type == "m" else chord_type
+        elif chord_vector[minor_third_idx] > 1.5 * chord_vector[major_third_idx]:
+            # 마이너 코드로 수정
+            if chord_type == "" or chord_type == "maj":
+                chord_type = "m"
+
+        # 규칙 2: 7th 코드 확인
+        seventh_idx = (root_idx + 10) % 12  # 마이너 7도
+        maj_seventh_idx = (root_idx + 11) % 12  # 메이저 7도
+
+        if chord_vector[seventh_idx] > 0.6 * np.max(chord_vector):
+            # 7th 코드 확인
+            if chord_type == "" or chord_type == "maj":
+                chord_type = "7"  # 도미넌트 7th
+            elif chord_type == "m":
+                chord_type = "m7"
+        elif chord_vector[maj_seventh_idx] > 0.6 * np.max(chord_vector):
+            # maj7 코드 확인
+            if chord_type == "" or chord_type == "maj":
+                chord_type = "maj7"
+            elif chord_type == "m":
+                chord_type = "m(maj7)"
+
+        # 최종 코드 이름 조합
+        return root + (chord_type if chord_type != "maj" else "")
 
 
 # 코드 인식 유틸리티 함수
