@@ -12,6 +12,12 @@ class AuthInterceptor @Inject constructor(
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val token = runBlocking { tokenManager.getAccessToken().first() }
+        val originalRequest = chain.request()
+
+        // 👇 login 요청에는 Authorization 헤더를 붙이지 않음
+        if (originalRequest.url.encodedPath.endsWith("/login")) {
+            return chain.proceed(originalRequest)
+        }
 
         val newRequest = chain.request().newBuilder().apply {
             token?.let {
