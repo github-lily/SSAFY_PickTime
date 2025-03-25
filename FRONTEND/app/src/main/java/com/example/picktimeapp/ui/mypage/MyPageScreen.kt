@@ -169,8 +169,8 @@ fun MyPageScreen(viewModel: MyPageViewModel, navController: NavController) {
                                         .size(30.dp)
                                 ) {
                                     Icon(
-                                        painter = painterResource(id = R.drawable.edit),
-//                                        imageVector = Icons.Default.Edit,
+//                                        painter = painterResource(id = R.drawable.edit),
+                                        imageVector = Icons.Default.Edit,
                                         contentDescription = "Edit Nickname",
                                     )
                                 }

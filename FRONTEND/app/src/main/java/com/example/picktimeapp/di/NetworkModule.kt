@@ -1,5 +1,6 @@
 package com.example.picktimeapp.di
 
+import com.example.picktimeapp.auth.TokenManager
 import com.example.picktimeapp.network.LoginApi
 import com.example.picktimeapp.network.SignUpApi
 import com.google.gson.Gson
@@ -35,13 +36,19 @@ object NetworkModule {
     // OkHttpClient 인스턴스를 제공하는 함수
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient =
+    fun provideOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient =
         OkHttpClient.Builder()
+            .addInterceptor(authInterceptor) // 👈 추가
             .addInterceptor(HttpLoggingInterceptor().apply {
-                // 네트워크 요청 및 응답 로그를 BODY 레벨로 출력
                 level = HttpLoggingInterceptor.Level.BODY
             })
             .build()
+
+    @Provides
+    @Singleton
+    fun provideAuthInterceptor(tokenManager: TokenManager): AuthInterceptor =
+        AuthInterceptor(tokenManager)
+
 
     // Retrofit 인스턴스를 제공하는 함수
     @Provides
@@ -65,5 +72,9 @@ object NetworkModule {
     @Singleton
     fun provideSignUpApi(retrofit: Retrofit) : SignUpApi =
         retrofit.create(SignUpApi::class.java)
+
+
+
 }
+
 
