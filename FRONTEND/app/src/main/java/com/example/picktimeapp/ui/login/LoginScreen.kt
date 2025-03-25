@@ -1,5 +1,6 @@
 package com.example.picktimeapp.ui.login
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -51,7 +52,7 @@ fun LoginScreen(
         // 로고
         Text(
             text = "피크 타임",
-            fontFamily = com.example.picktimeapp.ui.TitleFont,
+            fontFamily = com.example.picktimeapp.ui.theme.TitleFont,
             fontWeight = FontWeight.Medium,
             fontSize = 70.sp,
             modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -262,7 +263,10 @@ fun LoginFooterButtons(
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        TextButton(onClick = onSignUpClick) {
+        TextButton(onClick = {
+            Log.d("UI", "회원가입 버튼 클릭됨")
+            onSignUpClick()
+        }) {
             Text(
                 text = "회원가입",
                 style = MaterialTheme.typography.bodySmall,
