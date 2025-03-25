@@ -2,6 +2,7 @@ package com.b101.pickTime.config;
 
 import com.b101.pickTime.common.auth.JWTFilter;
 import com.b101.pickTime.common.auth.LoginFilter;
+import com.b101.pickTime.common.auth.CustomLogoutFilter;
 import com.b101.pickTime.common.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -37,14 +39,17 @@ public class SecurityConfig {
 		http.csrf(csrf -> csrf.disable())
         .formLogin(auth -> auth.disable())
         .httpBasic(auth -> auth.disable())
+		.logout(logout -> logout.disable())
         .authorizeHttpRequests(auth -> auth
 				.requestMatchers("/login", "/reissue", "/test","/verification/*").permitAll()
 				.requestMatchers(HttpMethod.POST, "/user").permitAll()
 //				.requestMatchers("/admin").hasRole("ADMIN")
 				.anyRequest().authenticated()
         )
+
 				.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class)
 				.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class)
+				.addFilterBefore(new CustomLogoutFilter(jwtUtil), LogoutFilter.class)
 		.sessionManagement((session)->session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 

@@ -15,6 +15,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -53,7 +55,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String refresh = jwtUtil.createJwt("refresh", userId, username, role, JWTUtil.REFRESH_TOKEN_VALIDITY_TIME);
 
         // 응답 설정
-        response.setHeader("access", access);
+        response.setHeader("Authorization", jwtUtil.BEARER_PREFIX+access);
         response.addCookie(createCookie("refresh", refresh));
         response.setStatus(HttpStatus.OK.value());
     }
@@ -61,7 +63,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     // 실패시 실행
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-        System.out.println("인증 실패");
         response.setStatus(401);
     }
 
