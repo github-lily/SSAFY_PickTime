@@ -67,7 +67,19 @@ dependencies {
 
     // Hilt
     implementation(libs.hilt.android)
+//    implementation(libs.androidx.navigation.runtime.android)
     kapt(libs.hilt.compiler)
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0") // jetpack 전용 hilt 연동 라이브러리
+
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.core)
+
+    // ViewModel
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+
+    // Icon
+    implementation(libs.androidx.material.icons.extended)
+
 
     // Retrofit & OkHttp
     implementation(libs.retrofit)
@@ -94,4 +106,9 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation(libs.navigation.compose) //  navigation-compose 안정 버전
+    implementation(libs.lifecycle.runtime.compose) // lifecycle-runtime 안정 버전
+    implementation(libs.lifecycle.viewmodel.compose) //  viewmodel-compose 안정 버전
+
 }

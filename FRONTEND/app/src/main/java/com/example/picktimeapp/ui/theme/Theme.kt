@@ -15,17 +15,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+// 배경색 지정
+private val LightColorScheme = lightColorScheme(
+    background = DarkGreen10,
+    surface = DarkGreen10
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-)
+// 다크테마
+//private val DarkColorScheme = darkColorScheme(
+//    primary = Purple80,
+//    secondary = PurpleGrey80,
+//    tertiary = Pink80
+//)
+
+
 
 @Composable
 fun PickTimeAppTheme(
@@ -38,7 +41,7 @@ fun PickTimeAppTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-        darkTheme -> DarkColorScheme
+//        darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
     val view = LocalView.current
@@ -52,7 +55,7 @@ fun PickTimeAppTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = AppTypography,
         content = content
     )
 }
