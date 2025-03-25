@@ -20,6 +20,17 @@ val request = LoginRequest(username = "test@email.com", password = "1234")
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(private val loginApi: LoginApi) : ViewModel() {
+
+//    초기세팅
+    fun reset() {
+        email.value = ""
+        password.value = ""
+        loginResult.value = null
+        errorMessage.value = null
+        isPasswordVisible.value = false
+
+    }
+
     var email = mutableStateOf("")
         private set
 
