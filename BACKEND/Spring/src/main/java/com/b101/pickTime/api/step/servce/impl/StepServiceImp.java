@@ -1,5 +1,6 @@
 package com.b101.pickTime.api.step.servce.impl;
 
+import com.b101.pickTime.api.step.response.StepInfoResDto;
 import com.b101.pickTime.api.step.response.StepResDto;
 import com.b101.pickTime.api.step.servce.StepService;
 import com.b101.pickTime.db.repository.StepRepository;
@@ -17,5 +18,15 @@ public class StepServiceImp implements StepService {
     @Override
     public List<StepResDto> getSteps(int stageId, int userId) {
         return stepRepository.findStepsWithClearStatus(stageId, userId);
+    }
+
+    @Override
+    public StepInfoResDto getStepInfo(int stepId) {
+        return stepRepository.findStepInfoByStepId(stepId);
+    }
+
+    @Override
+    public List<Integer> getChordsFromStage(int stageId) {
+        return stepRepository.findChordIdByStageId(stageId);
     }
 }
