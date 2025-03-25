@@ -13,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.picktimeapp.ui.mypage.EditNicknameScreen
+import com.example.picktimeapp.ui.mypage.EditPasswordScreen
 import com.example.picktimeapp.ui.mypage.MyPageScreen
 import com.example.picktimeapp.ui.mypage.MyPageViewModel
 import com.example.picktimeapp.ui.mypage.PasswordCheckScreen
@@ -39,20 +40,14 @@ fun MyNavGraph(){
         }
 
         // 비밀번호 변경 화면
-        composable("editUserInfo") {
-            // 테스트용으로 화면 구성
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("비밀번호 수정 화면", fontSize = 24.sp)
-            }
-
+        composable("editPassword") {
+            EditPasswordScreen(navController = navController)
         }
 
         // 닉네임 변경 화면
         composable("editNickname") {
             EditNicknameScreen(navController = navController)
+
         }
     }
 }
