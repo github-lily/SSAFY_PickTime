@@ -2,6 +2,8 @@ package com.example.picktimeapp.ui.signup
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -24,6 +26,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
@@ -38,12 +41,21 @@ fun SignupScreen(
     onSignUpClick: () -> Unit
 ) {
     // 상태 관리
-    val name = viewModel.name.value
-    val email = viewModel.email.value
-    val password = viewModel.password.value
-    val passwordCheck = viewModel.passwordcheck.value
-    val isPasswordVisible = viewModel.isPasswordVisible.value
-    val isPasswordCheckVisible = viewModel.isPasswordCheckVisible.value
+    val name by viewModel.name
+    val email by viewModel.email
+    val password by viewModel.password
+    val passwordCheck by viewModel.passwordcheck
+    val isPasswordVisible by viewModel.isPasswordVisible
+    val isPasswordCheckVisible by viewModel.isPasswordCheckVisible
+
+    val signUpResult = viewModel.signUpResult.value
+
+    // 회원가입 성공 시 화면 전환
+    LaunchedEffect(signUpResult) {
+        if (signUpResult?.isSuccessful == true) {
+            onSignUpClick()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -55,7 +67,7 @@ fun SignupScreen(
         // 로고
         Text(
             text = "피크 타임",
-            fontFamily = com.example.picktimeapp.ui.TitleFont,
+            fontFamily = com.example.picktimeapp.ui.theme.TitleFont,
             fontWeight = FontWeight.Medium,
             fontSize = 70.sp,
             modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -103,10 +115,21 @@ fun SignupScreen(
         SignUpButton(
             onClick = {
                 viewModel.signup()
-                onSignUpClick() // 성공 시 다음 화면으로 전환하고 싶다면 여기에 조건 추가
             },
             enabled = name.isNotBlank() && email.isNotBlank() && password.isNotBlank() && passwordCheck.isNotBlank()
         )
+
+        // 에러메시지
+        if (viewModel.errorMessage.value != null) {
+            Text(
+                text = viewModel.errorMessage.value ?: "",
+                color = Color.Red,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+        }
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -257,7 +280,7 @@ fun PasswordInputField(
             ),
             placeholder = {
                 Text(
-                    text = "비밀번호를 입력하세요",
+                    text = "8자 이상, 숫자 + 영어 조합",
                     color = Gray50,
                     style = MaterialTheme.typography.bodySmall
                 )

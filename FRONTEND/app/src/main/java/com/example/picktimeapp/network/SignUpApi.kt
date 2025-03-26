@@ -15,5 +15,5 @@ data class SignUpRequest(
 
 interface SignUpApi {
     @POST("user")
-    suspend fun login(@Body request: SignUpRequest): Response<Unit>
+    suspend fun signup(@Body request: SignUpRequest): Response<Unit>
 }
