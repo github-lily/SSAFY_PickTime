@@ -29,7 +29,8 @@ import com.example.picktimeapp.ui.signup.SignupScreen
 fun WelcomeScreen(
     onNavigateToLogin: () -> Unit,
     onNavigateToSignup: () -> Unit,
-    onNavigateToMyPage: () -> Unit
+    onNavigateToMyPage: () -> Unit,
+    onNavigateToGuitarPosition: () -> Unit,
 ) {
     var showLogin by rememberSaveable { mutableStateOf(false) }
     var showSignup by rememberSaveable { mutableStateOf(false) }
@@ -171,6 +172,23 @@ fun WelcomeScreen(
                     ) {
                         Text("마이페이지 확인용", fontSize = 24.sp, fontWeight = FontWeight.Medium)
                     }
+
+                    // 기타 위치 확인용
+                    Button(
+                        onClick = {
+                            showMyPage = false
+                            onNavigateToGuitarPosition()
+                        },
+                        modifier = buttonModifier,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Brown40,
+                            contentColor = DarkGreen10
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text("기타 카메라 테스트", fontSize = 24.sp, fontWeight = FontWeight.Medium)
+                    }
+
                 }
 
                 // 오른쪽 이미지 영역
