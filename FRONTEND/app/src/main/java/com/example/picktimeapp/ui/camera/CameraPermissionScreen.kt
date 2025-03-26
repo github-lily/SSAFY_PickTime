@@ -4,8 +4,12 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 
@@ -41,6 +45,13 @@ fun CameraPermissionScreen(
 
     when {
         hasPermission -> onPermissionGranted()
-        showRationale -> Text("카메라 권한이 필요합니다. 설정 > 권한에서 허용해주세요.")
+        showRationale -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ){
+                Text("카메라 권한이 필요합니다. 설정 > 권한에서 허용해주세요.")
+            }
+        }
     }
 }
