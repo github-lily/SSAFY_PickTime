@@ -73,9 +73,6 @@ fun WelcomeScreen(
             )
         }
 
-        showMyPage -> {
-            com.example.picktimeapp.ui.nav.MyNavGraph()
-        }
 
         else -> {
             // 좌우로 나누는 Row
