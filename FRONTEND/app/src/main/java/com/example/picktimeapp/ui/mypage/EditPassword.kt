@@ -159,7 +159,9 @@ fun PasswordMismatchMessage(
 fun ActionButtons(navController: NavController){
     Row (horizontalArrangement = Arrangement.spacedBy(30.dp)){
         Button(
-            onClick = { navController.navigate("mypage")},
+            onClick = { navController.navigate("mypage"){
+                popUpTo("mypage") { inclusive = true }
+            } },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Brown20
             ),
@@ -171,7 +173,9 @@ fun ActionButtons(navController: NavController){
             Text("취소", color = Color.Black,fontSize = 30.sp)
         }
         Button(
-            onClick = {navController.navigate("mypage")},
+            onClick = {navController.navigate("mypage"){
+                popUpTo("mypage") { inclusive = true }
+            } },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Brown40
             ),
