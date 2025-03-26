@@ -24,9 +24,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.picktimeapp.R
+import com.example.picktimeapp.ui.nav.Routes
 import com.example.picktimeapp.ui.theme.Brown20
 import com.example.picktimeapp.ui.theme.Brown40
 import com.example.picktimeapp.ui.theme.Brown60
+
 
 @Composable
 fun SideNavigation(navController: NavController) {
@@ -44,26 +46,23 @@ fun SideNavigation(navController: NavController) {
                 iconResId = R.drawable.profile_level_1,
                 contentDescription = "마이페이지 이동",
                 onClick = {
-                    navController.navigate("mypage") {
-                        //만약 네브바에서 프로필을 누르면 화면 전환하겠다.
-                        // 그리고 마미페이지 앞에 화면들 앞의 페이지를 다 없애겠다.
-                    popUpTo("mypage") { inclusive = true }
-                    }
+                    navController.navigate(Routes.MYPAGE)
                 }
             )
         }
-        // 튜닝
+
+        // 다른 네비게이션 버튼들도 유사하게 수정
         Column {
             Spacer(modifier = Modifier.height(430.dp))
             IconNavigationButton(
                 iconResId = R.drawable.tuning_icon,
                 contentDescription = "튜닝페이지로 이동",
                 onClick = {
-                    // 튜닝페이지는 이전으로 갈 수 있도록 합니다.
-                    navController.navigate("mypage")
+                    navController.navigate(Routes.MYPAGE)
                 }
             )
         }
+
         // 연습모드
         Column {
             Spacer(modifier = Modifier.height(40.dp))
@@ -71,29 +70,28 @@ fun SideNavigation(navController: NavController) {
                 iconResId = R.drawable.practice_icon,
                 contentDescription = "연습모드페이지로 이동",
                 onClick = {
-                    navController.navigate("mypage") {
-                        popUpTo("mypage") { inclusive = true }
+                    navController.navigate(Routes.MYPAGE) {
+                        popUpTo(Routes.MYPAGE) { inclusive = true }
                     }
                 }
             )
         }
-        // 게임모드
 
+        // 게임모드
         Column {
             Spacer(modifier = Modifier.height(40.dp))
             IconNavigationButton(
                 iconResId = R.drawable.game_icon,
                 contentDescription = "게임모드페이지로 이동",
                 onClick = {
-                    navController.navigate("mypage") {
-                        popUpTo(0) { inclusive = true }
+                    navController.navigate(Routes.Game) {
+                        popUpTo(Routes.MYPAGE) { inclusive = true }
                     }
                 }
             )
         }
     }
 }
-
 // 프로필용 버튼
 @Composable
 fun ProfileNavigationButton(

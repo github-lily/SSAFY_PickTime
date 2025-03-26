@@ -12,7 +12,11 @@ import com.example.picktimeapp.ui.signup.SignupViewModel
 import com.example.picktimeapp.ui.welcome.WelcomeScreen
 import com.example.picktimeapp.ui.guitarposition.GuitarPositionScreen
 import com.example.picktimeapp.ui.game.GameModeScreen
-
+import com.example.picktimeapp.ui.mypage.MyPageScreen
+import com.example.picktimeapp.ui.mypage.MyPageViewModel
+import com.example.picktimeapp.ui.mypage.EditNicknameScreen
+import com.example.picktimeapp.ui.mypage.EditPasswordScreen
+import com.example.picktimeapp.ui.mypage.PasswordCheckScreen
 
 // Update Routes object
 object Routes {
@@ -20,6 +24,9 @@ object Routes {
     const val LOGIN = "login"
     const val SIGNUP = "signup"
     const val MYPAGE = "mypage"
+    const val EDIT_NICKNAME = "editNickname"
+    const val EDIT_PASSWORD = "editPassword"
+    const val PASSWORD_CHECK = "passwordCheck"
     const val GuitarPosition = "guitarposition"
     const val Game = "game"
 }
@@ -42,13 +49,11 @@ fun AppNavGraph() {
                         popUpTo(Routes.WELCOME) { inclusive = false }
                     }
                 },
-
                 onNavigateToMyPage = {
                     navController.navigate(Routes.MYPAGE) {
                         popUpTo(Routes.WELCOME) { inclusive = true }
                     }
                 },
-
                 onNavigateToGuitarPosition = {
                     navController.navigate(Routes.GuitarPosition) {
                         popUpTo(Routes.WELCOME) { inclusive = false }
@@ -59,7 +64,6 @@ fun AppNavGraph() {
                         popUpTo(Routes.WELCOME) { inclusive = false }
                     }
                 }
-
             )
         }
 
@@ -69,21 +73,16 @@ fun AppNavGraph() {
             LoginScreen(
                 viewModel = viewModel,
                 onLoginClick = {
-                    // 로그인 성공 시 마이페이지로 이동
                     navController.navigate(Routes.MYPAGE) {
                         popUpTo(Routes.LOGIN) { inclusive = true }
                     }
                 },
-                onFindPasswordClick = {
-                    // 비밀번호 찾기 화면으로 이동
-                },
+                onFindPasswordClick = { /* 구현 필요 */ },
                 onSignUpClick = {
-                    // 회원가입 화면으로 이동
                     navController.navigate(Routes.SIGNUP)
                 }
             )
         }
-
 
         // Signup Screen
         composable(Routes.SIGNUP) {
@@ -91,11 +90,9 @@ fun AppNavGraph() {
             SignupScreen(
                 viewModel = viewModel,
                 onLoginClick = {
-                    // 로그인 화면으로 돌아가기
                     navController.popBackStack()
                 },
                 onSignUpClick = {
-                    // 회원가입 성공 시 로그인 화면으로 이동
                     navController.navigate(Routes.LOGIN) {
                         popUpTo(Routes.SIGNUP) { inclusive = true }
                     }
@@ -105,17 +102,33 @@ fun AppNavGraph() {
 
         // MyPage Screen
         composable(Routes.MYPAGE) {
-            com.example.picktimeapp.ui.nav.MyNavGraph()
+            val viewModel: MyPageViewModel = hiltViewModel()
+            MyPageScreen(viewModel = viewModel, navController = navController)
+        }
+
+        // Nickname Edit Screen
+        composable(Routes.EDIT_NICKNAME) {
+            EditNicknameScreen(navController)
+        }
+
+        // Password Edit Screen
+        composable(Routes.EDIT_PASSWORD) {
+            EditPasswordScreen(navController)
+        }
+
+        // Password Check Screen
+        composable(Routes.PASSWORD_CHECK) {
+            PasswordCheckScreen(navController)
         }
 
         // Guitar Position
         composable(Routes.GuitarPosition) {
-            com.example.picktimeapp.ui.guitarposition.GuitarPositionScreen()
+            GuitarPositionScreen()
         }
 
-        // 게임모드
+        // Game Mode
         composable(Routes.Game) {
-            com.example.picktimeapp.ui.game.GameModeScreen()
+            GameModeScreen()
         }
     }
 }

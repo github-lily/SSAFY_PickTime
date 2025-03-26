@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.picktimeapp.ui.components.SideNavigation
+import com.example.picktimeapp.ui.nav.Routes
 import com.example.picktimeapp.ui.theme.Brown40
 import com.example.picktimeapp.ui.theme.DarkGreen10
 import com.example.picktimeapp.ui.theme.Gray70
@@ -162,7 +163,7 @@ fun MyPageScreen(viewModel: MyPageViewModel, navController: NavController) {
                                     )
                                     IconButton(
                                         onClick = {
-                                            navController.navigate("editNickname")
+                                            navController.navigate(Routes.EDIT_NICKNAME)
                                         },
                                         modifier = Modifier
                                             .padding(start = 15.dp)
@@ -180,7 +181,7 @@ fun MyPageScreen(viewModel: MyPageViewModel, navController: NavController) {
                             // 비밀번호 수정 버튼
                             Button(
                                 onClick = {
-                                    navController.navigate("passwordCheck")
+                                    navController.navigate(Routes.PASSWORD_CHECK)
                                 },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Color(0x33E0CDA8),
