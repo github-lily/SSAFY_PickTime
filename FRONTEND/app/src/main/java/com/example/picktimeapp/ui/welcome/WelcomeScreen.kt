@@ -31,6 +31,7 @@ fun WelcomeScreen(
     onNavigateToSignup: () -> Unit,
     onNavigateToMyPage: () -> Unit,
     onNavigateToGuitarPosition: () -> Unit,
+    onNavigateToGame:() -> Unit
 ) {
     var showLogin by rememberSaveable { mutableStateOf(false) }
     var showSignup by rememberSaveable { mutableStateOf(false) }
@@ -187,6 +188,21 @@ fun WelcomeScreen(
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Text("기타 카메라 테스트", fontSize = 24.sp, fontWeight = FontWeight.Medium)
+                    }
+
+                    Button(
+                        onClick = {
+                            showMyPage = false
+                            onNavigateToGame()
+                        },
+                        modifier = buttonModifier,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Brown40,
+                            contentColor = DarkGreen10
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text("게임모드", fontSize = 24.sp, fontWeight = FontWeight.Medium)
                     }
 
                 }

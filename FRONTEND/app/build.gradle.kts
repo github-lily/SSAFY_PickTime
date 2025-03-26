@@ -122,4 +122,8 @@ dependencies {
     implementation(libs.lifecycle.runtime.compose) // lifecycle-runtime 안정 버전
     implementation(libs.lifecycle.viewmodel.compose) //  viewmodel-compose 안정 버전
 
+
+    // 이미지 url을 받을 때 사용
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
 }
