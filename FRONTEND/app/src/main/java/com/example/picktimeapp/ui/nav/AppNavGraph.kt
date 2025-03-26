@@ -11,6 +11,8 @@ import com.example.picktimeapp.ui.signup.SignupScreen
 import com.example.picktimeapp.ui.signup.SignupViewModel
 import com.example.picktimeapp.ui.welcome.WelcomeScreen
 import com.example.picktimeapp.ui.guitarposition.GuitarPositionScreen
+import com.example.picktimeapp.ui.game.GameModeScreen
+
 
 // Update Routes object
 object Routes {
@@ -19,6 +21,7 @@ object Routes {
     const val SIGNUP = "signup"
     const val MYPAGE = "mypage"
     const val GuitarPosition = "guitarposition"
+    const val Game = "game"
 }
 
 @Composable
@@ -50,7 +53,13 @@ fun AppNavGraph() {
                     navController.navigate(Routes.GuitarPosition) {
                         popUpTo(Routes.WELCOME) { inclusive = false }
                     }
+                },
+                onNavigateToGame = {
+                    navController.navigate(Routes.Game) {
+                        popUpTo(Routes.WELCOME) { inclusive = false }
+                    }
                 }
+
             )
         }
 
@@ -101,6 +110,12 @@ fun AppNavGraph() {
 
         // Guitar Position
         composable(Routes.GuitarPosition) {
-           com.example.picktimeapp.ui.guitarposition.GuitarPositionScreen()
+            com.example.picktimeapp.ui.guitarposition.GuitarPositionScreen()
         }
-}}
+
+        // 게임모드
+        composable(Routes.Game) {
+            com.example.picktimeapp.ui.game.GameModeScreen()
+        }
+    }
+}
