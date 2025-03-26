@@ -61,6 +61,7 @@ fun EditNicknameScreen (
                 Spacer(modifier = Modifier.width(30.dp))
                 NicknameSubmitButton(
                     nickname = nickname,
+                    // 현재 페이지를 스택에서 제거 후 전 단계로 이동하겠다.
                     onSuccess = { navController.popBackStack() },
                 )
 
