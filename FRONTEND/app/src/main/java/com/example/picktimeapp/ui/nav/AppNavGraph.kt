@@ -10,6 +10,7 @@ import com.example.picktimeapp.ui.login.LoginViewModel
 import com.example.picktimeapp.ui.signup.SignupScreen
 import com.example.picktimeapp.ui.signup.SignupViewModel
 import com.example.picktimeapp.ui.welcome.WelcomeScreen
+import com.example.picktimeapp.ui.guitarposition.GuitarPositionScreen
 
 // Update Routes object
 object Routes {
@@ -17,6 +18,7 @@ object Routes {
     const val LOGIN = "login"
     const val SIGNUP = "signup"
     const val MYPAGE = "mypage"
+    const val GuitarPosition = "guitarposition"
 }
 
 @Composable
@@ -37,9 +39,16 @@ fun AppNavGraph() {
                         popUpTo(Routes.WELCOME) { inclusive = false }
                     }
                 },
+
                 onNavigateToMyPage = {
                     navController.navigate(Routes.MYPAGE) {
                         popUpTo(Routes.WELCOME) { inclusive = true }
+                    }
+                },
+
+                onNavigateToGuitarPosition = {
+                    navController.navigate(Routes.GuitarPosition) {
+                        popUpTo(Routes.WELCOME) { inclusive = false }
                     }
                 }
             )
@@ -57,7 +66,7 @@ fun AppNavGraph() {
                     }
                 },
                 onFindPasswordClick = {
-                    // 비밀번호 찾기 화면으로 이동 (필요시 구현)
+                    // 비밀번호 찾기 화면으로 이동
                 },
                 onSignUpClick = {
                     // 회원가입 화면으로 이동
@@ -65,6 +74,7 @@ fun AppNavGraph() {
                 }
             )
         }
+
 
         // Signup Screen
         composable(Routes.SIGNUP) {
@@ -88,5 +98,9 @@ fun AppNavGraph() {
         composable(Routes.MYPAGE) {
             com.example.picktimeapp.ui.nav.MyNavGraph()
         }
-    }
-}
+
+        // Guitar Position
+        composable(Routes.GuitarPosition) {
+           com.example.picktimeapp.ui.guitarposition.GuitarPositionScreen()
+        }
+}}

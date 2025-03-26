@@ -13,6 +13,9 @@ activityCompose = "1.7.2"
 navigation = "2.7.7"
 lifecycle = "2.6.2"
 datastore = "1.0.0"
+camerax = "1.3.0"
+cameraxView = "1.3.0"
+cameraxLifecycle = "1.3.0"
 
 
 
@@ -55,6 +58,13 @@ androidx-material-icons-extended = { group = "androidx.compose.material", name =
 navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigation" }
 lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+
+# ✅ 카메라
+androidx-camera-core = { group = "androidx.camera", name = "camera-core", version.ref = "camerax" }
+androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "camerax" }
+androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "cameraxLifecycle" }
+androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "cameraxView" }
+
 
 # ✅ Hilt (의존성 주입)
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
