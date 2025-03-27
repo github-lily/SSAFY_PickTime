@@ -17,6 +17,7 @@ import com.example.picktimeapp.ui.mypage.MyPageViewModel
 import com.example.picktimeapp.ui.mypage.EditNicknameScreen
 import com.example.picktimeapp.ui.mypage.EditPasswordScreen
 import com.example.picktimeapp.ui.mypage.PasswordCheckScreen
+import com.example.picktimeapp.ui.tunning.TunningScreen
 
 // Update Routes object
 object Routes {
@@ -123,7 +124,7 @@ fun AppNavGraph() {
             PasswordCheckScreen(navController)
         }
 
-        // Guitar Position
+        // 🔥 Guitar Position 🔥
         composable(Routes.GUITAR_POSITION) {
             GuitarPositionScreen()
         }
@@ -135,7 +136,7 @@ fun AppNavGraph() {
 
         // 🔥 Tunning Mode 🔥
         composable(Routes.GUITAR_TUNNING) {
-
+            TunningScreen()
         }
     }
 }
