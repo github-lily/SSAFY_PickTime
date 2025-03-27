@@ -12,6 +12,7 @@ public interface StageRepository extends JpaRepository<Stage, Integer> {
     @Query("SELECT new com.b101.pickTime.api.stage.response.StageResDto(" +
             "s.stageId, s.description)" +
             "FROM Stage s")
-    public List<StageResDto> findAllStage();
+    List<StageResDto> findAllStage();
 
+    
 }
