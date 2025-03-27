@@ -25,9 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.picktimeapp.R
 import com.example.picktimeapp.ui.nav.Routes
-import com.example.picktimeapp.ui.theme.Brown20
-import com.example.picktimeapp.ui.theme.Brown40
-import com.example.picktimeapp.ui.theme.Brown60
+import com.example.picktimeapp.ui.theme.*
 
 
 @Composable
@@ -58,7 +56,7 @@ fun SideNavigation(navController: NavController) {
                 iconResId = R.drawable.tuning_icon,
                 contentDescription = "튜닝페이지로 이동",
                 onClick = {
-                    navController.navigate(Routes.MYPAGE)
+                    navController.navigate(Routes.GUITAR_TUNNING)
                 }
             )
         }
@@ -84,7 +82,7 @@ fun SideNavigation(navController: NavController) {
                 iconResId = R.drawable.game_icon,
                 contentDescription = "게임모드페이지로 이동",
                 onClick = {
-                    navController.navigate(Routes.Game) {
+                    navController.navigate(Routes.GAME) {
                         popUpTo(Routes.MYPAGE) { inclusive = true }
                     }
                 }

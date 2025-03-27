@@ -17,6 +17,7 @@ import com.example.picktimeapp.ui.mypage.MyPageViewModel
 import com.example.picktimeapp.ui.mypage.EditNicknameScreen
 import com.example.picktimeapp.ui.mypage.EditPasswordScreen
 import com.example.picktimeapp.ui.mypage.PasswordCheckScreen
+import com.example.picktimeapp.ui.tunning.TunningScreen
 
 // Update Routes object
 object Routes {
@@ -27,8 +28,9 @@ object Routes {
     const val EDIT_NICKNAME = "editNickname"
     const val EDIT_PASSWORD = "editPassword"
     const val PASSWORD_CHECK = "passwordCheck"
-    const val GuitarPosition = "guitarposition"
-    const val Game = "game"
+    const val GUITAR_POSITION = "guitarposition"
+    const val GAME = "game"
+    const val GUITAR_TUNNING = "guitartunning"
 }
 
 @Composable
@@ -36,7 +38,7 @@ fun AppNavGraph() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = Routes.WELCOME) {
-        // Welcome Screen
+        // 🔥 Welcome Screen 🔥
         composable(Routes.WELCOME) {
             WelcomeScreen(
                 onNavigateToLogin = {
@@ -55,19 +57,20 @@ fun AppNavGraph() {
                     }
                 },
                 onNavigateToGuitarPosition = {
-                    navController.navigate(Routes.GuitarPosition) {
+                    navController.navigate(Routes.GUITAR_POSITION) {
                         popUpTo(Routes.WELCOME) { inclusive = false }
                     }
                 },
                 onNavigateToGame = {
-                    navController.navigate(Routes.Game) {
+                    navController.navigate(Routes.GAME) {
                         popUpTo(Routes.WELCOME) { inclusive = false }
                     }
                 }
             )
         }
 
-        // Login Screen
+
+        //🔥 Login Screen 🔥
         composable(Routes.LOGIN) {
             val viewModel: LoginViewModel = hiltViewModel()
             LoginScreen(
@@ -84,7 +87,7 @@ fun AppNavGraph() {
             )
         }
 
-        // Signup Screen
+        //🔥 Signup Screen 🔥
         composable(Routes.SIGNUP) {
             val viewModel: SignupViewModel = hiltViewModel()
             SignupScreen(
@@ -100,7 +103,7 @@ fun AppNavGraph() {
             )
         }
 
-        // MyPage Screen
+        //🔥 MyPage Screen 🔥
         composable(Routes.MYPAGE) {
             val viewModel: MyPageViewModel = hiltViewModel()
             MyPageScreen(viewModel = viewModel, navController = navController)
@@ -121,14 +124,19 @@ fun AppNavGraph() {
             PasswordCheckScreen(navController)
         }
 
-        // Guitar Position
-        composable(Routes.GuitarPosition) {
+        // 🔥 Guitar Position 🔥
+        composable(Routes.GUITAR_POSITION) {
             GuitarPositionScreen()
         }
 
-        // Game Mode
-        composable(Routes.Game) {
+        // 🔥 Game Mode 🔥
+        composable(Routes.GAME) {
             GameModeScreen()
+        }
+
+        // 🔥 Tunning Mode 🔥
+        composable(Routes.GUITAR_TUNNING) {
+            TunningScreen()
         }
     }
 }
