@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,19 +25,30 @@ public class CompletedSongServiceImpl implements CompletedSongService {
     @Override
     public void completeSong(Integer userId, Integer songId, Integer score) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("찾는 회원이 없습니다."));
+        Optional<CompletedSong> completedSong = completedSongRepository.findByUserUserIdAndSongSongId(userId, songId);
 
-        Song song = songRepository.findById(songId)
-                .orElseThrow(() -> new EntityNotFoundException("찾는 곡이 없습니다."));
+        if(completedSong.isPresent()) {
+            CompletedSong playedSong = completedSong.get();
+            playedSong.setScore(Math.max(playedSong.getScore(), score));
+            completedSongRepository.save(playedSong);
+        }
+        else{
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("찾는 회원이 없습니다."));
 
-        completedSongRepository.save(
-                CompletedSong.builder()
-                        .user(user)
-                        .song(song)
-                        .score(score)
-                        .build()
-        );
+            Song song = songRepository.findById(songId)
+                    .orElseThrow(() -> new EntityNotFoundException("찾는 곡이 없습니다."));
+
+
+            completedSongRepository.save(
+                            CompletedSong.builder()
+                                    .user(user)
+                                    .song(song)
+                                    .score(score)
+                                    .build()
+                            );
+        }
+
     }
 
     @Override

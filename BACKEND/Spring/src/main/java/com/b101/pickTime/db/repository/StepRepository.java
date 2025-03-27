@@ -12,7 +12,8 @@ import java.util.List;
 public interface StepRepository extends JpaRepository<Step, Integer> {
     @Query("SELECT new com.b101.pickTime.api.step.response.StepResDto(" +
             "s.stepId, s.description, s.stepNumber ," +
-            "CASE WHEN c.completedStepId IS NOT NULL THEN true ELSE false END) " +
+            "CASE WHEN c.completedStepId IS NOT NULL THEN true ELSE false END ," +
+            "CASE WHEN c.completedStepId IS NOT NULL THEN c.score ELSE 0 END)" +
             "FROM Step s LEFT JOIN CompletedStep c ON s.stepId = c.step.stepId AND c.user.userId = :userId " +
             "WHERE s.stage.stageId = :stageId " +
             "ORDER BY s.stepNumber ASC")

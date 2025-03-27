@@ -4,6 +4,7 @@ import com.b101.pickTime.api.game.response.SongDataResDto;
 import com.b101.pickTime.api.game.response.SongGameResDto;
 import com.b101.pickTime.api.game.service.SongDataService;
 import com.b101.pickTime.db.document.SongData;
+import com.b101.pickTime.db.repository.CompletedSongRepository;
 import com.b101.pickTime.db.repository.SongDataRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,15 +19,19 @@ import java.util.Set;
 public class SongDataServiceImpl implements SongDataService {
 
     private final SongDataRepository songDataRepository;
+    private final CompletedSongRepository completedSongRepository;
 
     @Override
-    public List<SongDataResDto> getAllSongs(){
+    public List<SongDataResDto> getAllSongs(int userId){
         List<SongDataResDto> songs = new ArrayList<>();
-
         List<SongData> songDatas = songDataRepository.findAll();
 
         for(SongData songData : songDatas){
-            songs.add(songDataToDto(songData));
+            SongDataResDto song = songDataToDto(songData);
+            Integer star = completedSongRepository.findScoreByUserIdAndSongId(userId, songData.getSongDataId());
+            song.setStar(star == null ? 0 : star);
+
+            songs.add(song);
         }
 
         return songs;
