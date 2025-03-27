@@ -33,48 +33,6 @@ fun WelcomeScreen(
     onNavigateToGuitarPosition: () -> Unit,
     onNavigateToGame:() -> Unit
 ) {
-    var showLogin by rememberSaveable { mutableStateOf(false) }
-    var showSignup by rememberSaveable { mutableStateOf(false) }
-    var showMyPage by rememberSaveable { mutableStateOf(false) }
-
-    when {
-        showSignup -> {
-            val viewModel: SignupViewModel = hiltViewModel()
-            SignupScreen(
-                viewModel = viewModel,
-                onLoginClick = {
-                    showSignup = false
-                    showLogin = true
-                },
-                onSignUpClick = {
-                    // 회원가입 완료 후 원하는 화면으로 전환 가능
-                    showSignup = false
-                    showLogin = true  // 로그인 화면으로
-                    Log.d("WelcomeScreen", "showLogin=$showLogin, showSignup=$showSignup")
-                }
-            )
-        }
-
-        showLogin -> {
-            val viewModel: LoginViewModel = hiltViewModel()
-            LoginScreen(
-                viewModel = viewModel,
-                onLoginClick = {
-                    viewModel.reset()
-                    showSignup = false
-                    showLogin = true
-                },
-                onFindPasswordClick = { showLogin = false },
-                onSignUpClick = {
-                    Log.d("WelcomeScreen", "showLogin=$showLogin, showSignup=$showSignup")
-                    showLogin = false
-                    showSignup = true // 회원가입 화면으로 이동
-                }
-            )
-        }
-
-
-        else -> {
             // 좌우로 나누는 Row
             Row(
                 modifier = Modifier
@@ -122,7 +80,6 @@ fun WelcomeScreen(
                     // 로그인 버튼
                     Button(
                         onClick = {
-                            showLogin = true
                             onNavigateToLogin()
                         },
                         modifier = buttonModifier,
@@ -140,7 +97,6 @@ fun WelcomeScreen(
                     // 회원가입 버튼
                     Button(
                         onClick = {
-                            showSignup = true
                             onNavigateToSignup()
                         },
                         modifier = buttonModifier,
@@ -158,7 +114,6 @@ fun WelcomeScreen(
                     // 마이페이지 버튼
                     Button(
                         onClick = {
-                            showMyPage = true
                             onNavigateToMyPage()
                         },
                         modifier = buttonModifier,
@@ -168,13 +123,15 @@ fun WelcomeScreen(
                         ),
                         shape = RoundedCornerShape(16.dp)
                     ) {
-                        Text("마이페이지 확인용", fontSize = 24.sp, fontWeight = FontWeight.Medium)
+                        Text("마이페이지", fontSize = 24.sp, fontWeight = FontWeight.Medium)
                     }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
 
                     // 기타 위치 확인용
                     Button(
                         onClick = {
-                            showMyPage = false
                             onNavigateToGuitarPosition()
                         },
                         modifier = buttonModifier,
@@ -185,21 +142,6 @@ fun WelcomeScreen(
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Text("기타 카메라 테스트", fontSize = 24.sp, fontWeight = FontWeight.Medium)
-                    }
-
-                    Button(
-                        onClick = {
-                            showMyPage = false
-                            onNavigateToGame()
-                        },
-                        modifier = buttonModifier,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Brown40,
-                            contentColor = DarkGreen10
-                        ),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Text("게임모드", fontSize = 24.sp, fontWeight = FontWeight.Medium)
                     }
 
                 }
@@ -221,5 +163,4 @@ fun WelcomeScreen(
                 }
             }
         }
-    }
-}
+
