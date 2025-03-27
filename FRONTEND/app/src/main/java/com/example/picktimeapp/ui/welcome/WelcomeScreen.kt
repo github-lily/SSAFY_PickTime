@@ -31,7 +31,7 @@ fun WelcomeScreen(
     onNavigateToSignup: () -> Unit,
     onNavigateToMyPage: () -> Unit,
     onNavigateToGuitarPosition: () -> Unit,
-    onNavigateToGame:() -> Unit
+    onNavigateToStep4:() -> Unit
 ) {
             // 좌우로 나누는 Row
             Row(
@@ -142,6 +142,23 @@ fun WelcomeScreen(
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Text("기타 카메라 테스트", fontSize = 24.sp, fontWeight = FontWeight.Medium)
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // 연습모드 step4
+                    Button(
+                        onClick = {
+                            onNavigateToStep4()
+                        },
+                        modifier = buttonModifier,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Brown40,
+                            contentColor = DarkGreen10
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text("연습모드 step4", fontSize = 24.sp, fontWeight = FontWeight.Medium)
                     }
 
                 }
