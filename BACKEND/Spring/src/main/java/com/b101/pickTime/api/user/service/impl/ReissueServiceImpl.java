@@ -1,5 +1,6 @@
-package com.b101.pickTime.api.user.service;
+package com.b101.pickTime.api.user.service.impl;
 
+import com.b101.pickTime.api.user.service.ReissueService;
 import com.b101.pickTime.common.exception.exception.InvalidRefreshTokenException;
 import com.b101.pickTime.common.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ReissueServiceImpl implements ReissueService{
+public class ReissueServiceImpl implements ReissueService {
     private final JWTUtil jwtUtil;
 
 
