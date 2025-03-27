@@ -13,12 +13,5 @@ public class StepResDto {
     private Integer stepNumber;
     private Boolean isClear;
 
-//    public static StepResDto of(Step step){
-//        return StepResDto.builder()
-//                .stepId(step.getStepId())
-//                .stepDescription(step.getDescription())
-//                .stepNumber(step.getStepNumber())
-//                .build();
-//    }
 
 }

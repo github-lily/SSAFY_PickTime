@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
-@Getter
+@Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -44,4 +44,12 @@ public class User {
     @Builder.Default
     private Boolean isActive = true;
 
+    public void updatePassword(String password) {
+        this.password = password;
+    }
+
+    public User checkActive(){
+        if(!this.isActive) throw new EntityNotFoundException("탈퇴한 회원입니다.");
+        else return this;
+    }
 }
