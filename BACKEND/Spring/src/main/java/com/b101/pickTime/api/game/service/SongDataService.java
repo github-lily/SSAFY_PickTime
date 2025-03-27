@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface SongDataService {
 
-    List<SongDataResDto> getAllSongs();
+    List<SongDataResDto> getAllSongs(int userId);
     SongGameResDto getSong(Integer songId);
 }

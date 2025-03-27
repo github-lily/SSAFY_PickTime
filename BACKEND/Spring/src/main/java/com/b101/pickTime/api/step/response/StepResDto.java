@@ -12,6 +12,6 @@ public class StepResDto {
     private String stepDescription;
     private Integer stepNumber;
     private Boolean isClear;
-
+    private Integer star;
 
 }
