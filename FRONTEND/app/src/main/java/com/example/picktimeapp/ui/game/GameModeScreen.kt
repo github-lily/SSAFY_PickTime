@@ -14,9 +14,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.picktimeapp.ui.components.SideNavigation
+import com.example.picktimeapp.ui.nav.Routes
 
 @Composable
-fun GameModeScreen() {
+fun GameModeScreen(navController: NavController) {
     // 임시 데이터
     val dummySongs = listOf(
         SongData(1, "Winter Christmas", 120, "", "https://picsum.photos/id/101/200", listOf("C", "D", "E", "Am"), 2),
@@ -35,13 +38,8 @@ fun GameModeScreen() {
 
     Row(modifier = Modifier.fillMaxSize()) {
 
-        // 왼쪽 사이드바
-        Box(
-            modifier = Modifier
-                .width(180.dp)
-                .fillMaxHeight()
-                .background(Color(0xFFEADBC3))
-        )
+        //네비게이션 만들기
+        SideNavigation(navController = navController)
 
         // 오른쪽 메인 콘텐츠
         LazyColumn(
@@ -84,7 +82,7 @@ fun GameModeScreen() {
                         GameCard(
                             song = song,
                             onPlayClick = {
-                                println("Play ${it.title}")
+                                navController.navigate(Routes.GAME_PLAY)
                             },
                             onSoundClick = {
                                 println("Sound ${it.title}")

@@ -12,6 +12,7 @@ import com.example.picktimeapp.ui.signup.SignupViewModel
 import com.example.picktimeapp.ui.welcome.WelcomeScreen
 import com.example.picktimeapp.ui.guitarposition.GuitarPositionScreen
 import com.example.picktimeapp.ui.game.GameModeScreen
+import com.example.picktimeapp.ui.game.play.GamePlayScreen
 import com.example.picktimeapp.ui.mypage.MyPageScreen
 import com.example.picktimeapp.ui.mypage.MyPageViewModel
 import com.example.picktimeapp.ui.mypage.EditNicknameScreen
@@ -30,7 +31,9 @@ object Routes {
     const val PASSWORD_CHECK = "passwordCheck"
     const val GUITAR_POSITION = "guitarposition"
     const val GAME = "game"
+    const val GAME_PLAY = "gameplay"
     const val GUITAR_TUNNING = "guitartunning"
+
 }
 
 @Composable
@@ -131,12 +134,24 @@ fun AppNavGraph() {
 
         // 🔥 Game Mode 🔥
         composable(Routes.GAME) {
-            GameModeScreen()
+            GameModeScreen(navController)
         }
+
+        // Game Play Screen
+        composable(Routes.GAME_PLAY){
+            GamePlayScreen(navController)
+        }
+        // 뭐 받아올 때 예시코드 --지우지 마시오!!!--
+//        composable("${Routes.GAME_PLAY}/{title}") { backStackEntry ->
+//            val title = backStackEntry.arguments?.getString("title") ?: ""
+//            GamePlayScreen(navController = navController, title = title)
+//        }
+
 
         // 🔥 Tunning Mode 🔥
         composable(Routes.GUITAR_TUNNING) {
             TunningScreen()
         }
+
     }
 }
