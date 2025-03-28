@@ -43,14 +43,13 @@ public class SecurityConfig {
         .authorizeHttpRequests(auth -> auth
 				.requestMatchers("/login", "/reissue", "/test","/verification/*").permitAll()
 				.requestMatchers(HttpMethod.POST, "/user").permitAll()
-//				.requestMatchers("/admin").hasRole("ADMIN")
 				.anyRequest().authenticated()
         )
 
 				.addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class)
 				.addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class)
 				.addFilterBefore(new CustomLogoutFilter(jwtUtil), LogoutFilter.class)
-		.sessionManagement((session)->session
+				.sessionManagement((session)->session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 		return http.build();

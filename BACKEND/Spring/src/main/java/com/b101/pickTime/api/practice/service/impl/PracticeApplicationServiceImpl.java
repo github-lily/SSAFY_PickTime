@@ -44,7 +44,7 @@ public class PracticeApplicationServiceImpl implements PracticeApplicationServic
                 }
             }
 
-            stage.setIsClear(isClear);     // 추후 수정
+            stage.setIsClear(isClear);
         }
 
         double clearRate = completedStepService.getProgress(userId);

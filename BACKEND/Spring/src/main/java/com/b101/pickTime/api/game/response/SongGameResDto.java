@@ -12,6 +12,8 @@ public class SongGameResDto {
 
     private String title;
     private int bpm;
+    private String artist;
+    private int durationSec;
     private String timeSignature;
     private List<SongData.Measure> chordProgression;
     private String songUri;

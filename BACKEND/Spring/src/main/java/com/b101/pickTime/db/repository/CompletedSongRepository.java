@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CompletedSongRepository extends JpaRepository<CompletedSong, Integer> {
 
@@ -16,4 +17,9 @@ public interface CompletedSongRepository extends JpaRepository<CompletedSong, In
             "WHERE c.user.userId = :userId " +
             "GROUP BY c.createdAt")
     List<CompletedActivitiesResDto> countCompletedStepsGroupedByCreatedAt(@Param("userId") Integer userId);
+
+    Optional<CompletedSong> findByUserUserIdAndSongSongId(Integer userId, Integer songId);
+
+    @Query("SELECT cs.score FROM CompletedSong cs WHERE cs.user.userId = :userId AND cs.song.songId = :songId")
+    Integer findScoreByUserIdAndSongId(@Param("userId") Integer userId, @Param("songId") Integer songId);
 }

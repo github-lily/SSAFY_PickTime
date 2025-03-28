@@ -16,5 +16,6 @@ public class SongDataResDto {
     private String songUri;
     private String songThumbnailUri;
     private List<String> chords;
+    private int star;
 
 }

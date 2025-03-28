@@ -10,6 +10,6 @@ public class NotFoundUsernameException extends RuntimeException {
 
     public NotFoundUsernameException() {
         this.message = "username is not exist.";
-        this.status = HttpStatus.NOT_FOUND.value(); // 400 상태 코드 설정
+        this.status = HttpStatus.BAD_REQUEST.value(); // 400 상태 코드 설정
     }
 }

@@ -45,5 +45,13 @@ dependencies {
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+	useJUnitPlatform() // JUnit5 사용
+
+	testLogging {
+		events "passed", "skipped", "failed" // 테스트 결과 모두 출력
+	}
+	reports {
+		html.required.set(true)
+		junitXml.required.set(true)
+	}
 }
