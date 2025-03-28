@@ -3,6 +3,7 @@ package com.example.picktimeapp.di
 import com.example.picktimeapp.auth.TokenManager
 import com.example.picktimeapp.network.LoginApi
 import com.example.picktimeapp.network.SignUpApi
+import com.example.picktimeapp.network.UserApi
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -73,7 +74,11 @@ object NetworkModule {
     fun provideSignUpApi(retrofit: Retrofit) : SignUpApi =
         retrofit.create(SignUpApi::class.java)
 
-
+    // UserApi 마이페이지
+    @Provides
+    @Singleton
+    fun provideUserApi(retrofit: Retrofit): UserApi =
+        retrofit.create(UserApi::class.java)
 
 }
 

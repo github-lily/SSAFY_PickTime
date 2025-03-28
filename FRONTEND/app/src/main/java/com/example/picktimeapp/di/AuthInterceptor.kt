@@ -1,5 +1,6 @@
 package com.example.picktimeapp.di
 
+import android.util.Log
 import com.example.picktimeapp.auth.TokenManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -21,7 +22,10 @@ class AuthInterceptor @Inject constructor(
 
         val newRequest = chain.request().newBuilder().apply {
             token?.let {
-                addHeader("Authorization", it)
+                Log.d("AuthInterceptor", "실제 붙이는 토큰: $it")
+                addHeader("Authorization", "$it")
+                // Content-type 헤더 추가하기
+                addHeader("Content-Type", "application/json")
             }
         }.build()
 
