@@ -43,22 +43,22 @@ class MyPageViewModel @Inject constructor(
             }
         }
         //모델 뷰가 처음 만들어질 때 로딩
-//        loadPickDays()
+        loadPickDays()
     }
     private suspend fun loadUserInfo() {
         val result = repository.getUserInfo()
-        Log.d("MyPageVM", "API 결과: $result")
+        Log.d("MyPageVM", "유저 정보 API 결과: $result")
         _userInfo.value = result
     }
 
     // load~~ - 리액트의 fetch + setState(), API 호출 후 상태를 업데이트하는 함수
-//    private fun loadUserInfo(){
-//        _userInfo.value = repository.getUserInfo()
-//    }
-
-//    private fun loadPickDays(){
-//        _pickDayData.value = repository.getPickDays()
-//    }
+    private fun loadPickDays(){
+        viewModelScope.launch {
+            val result = repository.getPickDays()
+            Log.d("MyPageVM", "PickDays API 결과: $result" )
+            _pickDayData.value = result
+        }
+    }
 
     //잔디 105개로 만들기
     fun getFullPickDayList(): List<PickDay> {
