@@ -112,7 +112,7 @@ fun PracticeChordInfoScreen(navController: NavController) {
                                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
                                             append("G코드")
                                         }
-                           ㄴ             append("를 배워볼게요")
+                                        append("를 배워볼게요")
                                     },
                                     fontFamily = TitleFont,
                                     fontSize = 40.sp * scale,      // ✅ 화면 크기 반응형

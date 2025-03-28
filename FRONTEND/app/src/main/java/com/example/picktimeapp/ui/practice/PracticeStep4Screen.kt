@@ -18,7 +18,6 @@ import com.example.picktimeapp.ui.camera.CameraPreview
 import com.example.picktimeapp.ui.theme.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.foundation.layout.BoxWithConstraints
 
 
