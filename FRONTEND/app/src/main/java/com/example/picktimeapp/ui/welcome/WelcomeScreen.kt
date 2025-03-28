@@ -31,7 +31,8 @@ fun WelcomeScreen(
     onNavigateToSignup: () -> Unit,
     onNavigateToMyPage: () -> Unit,
     onNavigateToGuitarPosition: () -> Unit,
-    onNavigateToStep4:() -> Unit
+    onNavigateToStep4:() -> Unit,
+    onNavigateToChordInfo:() -> Unit,
 ) {
             // 좌우로 나누는 Row
             Row(
@@ -161,6 +162,22 @@ fun WelcomeScreen(
                         Text("연습모드 step4", fontSize = 24.sp, fontWeight = FontWeight.Medium)
                     }
 
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // 코드 안내
+                    Button(
+                        onClick = {
+                            onNavigateToChordInfo()
+                        },
+                        modifier = buttonModifier,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Brown40,
+                            contentColor = DarkGreen10
+                        ),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Text("코드 안내", fontSize = 24.sp, fontWeight = FontWeight.Medium)
+                    }
                 }
 
                 // 오른쪽 이미지 영역
