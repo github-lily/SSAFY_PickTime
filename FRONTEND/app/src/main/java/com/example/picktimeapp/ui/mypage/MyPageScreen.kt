@@ -31,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.picktimeapp.R
 import androidx.compose.runtime.getValue
@@ -39,8 +38,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.example.picktimeapp.ui.components.SideNavigation
 import com.example.picktimeapp.ui.nav.Routes
 import com.example.picktimeapp.ui.theme.Brown40
@@ -50,7 +49,7 @@ import com.example.picktimeapp.ui.theme.Pretendard
 import com.example.picktimeapp.ui.theme.TitleFont
 
 @Composable
-fun MyPageScreen(viewModel: MyPageViewModel, navController: NavController) {
+fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: NavController) {
 
     // collectAsState (StateFlow를 UI와 연결하는 방법)
     // - StateFlow를 실시간으로 구독해서 값이 바뀌면 자동으로 업데이트 됨, 리액트의 useState + useEffect
@@ -243,13 +242,4 @@ fun MyPageScreen(viewModel: MyPageViewModel, navController: NavController) {
         }
     }
 
-}
-
-@Preview (showBackground = true)
-@Composable
-fun MyPageScreenPreview(){
-    val previewViewModel = MyPageViewModel()
-    val navController = rememberNavController()
-
-    MyPageScreen(viewModel = previewViewModel,navController = navController )
 }
