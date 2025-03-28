@@ -18,6 +18,7 @@ import com.example.picktimeapp.ui.mypage.MyPageViewModel
 import com.example.picktimeapp.ui.mypage.EditNicknameScreen
 import com.example.picktimeapp.ui.mypage.EditPasswordScreen
 import com.example.picktimeapp.ui.mypage.PasswordCheckScreen
+import com.example.picktimeapp.ui.practice.PracticeStep4Screen
 import com.example.picktimeapp.ui.tunning.TunningScreen
 
 // Update Routes object
@@ -33,6 +34,7 @@ object Routes {
     const val GAME = "game"
     const val GAME_PLAY = "gameplay"
     const val GUITAR_TUNNING = "guitartunning"
+    const val PRACTICE_STEP_4 = "practicestep4"
 
 }
 
@@ -64,11 +66,11 @@ fun AppNavGraph() {
                         popUpTo(Routes.WELCOME) { inclusive = false }
                     }
                 },
-                onNavigateToGame = {
-                    navController.navigate(Routes.GAME) {
+                onNavigateToStep4 = {
+                    navController.navigate(Routes.PRACTICE_STEP_4) {
                         popUpTo(Routes.WELCOME) { inclusive = false }
                     }
-                }
+                },
             )
         }
 
@@ -147,6 +149,10 @@ fun AppNavGraph() {
 //            GamePlayScreen(navController = navController, title = title)
 //        }
 
+        // 🔥 Practice step4 Mode 🔥
+        composable(Routes.PRACTICE_STEP_4) {
+            PracticeStep4Screen()
+        }
 
         // 🔥 Tunning Mode 🔥
         composable(Routes.GUITAR_TUNNING) {
