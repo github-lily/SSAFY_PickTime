@@ -22,6 +22,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,10 +31,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.example.picktimeapp.ui.nav.Routes
 import com.example.picktimeapp.ui.theme.Brown40
 import com.example.picktimeapp.ui.theme.Gray30
 import com.example.picktimeapp.ui.theme.Gray50
@@ -42,9 +47,17 @@ import com.example.picktimeapp.ui.theme.Gray90
 
 @Composable
 fun EditNicknameScreen (
-    navController: NavController
+    navController: NavController,
+    viewModel: EditNicknameViewModel = hiltViewModel()
 ) {
-    var nickname by remember { mutableStateOf("") }
+    val nickname by viewModel.nickname.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
+
+    // 처음 진입 시 유저 정보 가져오기
+    LaunchedEffect(Unit) {
+        viewModel.loadUserInfo()
+    }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -56,15 +69,34 @@ fun EditNicknameScreen (
 
             Row (
                 verticalAlignment = Alignment.CenterVertically
-            ){
-                NicknameInputField(nickname) { nickname = it }
+            )
+            {
+                NicknameInputField(
+                    nickname = nickname,
+                    placeholder = nickname,
+                    onValueChange = {viewModel.onNicknameChange(it)}
+                )
                 Spacer(modifier = Modifier.width(30.dp))
                 NicknameSubmitButton(
                     nickname = nickname,
                     // 현재 페이지를 스택에서 제거 후 전 단계로 이동하겠다.
-                    onSuccess = { navController.popBackStack() },
+                    onSuccess = {
+                        viewModel.updateNickname(nickname) {
+//                            navController.popBackStack()
+                            navController.navigate(Routes.MYPAGE)
+                        }
+                    }
                 )
+            }
 
+            // 에러 메시지 보여주기
+            if (errorMessage.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = errorMessage,
+                    color = Color.Red,
+                    fontSize = 20.sp
+                )
             }
 
         }
@@ -82,13 +114,13 @@ fun EditNicknameTitle (){
 }
 
 @Composable
-fun NicknameInputField (nickname: String, onValueChange: (String) -> Unit) {
+fun NicknameInputField (nickname: String, placeholder: String, onValueChange: (String) -> Unit) {
     OutlinedTextField(
         value = nickname,
         onValueChange = onValueChange,
         placeholder = {
             Text(
-                text = "민동",
+                text = placeholder,
                 fontSize = 40.sp,
                 color = Gray50
             )
