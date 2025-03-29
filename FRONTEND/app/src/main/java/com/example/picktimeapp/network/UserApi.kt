@@ -2,6 +2,7 @@ package com.example.picktimeapp.network
 // 마미페이지에서부터 발생하는 모든 api 인터페이스 모음
 
 import com.example.picktimeapp.data.model.PasswordCheckRequest
+import com.example.picktimeapp.data.model.PasswordUpdateRequest
 import com.example.picktimeapp.data.model.PickDayResponse
 import com.example.picktimeapp.data.model.UpdateNameRequest
 import com.example.picktimeapp.data.model.UserInfo
@@ -31,6 +32,12 @@ interface PickTimeApi {
 interface PasswordConfirmApi {
     @POST("user/password")
     suspend fun checkPassword(@Body request: PasswordCheckRequest): Response<Unit>
+}
+
+// 마이페이지 비밀번호 수정
+interface PasswordUpdateApi {
+    @PATCH("user/password")
+    suspend fun updatePassword(@Body request: PasswordUpdateRequest): Response<Unit>
 }
 
 

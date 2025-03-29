@@ -70,7 +70,7 @@ fun PasswordCheckScreen(
                             password = inputPassword,
                             onSuccess = {
                                 errorMessage = null
-                                navController.navigate("editPassword")
+                                navController.navigate("editPassword/$password")
                             },
                             onFailure = {
                                 errorMessage = "비밀번호가 일치하지 않습니다."

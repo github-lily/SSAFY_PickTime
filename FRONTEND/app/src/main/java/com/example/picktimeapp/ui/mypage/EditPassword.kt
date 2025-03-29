@@ -42,15 +42,21 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.picktimeapp.ui.theme.Gray30
 import com.example.picktimeapp.ui.theme.Gray50
 import com.example.picktimeapp.ui.theme.Gray70
 
 @Composable
-fun EditPasswordScreen(navController: NavController) {
+fun EditPasswordScreen(
+    navController: NavController,
+    originalPassword: String, // 기존 비밀번호 받아오기
+    viewModel: EditPasswordViewModel = hiltViewModel()
+    ) {
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     val isPasswordSame = newPassword == confirmPassword || confirmPassword.isEmpty()
+    var triedToSave by remember { mutableStateOf(false) } // 저장 눌러야 에러메세지 확인가능
 
     Column(
         modifier = Modifier
@@ -74,12 +80,37 @@ fun EditPasswordScreen(navController: NavController) {
                 password = confirmPassword,
                 onPasswordChange = {confirmPassword = it}
             )
-            PasswordMismatchMessage(isPasswordSame)
+//            PasswordMismatchMessage(isPasswordSame)
+            if(triedToSave) {
+                PasswordMismatchMessage(
+                    newPassword = newPassword,
+                    confirmPassword = confirmPassword,
+                    originalPassword = originalPassword
+                )
+            }
         }
         Spacer(modifier = Modifier.height(30.dp))
-        ActionButtons(navController)
+        ActionButtons(
+            navController = navController,
+            password = newPassword,
+            isPasswordSame = isPasswordSame,
+            onSaveClick = { password ->
+                triedToSave = true
+                if (isPasswordSame && password.isNotBlank() && password != originalPassword) {
+                    viewModel.updatePassword(
+                        newPassword = password,
+                        onSuccess = {
+                            navController.navigate("mypage") {
+                                popUpTo("mypage") { inclusive = true }
+                            }
+                        }
+                    )
+                }
+            }
+        )
     }
 }
+
 
 // 첫 번째 입력란
 @Composable
@@ -138,12 +169,42 @@ fun PasswordInputField (
 
 // 에러메세지
 @Composable
+//fun PasswordMismatchMessage(
+//    isPasswordSame: Boolean
+//){
+//    if(!isPasswordSame){
+//        Text(
+//            text = "비밀번호가 일치하지 않습니다.",
+//            color = Color.Red,
+//            style = MaterialTheme.typography.bodySmall,
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 20.dp, start = 4.dp),
+//            textAlign = TextAlign.Start
+//        )
+//    }
+//}
 fun PasswordMismatchMessage(
-    isPasswordSame: Boolean
-){
-    if(!isPasswordSame){
+    newPassword: String,
+    confirmPassword: String,
+    originalPassword: String
+) {
+    val message = when {
+        newPassword.isBlank() || confirmPassword.isBlank() ->
+            "비밀번호를 입력해주세요."
+
+        newPassword != confirmPassword ->
+            "비밀번호가 일치하지 않습니다."
+
+        newPassword == originalPassword ->
+            "기존 비밀번호와 동일합니다."
+
+        else -> null
+    }
+
+    message?.let {
         Text(
-            text = "비밀번호가 일치하지 않습니다.",
+            text = it,
             color = Color.Red,
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier
@@ -156,7 +217,12 @@ fun PasswordMismatchMessage(
 
 // 버튼
 @Composable
-fun ActionButtons(navController: NavController){
+fun ActionButtons(
+    navController: NavController,
+    password: String,
+    isPasswordSame: Boolean,
+    onSaveClick: (String) -> Unit
+    ){
     Row (horizontalArrangement = Arrangement.spacedBy(30.dp)){
         Button(
             onClick = { navController.navigate("mypage"){
@@ -173,9 +239,10 @@ fun ActionButtons(navController: NavController){
             Text("취소", color = Color.Black,fontSize = 30.sp)
         }
         Button(
-            onClick = {navController.navigate("mypage"){
-                popUpTo("mypage") { inclusive = true }
-            } },
+//            onClick = {navController.navigate("mypage"){
+//                popUpTo("mypage") { inclusive = true }
+//            } },
+            onClick = { onSaveClick(password) },
             colors = ButtonDefaults.buttonColors(
                 containerColor = Brown40
             ),
