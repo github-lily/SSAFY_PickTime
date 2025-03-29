@@ -29,11 +29,13 @@ import com.google.accompanist.permissions.rememberPermissionState
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun TunningScreen(
-    viewModel: TunningViewModel,
+fun TuningScreen(
+    viewModel: TuningViewModel,
     onBackClick: () -> Unit = {}
 ) {
+    // 오디오 수음 권한 변수
     val permissionState = rememberPermissionState(Manifest.permission.RECORD_AUDIO)
+
     LaunchedEffect(Unit) {
         if (!permissionState.status.isGranted) {
             permissionState.launchPermissionRequest()
@@ -110,8 +112,24 @@ fun TunningScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Spacer(modifier = Modifier.height(50.dp))
-            Text(text = "test 중입니다.")
+            Text(text = viewModel.audioDebugInfo.value)
             Spacer(modifier = Modifier.height(50.dp))
+
+            // 오디오 시작/정지 버튼 (간단한 테스트용)
+            Row {
+                Text(
+                    text = "녹음 시작",
+                    modifier = Modifier
+                        .clickable { viewModel.startAudioCaptureAndPlayback() }
+                        .padding(16.dp)
+                )
+                Text(
+                    text = "녹음 중지",
+                    modifier = Modifier
+                        .clickable { viewModel.stopAudioCaptureAndPlayback() }
+                        .padding(16.dp)
+                )
+            }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -126,11 +144,22 @@ fun TunningScreen(
                         .fillMaxHeight(),
                     contentAlignment = Alignment.TopCenter
                 ) {
-                    TuningPegsColumn(
+                    TunningPegsColumn(
                         pegs = leftPegs,
                         baseIndex = 0,
                         selectedIndex = selectedIndex,
-                        onSelected = { selectedIndex = it }
+                        onSelected = { index ->
+                            // 1) 선택 인덱스 저장
+                            selectedIndex = index
+
+                            // 2) 오디오 권한이 있다면, 뷰모델에 녹음 시작 요청
+                            if (permissionState.status.isGranted) {
+                                //viewModel.startAudioRecording(index)
+                            } else {
+                                // 혹시라도 권한이 없다면 다시 요청
+                                permissionState.launchPermissionRequest()
+                            }
+                        }
                     )
                 }
 
@@ -155,11 +184,22 @@ fun TunningScreen(
                         .fillMaxHeight(),
                     contentAlignment = Alignment.TopCenter
                 ) {
-                    TuningPegsColumn(
+                    TunningPegsColumn(
                         pegs = rightPegs,
                         baseIndex = 3,
                         selectedIndex = selectedIndex,
-                        onSelected = { selectedIndex = it }
+                        onSelected = { index ->
+                            // 1) 선택 인덱스 저장
+                            selectedIndex = index
+
+                            // 2) 오디오 권한이 있다면, 뷰모델에 녹음 시작 요청
+                            if (permissionState.status.isGranted) {
+                                //viewModel.startAudioRecording(index)
+                            } else {
+                                // 혹시라도 권한이 없다면 다시 요청
+                                permissionState.launchPermissionRequest()
+                            }
+                        }
                     )
                 }
 
@@ -171,7 +211,7 @@ fun TunningScreen(
 
 
 @Composable
-fun TuningPegsColumn(
+fun TunningPegsColumn(
     pegs: List<Pair<Pair<Int, Int>, String>>, // (normal, selected), description
     baseIndex: Int, // 이 열의 시작 인덱스
     selectedIndex: Int,

@@ -77,6 +77,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 
 # ✅ Coroutines
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = "1.7.3" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version = "1.7.3" }
 
 # ✅ Retrofit & OkHttp (API 통신)
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
