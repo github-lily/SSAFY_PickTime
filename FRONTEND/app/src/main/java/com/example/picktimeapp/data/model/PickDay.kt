@@ -31,4 +31,8 @@ data class PasswordCheckRequest(
     val password: String
 )
 
+// 비밀번호 수정 요청
+data class PasswordUpdateRequest(
+    val password: String
+)
 

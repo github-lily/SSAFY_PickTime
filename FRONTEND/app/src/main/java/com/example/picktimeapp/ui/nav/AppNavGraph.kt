@@ -127,14 +127,23 @@ fun AppNavGraph() {
         }
 
         // Password Edit Screen
-        composable(Routes.EDIT_PASSWORD) {
-            EditPasswordScreen(navController)
-        }
+//        composable(Routes.EDIT_PASSWORD) {
+//            EditPasswordScreen(navController)
+//        }
 
         // Password Check Screen
         composable(Routes.PASSWORD_CHECK) {
             PasswordCheckScreen(navController)
         }
+
+        // password route edit
+        composable(
+            route = "editPassword/{originalPassword}"
+        ) { backStackEntry ->
+            val originalPassword = backStackEntry.arguments?.getString("originalPassword") ?: ""
+            EditPasswordScreen(navController = navController, originalPassword = originalPassword)
+        }
+
 
         // 🔥 Guitar Position 🔥
         composable(Routes.GUITAR_POSITION) {
