@@ -40,4 +40,9 @@ interface PasswordUpdateApi {
     suspend fun updatePassword(@Body request: PasswordUpdateRequest): Response<Unit>
 }
 
+// 로그아웃
+interface LogoutApi {
+    @POST("logout")
+    suspend fun logout(): Response<Unit>
+}
 

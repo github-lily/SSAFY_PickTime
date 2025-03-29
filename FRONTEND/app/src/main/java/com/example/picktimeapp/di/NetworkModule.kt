@@ -2,6 +2,7 @@ package com.example.picktimeapp.di
 
 import com.example.picktimeapp.auth.TokenManager
 import com.example.picktimeapp.network.LoginApi
+import com.example.picktimeapp.network.LogoutApi
 import com.example.picktimeapp.network.PasswordConfirmApi
 import com.example.picktimeapp.network.PasswordUpdateApi
 import com.example.picktimeapp.network.PickTimeApi
@@ -101,6 +102,10 @@ object NetworkModule {
     fun providePasswordUpdateApi(retrofit: Retrofit): PasswordUpdateApi =
         retrofit.create(PasswordUpdateApi::class.java)
 
+    @Provides
+    @Singleton
+    fun provideLogoutApi(retrofit: Retrofit): LogoutApi =
+        retrofit.create(LogoutApi::class.java)
 }
 
 
