@@ -16,3 +16,7 @@ data class UserInfo (
     val name: String, // 진짜 이름
     val level: Int //레벨에 따라서 이미지 다르게 렌더링
 )
+
+data class UpdateNameRequest(
+    val name: String
+)
