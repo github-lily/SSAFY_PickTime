@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,8 +33,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -51,8 +53,9 @@ fun EditNicknameScreen (
     viewModel: EditNicknameViewModel = hiltViewModel()
 ) {
     val nickname by viewModel.nickname.collectAsStateWithLifecycle()
-    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+//    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
+    var isNicknameEmpty by remember { mutableStateOf(false) }
 
     // 처음 진입 시 유저 정보 가져오기
     LaunchedEffect(Unit) {
@@ -67,29 +70,49 @@ fun EditNicknameScreen (
             EditNicknameTitle()
             Spacer(modifier = Modifier.height(20.dp))
 
-            Row (
-                verticalAlignment = Alignment.CenterVertically
-            )
-            {
-                NicknameInputField(
-                    nickname = nickname,
-                    placeholder = nickname,
-                    onValueChange = {viewModel.onNicknameChange(it)}
-                )
+            Row(verticalAlignment = Alignment.Top) {
+                Column {
+                    NicknameInputField(
+                        nickname = nickname,
+                        placeholder = nickname,
+                        onValueChange = {
+                            viewModel.onNicknameChange(it)
+                            if (it.isNotBlank()) {
+                                isNicknameEmpty = false
+                            }
+                        }
+                    )
+
+                    if (isNicknameEmpty) {
+                        Text(
+                            text = "닉네임을 입력해주세요",
+                            color = Color.Red,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp, start = 4.dp),
+                            textAlign = TextAlign.Start
+                        )
+                    }
+                }
+
                 Spacer(modifier = Modifier.width(30.dp))
                 NicknameSubmitButton(
                     nickname = nickname,
-                    // 현재 페이지를 스택에서 제거 후 전 단계로 이동하겠다.
                     onSuccess = {
-                        viewModel.updateNickname(nickname) {
-//                            navController.popBackStack()
-                            navController.navigate(Routes.MYPAGE)
+                        if (nickname.isBlank()) {
+                            isNicknameEmpty = true
+                        } else {
+                            viewModel.updateNickname(nickname) {
+                                navController.navigate(Routes.MYPAGE) {
+                                    popUpTo(Routes.MYPAGE) { inclusive = true }
+                                }
+                            }
                         }
                     }
                 )
             }
 
-            // 에러 메시지 보여주기
             if (errorMessage.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(20.dp))
                 Text(
@@ -98,11 +121,9 @@ fun EditNicknameScreen (
                     fontSize = 20.sp
                 )
             }
-
         }
     }
 }
-
 // 제목
 @Composable
 fun EditNicknameTitle (){
@@ -166,15 +187,15 @@ fun NicknameSubmitButton(
     nickname: String,
     onSuccess: () ->  Unit
 ){
+    val isEnabled = nickname.isNotBlank()
+
     Button(
         onClick = {
-            if(nickname.isNotBlank()) {
-                onSuccess()
-            }else {
-                // 나중에 백이랑 통신연결할 때 바꿀것!
+            if(isEnabled) {
                 onSuccess()
             }
         },
+        enabled = isEnabled,
         colors = ButtonDefaults.buttonColors(
             containerColor = Brown40,
             contentColor = Color.White
