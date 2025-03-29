@@ -2,6 +2,7 @@ package com.example.picktimeapp.di
 
 import com.example.picktimeapp.auth.TokenManager
 import com.example.picktimeapp.network.LoginApi
+import com.example.picktimeapp.network.PasswordConfirmApi
 import com.example.picktimeapp.network.PickTimeApi
 import com.example.picktimeapp.network.SignUpApi
 import com.example.picktimeapp.network.UserApi
@@ -87,6 +88,11 @@ object NetworkModule {
     fun providePickTimeApi(retrofit: Retrofit): PickTimeApi =
         retrofit.create((PickTimeApi::class.java))
 
+    // 마이페이지 비밀번호 확인
+    @Provides
+    @Singleton
+    fun providePasswordConfirmApi(retrofit: Retrofit): PasswordConfirmApi =
+        retrofit.create(PasswordConfirmApi::class.java)
 }
 
 
