@@ -36,7 +36,7 @@ object Routes {
     const val GAME_PLAY = "gameplay"
     const val GUITAR_TUNNING = "guitartunning"
     const val PRACTICE_CHORDINFO = "practicechordinfo"
-    const val PRACTICE_STEP_4 = "practicestep4"
+    const val PRACTICE_STEP_4 = "practice/{stepId}"
 
 }
 
@@ -167,9 +167,16 @@ fun AppNavGraph() {
 //        }
 
         // 🔥 Practice step4 Mode 🔥
-        composable(Routes.PRACTICE_STEP_4) {
-            PracticeStep4Screen()
+        composable(Routes.PRACTICE_STEP_4) { backStackEntry ->
+            val stepId = backStackEntry.arguments?.getString("stepId")?.toIntOrNull() ?: -1
+            PracticeStep4Screen(stepId = stepId)
         }
+
+        // 연습모드 API test용
+        composable("practice-test") {
+            PracticeStep4Screen(stepId = 4)
+        }
+
 
         // 🔥 Practice Chord Info🔥
         composable(Routes.PRACTICE_CHORDINFO) {

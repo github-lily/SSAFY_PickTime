@@ -2,10 +2,14 @@ package com.example.picktimeapp.di
 
 import com.example.picktimeapp.auth.TokenManager
 import com.example.picktimeapp.network.LoginApi
+<<<<<<< HEAD
+import com.example.picktimeapp.network.PracticeApi
+=======
 import com.example.picktimeapp.network.LogoutApi
 import com.example.picktimeapp.network.PasswordConfirmApi
 import com.example.picktimeapp.network.PasswordUpdateApi
 import com.example.picktimeapp.network.PickTimeApi
+>>>>>>> 374b69b638225199450af6b13f44df4a704492ed
 import com.example.picktimeapp.network.SignUpApi
 import com.example.picktimeapp.network.UserApi
 import com.google.gson.Gson
@@ -84,6 +88,15 @@ object NetworkModule {
     fun provideUserApi(retrofit: Retrofit): UserApi =
         retrofit.create(UserApi::class.java)
 
+<<<<<<< HEAD
+    // Practice Step4
+    @Provides
+    @Singleton
+    fun providePracticeApi(retrofit: Retrofit): PracticeApi =
+        retrofit.create(PracticeApi::class.java)
+
+
+=======
     //마이페이지 피크타임
     @Provides
     @Singleton
@@ -106,6 +119,7 @@ object NetworkModule {
     @Singleton
     fun provideLogoutApi(retrofit: Retrofit): LogoutApi =
         retrofit.create(LogoutApi::class.java)
+>>>>>>> 374b69b638225199450af6b13f44df4a704492ed
 }
 
 
