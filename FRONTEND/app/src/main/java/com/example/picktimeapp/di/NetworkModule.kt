@@ -2,6 +2,7 @@ package com.example.picktimeapp.di
 
 import com.example.picktimeapp.auth.TokenManager
 import com.example.picktimeapp.network.LoginApi
+import com.example.picktimeapp.network.PracticeApi
 import com.example.picktimeapp.network.SignUpApi
 import com.example.picktimeapp.network.UserApi
 import com.google.gson.Gson
@@ -79,6 +80,13 @@ object NetworkModule {
     @Singleton
     fun provideUserApi(retrofit: Retrofit): UserApi =
         retrofit.create(UserApi::class.java)
+
+    // Practice Step4
+    @Provides
+    @Singleton
+    fun providePracticeApi(retrofit: Retrofit): PracticeApi =
+        retrofit.create(PracticeApi::class.java)
+
 
 }
 
