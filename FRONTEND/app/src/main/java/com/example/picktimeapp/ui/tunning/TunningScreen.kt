@@ -1,5 +1,6 @@
 package com.example.picktimeapp.ui.tunning
 
+import android.Manifest
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,11 +23,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.picktimeapp.R
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun TunningScreen(
+    viewModel: TunningViewModel,
     onBackClick: () -> Unit = {}
 ) {
+    val permissionState = rememberPermissionState(Manifest.permission.RECORD_AUDIO)
+    LaunchedEffect(Unit) {
+        if (!permissionState.status.isGranted) {
+            permissionState.launchPermissionRequest()
+        } else {
+            //viewModel.startAudioRecording()
+        }
+    }
+
     // ✅ 전역 선택 인덱스 하나로 통일
     var selectedIndex by remember { mutableStateOf(-1) }
 

@@ -108,6 +108,8 @@ dependencies {
 
     // Google Auth
 //    implementation(libs.google.auth)
+    // mic 권한 허용
+    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
 
     // Testing
     testImplementation(libs.junit)
