@@ -2,7 +2,14 @@ package com.example.picktimeapp.di
 
 import com.example.picktimeapp.auth.TokenManager
 import com.example.picktimeapp.network.LoginApi
+<<<<<<< HEAD
 import com.example.picktimeapp.network.PracticeApi
+=======
+import com.example.picktimeapp.network.LogoutApi
+import com.example.picktimeapp.network.PasswordConfirmApi
+import com.example.picktimeapp.network.PasswordUpdateApi
+import com.example.picktimeapp.network.PickTimeApi
+>>>>>>> 374b69b638225199450af6b13f44df4a704492ed
 import com.example.picktimeapp.network.SignUpApi
 import com.example.picktimeapp.network.UserApi
 import com.google.gson.Gson
@@ -81,6 +88,7 @@ object NetworkModule {
     fun provideUserApi(retrofit: Retrofit): UserApi =
         retrofit.create(UserApi::class.java)
 
+<<<<<<< HEAD
     // Practice Step4
     @Provides
     @Singleton
@@ -88,6 +96,30 @@ object NetworkModule {
         retrofit.create(PracticeApi::class.java)
 
 
+=======
+    //마이페이지 피크타임
+    @Provides
+    @Singleton
+    fun providePickTimeApi(retrofit: Retrofit): PickTimeApi =
+        retrofit.create((PickTimeApi::class.java))
+
+    // 마이페이지 비밀번호 확인
+    @Provides
+    @Singleton
+    fun providePasswordConfirmApi(retrofit: Retrofit): PasswordConfirmApi =
+        retrofit.create(PasswordConfirmApi::class.java)
+
+    // 마이페이지 비밀번호 수정
+    @Provides
+    @Singleton
+    fun providePasswordUpdateApi(retrofit: Retrofit): PasswordUpdateApi =
+        retrofit.create(PasswordUpdateApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideLogoutApi(retrofit: Retrofit): LogoutApi =
+        retrofit.create(LogoutApi::class.java)
+>>>>>>> 374b69b638225199450af6b13f44df4a704492ed
 }
 
 
