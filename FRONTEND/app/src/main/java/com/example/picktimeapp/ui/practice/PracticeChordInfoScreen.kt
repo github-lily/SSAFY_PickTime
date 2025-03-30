@@ -17,8 +17,14 @@ import com.example.picktimeapp.ui.theme.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.navigation.NavController
+import com.example.picktimeapp.ui.components.PauseDialogCustom
 import com.example.picktimeapp.ui.components.PracticeTopBar
 import com.example.picktimeapp.ui.nav.Routes
+
+import com.example.picktimeapp.ui.components.PauseDialogCustom
+import com.example.picktimeapp.ui.components.PracticeTopBar
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -27,13 +33,17 @@ fun PracticeChordInfoScreen(navController: NavController) {
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val screenWidth = maxWidth
         val screenHeight = maxHeight
-        // 👉 Scaffold 상단 TopBar
+
+        // 일시정지 모달
+        val showPauseDialog = remember { mutableStateOf(false) }
+
+
         Scaffold(
             containerColor = DarkGreen10,
             topBar = {
                PracticeTopBar(
                    titleText = "코드연습",
-                   onPauseClick = { /* 일시정지 기능 */ }
+                   onPauseClick = { showPauseDialog.value = true }
                )
             },
             content = { innerPadding ->
@@ -130,6 +140,19 @@ fun PracticeChordInfoScreen(navController: NavController) {
                         )
                     }
 
+                    // 일시정지 모달
+                    if (showPauseDialog.value) {
+                        PauseDialogCustom(
+                            screenWidth = screenWidth,
+                            onDismiss = { showPauseDialog.value = false },
+                            onExit = {
+                                showPauseDialog.value = false
+                                navController.navigate(Routes.WELCOME) {
+                                    popUpTo(Routes.WELCOME) { inclusive = true }
+                                }
+                            }
+                        )
+                    }
                 }
             }
         )

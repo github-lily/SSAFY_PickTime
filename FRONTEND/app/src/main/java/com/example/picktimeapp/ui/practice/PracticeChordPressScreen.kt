@@ -26,10 +26,14 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Text
 import androidx.compose.ui.platform.LocalDensity
 import androidx.navigation.NavController
+import com.example.picktimeapp.ui.components.PauseDialogCustom
 import com.example.picktimeapp.ui.components.PracticeTopBar
 import com.example.picktimeapp.ui.nav.Routes
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
 
-@OptIn(ExperimentalMaterial3Api::class)
+
+
 @Composable
 fun PracticeChordPressScreen(navController: NavController) {
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
@@ -37,11 +41,15 @@ fun PracticeChordPressScreen(navController: NavController) {
         val screenHeight = maxHeight
         val density = LocalDensity.current
 
+        // 일시정지 모달
+        val showPauseDialog = remember { mutableStateOf(false) }
+
+
         Scaffold(
             topBar = {
                 PracticeTopBar(
                     titleText = "코드연습",
-                    onPauseClick = { /* 일시정지 동작 */ }
+                    onPauseClick = { showPauseDialog.value = true }
                 )}
         ) { innerPadding ->
             Column(
@@ -159,6 +167,22 @@ fun PracticeChordPressScreen(navController: NavController) {
                         )
                     }
                 }
+
+                // 일시정지 버튼
+                if (showPauseDialog.value) {
+                    PauseDialogCustom(
+                        screenWidth = screenWidth,
+                        onDismiss = { showPauseDialog.value = false },
+                        onExit = {
+                            showPauseDialog.value = false
+                            navController.navigate(Routes.WELCOME) {
+                                popUpTo(Routes.WELCOME) { inclusive = true }
+
+                            }
+                        }
+                    )
+                }
+
             }
         }
     }
