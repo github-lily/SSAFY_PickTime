@@ -19,6 +19,7 @@ import com.example.picktimeapp.ui.mypage.EditNicknameScreen
 import com.example.picktimeapp.ui.mypage.EditPasswordScreen
 import com.example.picktimeapp.ui.mypage.PasswordCheckScreen
 import com.example.picktimeapp.ui.practice.PracticeChordInfoScreen
+import com.example.picktimeapp.ui.practice.PracticeChordPressScreen
 import com.example.picktimeapp.ui.practice.PracticeStep4Screen
 import com.example.picktimeapp.ui.tunning.TunningScreen
 
@@ -36,7 +37,9 @@ object Routes {
     const val GAME_PLAY = "gameplay"
     const val GUITAR_TUNNING = "guitartunning"
     const val PRACTICE_CHORDINFO = "practicechordinfo"
+    const val PRACTICE_CHORDPRESS = "practicechordpress"
     const val PRACTICE_STEP_4 = "practice/{stepId}"
+
 
 }
 
@@ -183,6 +186,11 @@ fun AppNavGraph() {
             PracticeChordInfoScreen(navController)
         }
 
+
+        // 🔥 Practice Chord Press🔥
+        composable(Routes.PRACTICE_CHORDPRESS) {
+            PracticeChordPressScreen(navController)
+        }
 
 
         // 🔥 Tunning Mode 🔥

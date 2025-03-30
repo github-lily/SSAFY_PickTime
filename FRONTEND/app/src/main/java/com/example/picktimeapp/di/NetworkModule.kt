@@ -86,12 +86,14 @@ object NetworkModule {
     fun provideUserApi(retrofit: Retrofit): UserApi =
         retrofit.create(UserApi::class.java)
 
-    //<<<<<<< HEAD
+
     // Practice Step4
     @Provides
     @Singleton
     fun providePracticeApi(retrofit: Retrofit): PracticeApi =
         retrofit.create(PracticeApi::class.java)
+
+
 
     //마이페이지 피크타임
     @Provides
@@ -121,6 +123,5 @@ object NetworkModule {
     @Singleton
     fun provideLogoutApi(retrofit: Retrofit): LogoutApi =
         retrofit.create(LogoutApi::class.java)
-
 }
 
