@@ -68,7 +68,7 @@ fun SideNavigation(navController: NavController) {
                 iconResId = R.drawable.practice_icon,
                 contentDescription = "연습모드페이지로 이동",
                 onClick = {
-                    navController.navigate(Routes.MYPAGE) {
+                    navController.navigate("practice-test") {
                         popUpTo(Routes.MYPAGE) { inclusive = true }
                     }
                 }

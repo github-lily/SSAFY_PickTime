@@ -18,6 +18,8 @@ import com.example.picktimeapp.ui.mypage.MyPageViewModel
 import com.example.picktimeapp.ui.mypage.EditNicknameScreen
 import com.example.picktimeapp.ui.mypage.EditPasswordScreen
 import com.example.picktimeapp.ui.mypage.PasswordCheckScreen
+import com.example.picktimeapp.ui.practice.PracticeChordInfoScreen
+import com.example.picktimeapp.ui.practice.PracticeChordPressScreen
 import com.example.picktimeapp.ui.practice.PracticeStep4Screen
 import com.example.picktimeapp.ui.tunning.TuningScreen
 import com.example.picktimeapp.ui.tunning.TuningViewModel
@@ -35,7 +37,10 @@ object Routes {
     const val GAME = "game"
     const val GAME_PLAY = "gameplay"
     const val GUITAR_TUNNING = "guitartunning"
-    const val PRACTICE_STEP_4 = "practicestep4"
+    const val PRACTICE_CHORDINFO = "practicechordinfo"
+    const val PRACTICE_CHORDPRESS = "practicechordpress"
+    const val PRACTICE_STEP_4 = "practice/{stepId}"
+
 
 }
 
@@ -69,6 +74,11 @@ fun AppNavGraph() {
                 },
                 onNavigateToStep4 = {
                     navController.navigate(Routes.PRACTICE_STEP_4) {
+                        popUpTo(Routes.WELCOME) { inclusive = false }
+                    }
+                },
+                onNavigateToChordInfo = {
+                    navController.navigate(Routes.PRACTICE_CHORDINFO) {
                         popUpTo(Routes.WELCOME) { inclusive = false }
                     }
                 },
@@ -121,26 +131,36 @@ fun AppNavGraph() {
         }
 
         // Password Edit Screen
-        composable(Routes.EDIT_PASSWORD) {
-            EditPasswordScreen(navController)
-        }
+//        composable(Routes.EDIT_PASSWORD) {
+//            EditPasswordScreen(navController)
+//        }
 
         // Password Check Screen
         composable(Routes.PASSWORD_CHECK) {
             PasswordCheckScreen(navController)
         }
 
+        // password route edit
+        composable(
+            route = "editPassword/{originalPassword}"
+        ) { backStackEntry ->
+            val originalPassword = backStackEntry.arguments?.getString("originalPassword") ?: ""
+            EditPasswordScreen(navController = navController, originalPassword = originalPassword)
+        }
+
+
         // 🔥 Guitar Position 🔥
         composable(Routes.GUITAR_POSITION) {
             GuitarPositionScreen()
         }
+
 
         // 🔥 Game Mode 🔥
         composable(Routes.GAME) {
             GameModeScreen(navController)
         }
 
-        // Game Play Screen
+        // 🔥Game Play Screen 🔥
         composable(Routes.GAME_PLAY){
             GamePlayScreen(navController)
         }
@@ -150,10 +170,31 @@ fun AppNavGraph() {
 //            GamePlayScreen(navController = navController, title = title)
 //        }
 
-        // 🔥 Practice step4 Mode 🔥
-        composable(Routes.PRACTICE_STEP_4) {
-            PracticeStep4Screen()
+
+
+
+        // 🔥 Practice Chord Info🔥
+        composable(Routes.PRACTICE_CHORDINFO) {
+            PracticeChordInfoScreen(navController)
         }
+
+
+        // 🔥 Practice Chord Press🔥
+        composable(Routes.PRACTICE_CHORDPRESS) {
+            PracticeChordPressScreen(navController)
+        }
+
+        // 🔥 Practice step4 Mode 🔥
+        composable(Routes.PRACTICE_STEP_4) { backStackEntry ->
+            val stepId = backStackEntry.arguments?.getString("stepId")?.toIntOrNull() ?: -1
+            PracticeStep4Screen(stepId = stepId, navController = navController)
+        }
+
+        // 연습모드 API test용
+        composable("practice-test") {
+            PracticeStep4Screen(stepId = 4, navController = navController)
+        }
+
 
         // 🔥 Tunning Mode 🔥
         composable(Routes.GUITAR_TUNNING) {

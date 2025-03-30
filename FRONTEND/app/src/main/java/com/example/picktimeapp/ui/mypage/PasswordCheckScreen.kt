@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
 import com.example.picktimeapp.ui.theme.Brown40
 import com.example.picktimeapp.ui.theme.DarkGreen10
@@ -41,7 +42,8 @@ import com.example.picktimeapp.ui.theme.Pretendard
 
 @Composable
 fun PasswordCheckScreen(
-    navController: NavController // 다음 화면 이동을 위한 코드
+    navController: NavController, // 다음 화면 이동을 위한 코드
+    viewModel: PasswordCheckViewModel = hiltViewModel()
 ) {
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -63,8 +65,18 @@ fun PasswordCheckScreen(
                 Spacer(modifier = Modifier.width(30.dp))
                 PasswordSubmitButton(
                     password = password,
-                    onSuccess = { navController.navigate("editPassword")},
-                    onError = { errorMessage = it}
+                    onCheckPassword = { inputPassword ->
+                        viewModel.checkPassword(
+                            password = inputPassword,
+                            onSuccess = {
+                                errorMessage = null
+                                navController.navigate("editPassword/$password")
+                            },
+                            onFailure = {
+                                errorMessage = "비밀번호가 일치하지 않습니다."
+                            }
+                        )
+                    }
                 )
             }
 
@@ -102,7 +114,7 @@ fun PasswordInputField(password: String, onValueChange: (String) -> Unit) {
         onValueChange = onValueChange, //비밀번호 값 변경 시 호출되는 콜백 함수
         placeholder = {
             Text(
-                text = "현재 비밀번호 입력 qq",
+                text = "현재 비밀번호를 입력해주세요.",
                 fontSize = 40.sp,
                 color = Gray50
             ) },
@@ -151,18 +163,14 @@ fun PasswordInputField(password: String, onValueChange: (String) -> Unit) {
 @Composable
 fun PasswordSubmitButton(
     password: String,
-    onSuccess: () -> Unit,
-    onError: (String?) -> Unit
+    onCheckPassword: (String) -> Unit,
+//    onSuccess: () -> Unit,
+//    onError: (String?) -> Unit
 ){
     Button(
         onClick = {
-            if (password == "qq") {
-                onError(null)
-                onSuccess()
-            } else {
-                onError("비밀번호가 일치하지 않습니다.")
-            }
-        },
+            onCheckPassword(password)
+            },
         colors = ButtonDefaults.buttonColors(
             containerColor = Brown40,
             contentColor = Color.White

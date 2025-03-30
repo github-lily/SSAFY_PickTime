@@ -1,24 +1,33 @@
 package com.example.picktimeapp.ui.mypage
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.picktimeapp.data.model.PickDay
 import androidx.compose.material3.Text
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
+import com.example.picktimeapp.ui.theme.Brown40
 import com.example.picktimeapp.ui.theme.Pretendard
 
 @Composable
@@ -28,25 +37,22 @@ fun PickDaysGrid(
         .fillMaxWidth()
         .padding(top = 16.dp, start = 8.dp)
 ) {
+    val selectedPickDay = remember { mutableStateOf<PickDay?>(null) }
     Row (
         modifier = Modifier
             .horizontalScroll(rememberScrollState()),
         verticalAlignment = Alignment.Top
     ){
         Column (
-//            verticalArrangement = Arrangement.spacedBy(2.dp),
             // 가운데 정렬
             horizontalAlignment = Alignment.CenterHorizontally,
-//            modifier = Modifier.padding(top = 2.dp)
         ) {
             val daysOfWeek = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
             daysOfWeek.forEach {day ->
                 Text(
                     text = day,
                     fontSize = 18.sp,
-                    fontFamily = Pretendard,
                     modifier = Modifier.height(27.dp)
-
                 )
             }
         }
@@ -70,14 +76,42 @@ fun PickDaysGrid(
                 ) {
                     column.forEach { pickDay ->
                         if (pickDay != null) {
-                            PickDayBox(pickCount = pickDay.pickCount)
+                            Box(
+                                contentAlignment = Alignment.TopCenter,
+                                modifier = Modifier.size(26.dp),
+                            ) {
+                                if (selectedPickDay.value == pickDay) {
+                                    TooltipBalloon(pickDay = pickDay)
+                                }
+                                PickDayBox(
+                                    pickDay = pickDay,
+                                    onClick = { selectedPickDay.value = it }
+                                )
+                            }
                         } else {
-                            Spacer(modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.size(26.dp))
                         }
                     }
                 }
             }
         }
+    }
+}
+@Composable
+fun TooltipBalloon(pickDay: PickDay) {
+    Box(
+        modifier = Modifier
+            .zIndex(2f) // 다른 요소 위에 올라가게
+            .offset(y = (-36).dp) // 박스 위로 떠오르게
+            .background(Color(0xFF996633), shape = RoundedCornerShape(16.dp))
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+    ) {
+        Text(
+            text = "${pickDay.pickCount}회 pick - ${pickDay.completedDate}",
+            color = Color.White,
+            fontSize = 14.sp,
+            lineHeight = 16.sp
+        )
     }
 }
 

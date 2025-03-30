@@ -1,8 +1,15 @@
 package com.example.picktimeapp.di
 
 import com.example.picktimeapp.auth.TokenManager
+import com.example.picktimeapp.network.GameListsApi
 import com.example.picktimeapp.network.LoginApi
+import com.example.picktimeapp.network.PracticeApi
+import com.example.picktimeapp.network.LogoutApi
+import com.example.picktimeapp.network.PasswordConfirmApi
+import com.example.picktimeapp.network.PasswordUpdateApi
+import com.example.picktimeapp.network.PickTimeApi
 import com.example.picktimeapp.network.SignUpApi
+import com.example.picktimeapp.network.UserApi
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -70,11 +77,51 @@ object NetworkModule {
     // SignUpApi
     @Provides
     @Singleton
-    fun provideSignUpApi(retrofit: Retrofit) : SignUpApi =
+    fun provideSignUpApi(retrofit: Retrofit): SignUpApi =
         retrofit.create(SignUpApi::class.java)
 
+    // UserApi 마이페이지
+    @Provides
+    @Singleton
+    fun provideUserApi(retrofit: Retrofit): UserApi =
+        retrofit.create(UserApi::class.java)
 
 
+    // Practice Step4
+    @Provides
+    @Singleton
+    fun providePracticeApi(retrofit: Retrofit): PracticeApi =
+        retrofit.create(PracticeApi::class.java)
+
+
+
+    //마이페이지 피크타임
+    @Provides
+    @Singleton
+    fun providePickTimeApi(retrofit: Retrofit): PickTimeApi =
+        retrofit.create((PickTimeApi::class.java))
+
+    // 마이페이지 비밀번호 확인
+    @Provides
+    @Singleton
+    fun providePasswordConfirmApi(retrofit: Retrofit): PasswordConfirmApi =
+        retrofit.create(PasswordConfirmApi::class.java)
+
+    // 마이페이지 비밀번호 수정
+    @Provides
+    @Singleton
+    fun providePasswordUpdateApi(retrofit: Retrofit): PasswordUpdateApi =
+        retrofit.create(PasswordUpdateApi::class.java)
+
+    // 게임 가져오기
+    @Provides
+    @Singleton
+    fun provideGameListsApi(retrofit: Retrofit): GameListsApi =
+        retrofit.create(GameListsApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideLogoutApi(retrofit: Retrofit): LogoutApi =
+        retrofit.create(LogoutApi::class.java)
 }
-
 
