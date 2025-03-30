@@ -147,7 +147,7 @@ fun PracticeChordInfoScreen(navController: NavController) {
 
                     // 다음 버튼
                     IconButton(
-                        onClick = { navController.navigate(Routes.PRACTICE_STEP_4) }, // ✅ 다음 화면으로 이동
+                        onClick = { navController.navigate(Routes.PRACTICE_CHORDPRESS) }, // ✅ 다음 화면으로 이동
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(

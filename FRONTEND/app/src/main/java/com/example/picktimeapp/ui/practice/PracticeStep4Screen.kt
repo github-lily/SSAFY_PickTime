@@ -251,7 +251,12 @@ fun PracticeStep4Screen(stepId: Int, viewModel: PracticeStepViewModel = hiltView
                 // 카메라 프리뷰
                 CameraPreview(
                     modifier = Modifier
-                        .align(Alignment.BottomEnd)
+                        .align(Alignment.BottomCenter)
+                        .offset {
+                            with(density) {
+                                IntOffset(x = (screenWidth * 0.3f).toPx().toInt(), y = 0)
+                            }
+                        }
                         .padding(40.dp)
                         .size(
                             width = screenWidth * 0.20f,
