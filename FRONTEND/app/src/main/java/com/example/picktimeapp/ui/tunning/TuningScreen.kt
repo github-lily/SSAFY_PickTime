@@ -113,18 +113,13 @@ fun TuningScreen(
         ) {
             Spacer(modifier = Modifier.height(50.dp))
             Text(text = viewModel.noteName.value)
+            Text(text = viewModel.tuningFeedback.value)
             Spacer(modifier = Modifier.height(50.dp))
 
-            // 오디오 시작/정지 버튼 (간단한 테스트용)
+            // 임시: 수동으로 녹음 중지 버튼
             Row {
                 Text(
-                    text = "녹음 시작",
-                    modifier = Modifier
-                        .clickable { viewModel.startAudioProcessing() }
-                        .padding(16.dp)
-                )
-                Text(
-                    text = "녹음 중지",
+                    text = "튜닝 중지",
                     modifier = Modifier
                         .clickable { viewModel.stopAudioProcessing() }
                         .padding(16.dp)
@@ -154,7 +149,7 @@ fun TuningScreen(
 
                             // 2) 오디오 권한이 있다면, 뷰모델에 녹음 시작 요청
                             if (permissionState.status.isGranted) {
-                                //viewModel.startAudioRecording(index)
+                                viewModel.startStringTuning(index)
                             } else {
                                 // 혹시라도 권한이 없다면 다시 요청
                                 permissionState.launchPermissionRequest()
@@ -194,7 +189,7 @@ fun TuningScreen(
 
                             // 2) 오디오 권한이 있다면, 뷰모델에 녹음 시작 요청
                             if (permissionState.status.isGranted) {
-                                //viewModel.startAudioRecording(index)
+                                viewModel.startStringTuning(index)
                             } else {
                                 // 혹시라도 권한이 없다면 다시 요청
                                 permissionState.launchPermissionRequest()
@@ -230,7 +225,10 @@ fun TunningPegsColumn(
                 contentDescription = description,
                 modifier = Modifier
                     .padding(vertical = 16.dp)
-                    .clickable { onSelected(globalIndex) }
+                    .clickable {
+                        // 클릭 시 onSelected 호출
+                        onSelected(globalIndex)
+                    }
             )
         }
     }

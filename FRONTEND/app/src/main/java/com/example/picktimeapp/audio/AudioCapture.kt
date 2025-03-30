@@ -71,6 +71,7 @@ class AudioCapture(
     fun stopRecording() {
         isRecording = false
         captureJob?.cancel()
+        //captureJob?.join()
         captureJob = null
         audioRecord?.apply {
             stop()

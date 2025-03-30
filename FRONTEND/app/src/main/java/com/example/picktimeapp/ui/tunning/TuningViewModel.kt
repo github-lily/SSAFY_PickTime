@@ -17,82 +17,134 @@ import kotlin.math.sqrt
 @HiltViewModel
 class TuningViewModel @Inject constructor() : ViewModel() {
 
-    val girinOffsetX = Animatable(-50f)
-    private val _targetOffsetY = mutableStateOf(900f)
-    val targetOffsetY: State<Float> = _targetOffsetY
+    // 6줄에 해당하는 목표 주파수 (Standard Tuning)
+    // 인덱스: 0=D3, 1=A2, 2=E2, 3=G3, 4=B3, 5=E4
+    private val standardFrequencies = listOf(
+        146.83, // D3
+        110.00, // A2
+        82.41,  // E2
+        196.00, // G3
+        246.94, // B3
+        329.63  // E4
+    )
+    private val standardNoteNames = listOf(
+        "D3", "A2", "E2", "G3", "B3", "E4"
+    )
 
+    // 현재 사용자가 선택한 문자열(페그) 인덱스 (기본값 -1: 미선택)
+    private var selectedStringIndex = -1
+
+    // 현재 목표 주파수 (선택된 줄의 표준 주파수)
+    private var targetFrequency = 0.0
+
+    // UI 표시용: 현재 감지된 주파수와 노트
     private val _frequencyState = mutableStateOf(0.0)
     val frequencyState: State<Double> = _frequencyState
 
     private val _noteName = mutableStateOf("Unknown")
     val noteName: State<String> = _noteName
 
+    // ★ 추가: 튜닝 피드백 (ex: "E2 - 음이 높습니다")
+    private var targetNoteName = ""
+
+    private val _tuningFeedback = mutableStateOf("")
+    val tuningFeedback: State<String> = _tuningFeedback
+
+    // Audio Capture & Player
+    private val audioCapture = AudioCapture { audioData ->
+        val rms = calculateRMS(audioData)
+        if (rms < amplitudeThreshold) {
+            //Log.d("TuningViewModel", "신호 세기 낮음 (RMS: $rms) -> 건너뛰기")
+            return@AudioCapture
+        }
+        //Log.d("TuningViewModel", "targetFrequency=$targetFrequency, targetNoteName=$targetNoteName")
+        val newFreq = AudioAnalyzerYIN.analyzeFrequency(audioData)
+        processFrequency(newFreq)
+    }
+
     private val audioPlayer = AudioPlayer()
 
-    // RMS 임계값
+    // 임계값/디바운싱 등은 그대로 두거나, 수정 가능
     private val amplitudeThreshold = 300.0
-
-    // 디바운싱
     private var lastUpdateTime = 0L
-    private val updateIntervalMillis = 500L
-    private val frequencyUpdateThreshold = 5.0
+    private val updateIntervalMillis = 300L // 예: 300ms 단위로 업데이트
+    private val frequencyUpdateThreshold = 2.0 // 예: 2Hz 이내면 무시
 
-    // 버퍼 누적용
-    private val ANALYSIS_BUFFER_SIZE = 4096
-    private val accumulationBuffer = mutableListOf<Short>()
-
+    // RMS 계산 함수
     private fun calculateRMS(audioData: ShortArray): Double {
         if (audioData.isEmpty()) return 0.0
         var sumSquares = 0.0
         for (sample in audioData) {
             sumSquares += sample * sample
         }
-        return sqrt(sumSquares / audioData.size)
+        return kotlin.math.sqrt(sumSquares / audioData.size)
     }
 
+    /**
+     * YIN으로 새 주파수를 구했을 때 호출됨.
+     * - targetFrequency와 비교해 "음이 낮습니다", "음이 높습니다" 등을 로그에 남김.
+     */
     private fun processFrequency(newFreq: Double) {
         val currentTime = System.currentTimeMillis()
-        // 디바운싱: 500ms 내에 또 들어오면 무시
 //        if (currentTime - lastUpdateTime < updateIntervalMillis) return
-//        if (abs(newFreq - _frequencyState.value) < frequencyUpdateThreshold) return
+//        if (kotlin.math.abs(newFreq - _frequencyState.value) < frequencyUpdateThreshold) return
 
         lastUpdateTime = currentTime
         _frequencyState.value = newFreq
-        _noteName.value = AudioAnalyzerYIN.frequencyToNoteName(newFreq)
-        Log.d("TuningViewModel", "안정화된 분석 주파수: $newFreq Hz, 음: ${_noteName.value}")
-    }
+        val name = AudioAnalyzerYIN.frequencyToNoteName(newFreq)
+        _noteName.value = name
 
-    private val audioCapture = AudioCapture { smallChunk ->
-        // 1) 작은 chunk를 누적
-        accumulationBuffer.addAll(smallChunk.toList())
+        Log.d("TuningViewModel", "현재 주파수: $newFreq Hz, 감지된 음: $name")
+        //Log.d("TuningViewModel", "targetFrequency=$targetFrequency, targetNoteName=$targetNoteName")
+        // 목표 주파수와 비교
+        if (targetFrequency > 0 && targetNoteName.isNotEmpty()) {
+            Log.d("Test", "33333333333333333333333333")
+            val difference = newFreq - targetFrequency
+            // tolerance 범위를 어떻게 잡을지에 따라 달라짐 (예: ±1Hz)
+            val tolerance = 1.0
 
-        // 2) 4096 샘플 이상 쌓이면
-        if (accumulationBuffer.size >= ANALYSIS_BUFFER_SIZE) {
-            // 앞에서부터 4096개를 잘라 분석용으로 씀
-            val analysisChunk = accumulationBuffer.take(ANALYSIS_BUFFER_SIZE).toShortArray()
-            // 사용한 만큼 제거
-            accumulationBuffer.subList(0, ANALYSIS_BUFFER_SIZE).clear()
-
-            // 3) RMS 계산 & threshold 체크
-            val rms = calculateRMS(analysisChunk)
-            Log.d("TuningViewModel", "누적 버퍼 RMS: $rms")
-            if (rms < amplitudeThreshold) {
-                Log.d("TuningViewModel", "신호 세기 낮음 (RMS: $rms) -> 분석 스킵")
-            } else {
-                // 4) YIN 분석
-                val newFreq = AudioAnalyzerYIN.analyzeFrequency(analysisChunk)
-                processFrequency(newFreq)
+            _tuningFeedback.value = when {
+                newFreq <= 0.0 -> "" // 분석 실패
+                difference > tolerance -> "$targetNoteName - 음이 높습니다."
+                difference < -tolerance -> "$targetNoteName - 음이 낮습니다."
+                else -> "$targetNoteName - 음이 맞습니다."
             }
+            Log.d("TuningViewModel", "$tuningFeedback")
         }
     }
 
-    fun startAudioProcessing() {
-        audioPlayer.start()
+    /**
+     * 특정 줄(0~5)에 해당하는 튜닝을 시작
+     */
+    fun startStringTuning(stringIndex: Int) {
+        // 혹시 이미 캡처 중이면 stop 후 재시작
+        stopAudioProcessing()
+
+        selectedStringIndex = stringIndex
+        targetFrequency = standardFrequencies[stringIndex]
+        targetNoteName = standardNoteNames[stringIndex]
+
+
         audioCapture.startRecording()
+        //audioPlayer.start()
+
+        // 초기 피드백
+        _tuningFeedback.value = "$targetNoteName - 튜닝을 시작합니다."
+        //Log.d("TuningViewModel", "튜닝 시작: index=$stringIndex, targetFreq=$targetFrequency")
     }
 
+    /**
+     * 오디오 캡쳐 + 재생 중지
+     */
     fun stopAudioProcessing() {
         audioCapture.stopRecording()
-        audioPlayer.stop()
+        //audioPlayer.stop()
+        _tuningFeedback.value = "" // or "튜닝 중지됨"
+        selectedStringIndex = -1
+        targetFrequency = 0.0
+        targetNoteName = ""
+
+        //audioPlayer.stop()
+        //Log.d("TuningViewModel", "튜닝 중지")
     }
 }
