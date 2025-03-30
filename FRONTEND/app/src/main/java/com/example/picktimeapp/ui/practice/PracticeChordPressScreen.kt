@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Text
 import androidx.compose.ui.platform.LocalDensity
 import androidx.navigation.NavController
+import com.example.picktimeapp.ui.components.PracticeTopBar
 import com.example.picktimeapp.ui.nav.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,34 +39,10 @@ fun PracticeChordPressScreen(navController: NavController) {
 
         Scaffold(
             topBar = {
-                CenterAlignedTopAppBar(
-                    modifier = Modifier
-                        .wrapContentHeight()
-                        .padding(vertical = 24.dp),
-                    title = {
-                        Text(
-                            text = "연습모드",
-                            fontSize = (screenWidth * 0.025f).value.sp,
-                            fontWeight = FontWeight.Medium,
-                            fontFamily = TitleFont,
-                            color = Gray90
-                        )
-                    },
-                    actions = {
-                        IconButton(
-                            onClick = { /* 일시정지 동작 */ },
-                            modifier = Modifier
-                                .padding(end = screenWidth * 0.02f)
-                                .size(56.dp)
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.pause_btn),
-                                contentDescription = "Pause",
-                            )
-                        }
-                    }
-                )
-            }
+                PracticeTopBar(
+                    titleText = "코드연습",
+                    onPauseClick = { /* 일시정지 동작 */ }
+                )}
         ) { innerPadding ->
             Column(
                 modifier = Modifier
