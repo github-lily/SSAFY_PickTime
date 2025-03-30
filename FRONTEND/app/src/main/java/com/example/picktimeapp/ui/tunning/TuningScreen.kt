@@ -112,7 +112,7 @@ fun TuningScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Spacer(modifier = Modifier.height(50.dp))
-            Text(text = viewModel.audioDebugInfo.value)
+            Text(text = viewModel.noteName.value)
             Spacer(modifier = Modifier.height(50.dp))
 
             // 오디오 시작/정지 버튼 (간단한 테스트용)
@@ -120,13 +120,13 @@ fun TuningScreen(
                 Text(
                     text = "녹음 시작",
                     modifier = Modifier
-                        .clickable { viewModel.startAudioCaptureAndPlayback() }
+                        .clickable { viewModel.startAudioProcessing() }
                         .padding(16.dp)
                 )
                 Text(
                     text = "녹음 중지",
                     modifier = Modifier
-                        .clickable { viewModel.stopAudioCaptureAndPlayback() }
+                        .clickable { viewModel.stopAudioProcessing() }
                         .padding(16.dp)
                 )
             }

@@ -22,8 +22,11 @@ class AudioCapture(
     private val channelConfig = AudioFormat.CHANNEL_IN_MONO
     private val audioFormat = AudioFormat.ENCODING_PCM_16BIT
 
-    // AudioRecord를 위한 최소 버퍼 크기 계산
-    private val bufferSize: Int = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
+    // 일단 기본 minBufferSize (1024~2048 정도로 나오는 경우가 많음)
+    private val minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
+
+    // 실제로는 이 정도까지 늘려서 read해도 됨 (4096)
+    private val bufferSize = maxOf(minBufferSize, 4096)
 
     private var audioRecord: AudioRecord? = null
     private var isRecording = false
