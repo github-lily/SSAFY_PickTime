@@ -81,6 +81,7 @@ dependencies {
 
     // Coroutines
     implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.android)
 
     // ViewModel
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
@@ -108,6 +109,8 @@ dependencies {
 
     // Google Auth
 //    implementation(libs.google.auth)
+    // mic 권한 허용
+    implementation("com.google.accompanist:accompanist-permissions:0.34.0")
 
     // Testing
     testImplementation(libs.junit)
@@ -126,4 +129,6 @@ dependencies {
     // 이미지 url을 받을 때 사용
     implementation("io.coil-kt:coil-compose:2.4.0")
 
+    // 주파수 분석 관련
+    implementation("com.github.wendykierp:JTransforms:3.1")
 }
