@@ -169,16 +169,7 @@ fun AppNavGraph() {
 //            GamePlayScreen(navController = navController, title = title)
 //        }
 
-        // 🔥 Practice step4 Mode 🔥
-        composable(Routes.PRACTICE_STEP_4) { backStackEntry ->
-            val stepId = backStackEntry.arguments?.getString("stepId")?.toIntOrNull() ?: -1
-            PracticeStep4Screen(stepId = stepId)
-        }
 
-        // 연습모드 API test용
-        composable("practice-test") {
-            PracticeStep4Screen(stepId = 4)
-        }
 
 
         // 🔥 Practice Chord Info🔥
@@ -190,6 +181,17 @@ fun AppNavGraph() {
         // 🔥 Practice Chord Press🔥
         composable(Routes.PRACTICE_CHORDPRESS) {
             PracticeChordPressScreen(navController)
+        }
+
+        // 🔥 Practice step4 Mode 🔥
+        composable(Routes.PRACTICE_STEP_4) { backStackEntry ->
+            val stepId = backStackEntry.arguments?.getString("stepId")?.toIntOrNull() ?: -1
+            PracticeStep4Screen(stepId = stepId, navController = navController)
+        }
+
+        // 연습모드 API test용
+        composable("practice-test") {
+            PracticeStep4Screen(stepId = 4, navController = navController)
         }
 
 

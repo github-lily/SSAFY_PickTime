@@ -29,21 +29,28 @@ import androidx.compose.ui.unit.IntOffset
 import kotlinx.coroutines.delay
 import android.media.MediaPlayer
 import android.net.Uri
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import com.example.picktimeapp.ui.components.PracticeTopBar
+import com.example.picktimeapp.ui.nav.Routes
+
+import androidx.navigation.NavController
+import com.example.picktimeapp.ui.components.PauseDialogCustom
+import com.example.picktimeapp.ui.components.PracticeTopBar
 
 
 
-
-
-
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PracticeStep4Screen(stepId: Int, viewModel: PracticeStepViewModel = hiltViewModel()) {
+fun PracticeStep4Screen(
+    stepId: Int,
+    navController: NavController,
+    viewModel: PracticeStepViewModel = hiltViewModel()
+) {
+
 
     val song = viewModel.songData.value
     val error = viewModel.errorMessage.value
@@ -67,12 +74,17 @@ fun PracticeStep4Screen(stepId: Int, viewModel: PracticeStepViewModel = hiltView
         val screenWidth = maxWidth
         val screenHeight = maxHeight
 
+        // 일시정지
+        val showPauseDialog = remember { mutableStateOf(false) }
+
         Scaffold(
             topBar = {
                 PracticeTopBar(
                     titleText = "코드연습",
 //                    iconSize = (screenWidth * 0.05f).coerceAtLeast(32.dp),
-                    onPauseClick = { /*TODO*/ }
+                    onPauseClick = {
+                        showPauseDialog.value = true
+                    }
                 )
             }
         ) { innerPadding ->
@@ -232,6 +244,22 @@ fun PracticeStep4Screen(stepId: Int, viewModel: PracticeStepViewModel = hiltView
                         )
                         .clip(RoundedCornerShape(12.dp))
                 )
+
+
+                // 일시정지 모달
+                if (showPauseDialog.value) {
+                    PauseDialogCustom(
+                        screenWidth = screenWidth,
+                        onDismiss = { showPauseDialog.value = false },
+                        onExit = {
+                            showPauseDialog.value = false
+                            navController.navigate(Routes.WELCOME) {
+                                popUpTo(Routes.WELCOME) { inclusive = true }
+                            }
+                        }
+                    )
+                }
+
             }
         }
     }
