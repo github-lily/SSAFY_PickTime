@@ -36,3 +36,15 @@ data class PasswordUpdateRequest(
     val password: String
 )
 
+//게임 전체 조회
+data class GameListsResponse(
+    val songId: Int,
+    val title: String,
+    val bpm: Int,
+    val songUri: String,
+    val songThumbnailUri: String,
+    val chords: List<String>,
+    val star: Int
+)
+
+
