@@ -17,6 +17,7 @@ import com.example.picktimeapp.ui.theme.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.navigation.NavController
+import com.example.picktimeapp.ui.components.PracticeTopBar
 import com.example.picktimeapp.ui.nav.Routes
 
 
@@ -30,44 +31,10 @@ fun PracticeChordInfoScreen(navController: NavController) {
         Scaffold(
             containerColor = DarkGreen10,
             topBar = {
-                Column(modifier = Modifier.padding(top = screenHeight * 0.02f)) {
-                    CenterAlignedTopAppBar(
-                        modifier = Modifier.height(screenHeight * 0.1f),
-                        title = {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "연습 모드",
-                                    fontSize = (screenWidth * 0.025f).value.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    fontFamily = TitleFont,
-                                    color = Gray90
-                                )
-                            }
-                        },
-                        actions = {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .width(screenWidth * 0.05f)
-                                    .padding(end = screenWidth * 0.02f),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                IconButton(
-                                    onClick = { /* 일시정지 동작 */ },
-                                    modifier = Modifier.fillMaxSize()
-                                ) {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.pause_btn),
-                                        contentDescription = "Pause"
-                                    )
-                                }
-                            }
-                        }
-                    )
-                }
+               PracticeTopBar(
+                   titleText = "코드연습",
+                   onPauseClick = { /* 일시정지 기능 */ }
+               )
             },
             content = { innerPadding ->
                 Box(

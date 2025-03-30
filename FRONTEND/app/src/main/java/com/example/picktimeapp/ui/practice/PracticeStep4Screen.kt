@@ -33,6 +33,8 @@ import android.net.Uri
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
+import com.example.picktimeapp.ui.components.PracticeTopBar
+
 
 
 
@@ -61,56 +63,22 @@ fun PracticeStep4Screen(stepId: Int, viewModel: PracticeStepViewModel = hiltView
     }
 
 
-    // 반응형 사이즈 조절
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val screenWidth = maxWidth
         val screenHeight = maxHeight
 
-
         Scaffold(
             topBar = {
-                Column(modifier = Modifier.padding(top = screenHeight * 0.02f)) {
-                    CenterAlignedTopAppBar(
-                        modifier = Modifier.height(screenHeight * 0.1f),
-                        title = {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = "연습모드",
-                                    fontSize = (screenWidth * 0.025f).value.sp,
-                                    fontWeight = FontWeight.Medium,
-                                    fontFamily = TitleFont,
-                                    color = Gray90
-                                )
-                            }
-                        },
-                        actions = {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .width(screenWidth * 0.05f) // 아이콘 들어갈 공간 확보!
-                                    .padding(end = screenWidth * 0.02f),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                IconButton(
-                                    onClick = { /* 일시정지 동작 */ },
-                                    modifier = Modifier
-                                        .fillMaxSize() // 박스 크기 꽉 채우기
-                                ) {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.pause_btn),
-                                        contentDescription = "Pause",
-                                    )
-                                }
-                            }
-                        }
-
-                    )
-                }
+                PracticeTopBar(
+                    titleText = "코드연습",
+//                    iconSize = (screenWidth * 0.05f).coerceAtLeast(32.dp),
+                    onPauseClick = { /*TODO*/ }
+                )
             }
         ) { innerPadding ->
+
+
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
