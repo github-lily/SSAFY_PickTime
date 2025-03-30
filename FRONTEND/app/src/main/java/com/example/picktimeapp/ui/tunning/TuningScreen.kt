@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -20,9 +21,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.picktimeapp.R
+import com.example.picktimeapp.audio.AudioVisualizerBar
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -83,23 +88,17 @@ fun TuningScreen(
             }
         }
 
-        // (2) 기린 그림 영역
+        // (2) 오디오 캡쳐 UI를 표시할 튜닝 바 영역
         Box(
             modifier = Modifier
                 .weight(0.5f)
                 .fillMaxHeight(),
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.tunning_bar),
-                contentDescription = "튜닝 바"
-            )
+            // ★ TuningBar: 선택된 줄의 주파수 범위를 빨간색으로 표시
+            TuningBar(selectedIndex = selectedIndex)
+            AudioVisualizerBar(viewModel = viewModel, modifier = Modifier.fillMaxSize())
 
-            Image(
-                painter = painterResource(id = R.drawable.tunning_girin),
-                contentDescription = "튜닝 기린",
-                modifier = Modifier.offset(x = -50.dp, y = 100.dp)
-            )
         }
 
         // 기타 영역
@@ -201,6 +200,52 @@ fun TuningScreen(
                 Spacer(modifier = Modifier.weight(1f))
             }
         }
+    }
+}
+
+/**
+ * 튜닝 바 영역을 그리는 컴포저블
+ * - 배경으로 튜닝 바 이미지를 깔고,
+ * - selectedIndex에 해당하는 주파수 범위를 Canvas로 표시 (빨간색 hit area)
+ */
+@Composable
+fun TuningBar(
+    modifier: Modifier = Modifier,
+    selectedIndex: Int
+) {
+    // ★ 표준 튜닝 주파수
+    val standardFrequencies = listOf(146.83, 110.0, 82.41, 196.0, 246.94, 329.63)
+
+    // 선택된 줄에 대응하는 주파수 범위만 바꿀 것.
+    // 예: (targetFreq - 10Hz) ~ (targetFreq + 10Hz)
+    val defaultRange = 10.0
+    // null-safe하게 처리
+    val (minFreq, maxFreq) = if (selectedIndex in standardFrequencies.indices) {
+        val center = standardFrequencies[selectedIndex]
+        (center - defaultRange) to (center + defaultRange)
+    } else {
+        // 선택되지 않았을 때는 더미(0..1)로 설정
+        0.0 to 1.0
+    }
+
+    LaunchedEffect(selectedIndex) {
+        android.util.Log.d(
+            "TuningBar",
+            "selectedIndex=$selectedIndex, minFreq=$minFreq, maxFreq=$maxFreq"
+        )
+    }
+
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        // (1) 배경 이미지(튜닝 바)
+        Image(
+            painter = painterResource(id = R.drawable.tunning_bar),
+            contentDescription = "튜닝 바 배경",
+            modifier = Modifier.fillMaxSize()
+        )
+
     }
 }
 
