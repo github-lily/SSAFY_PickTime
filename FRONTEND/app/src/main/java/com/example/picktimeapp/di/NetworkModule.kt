@@ -1,6 +1,7 @@
 package com.example.picktimeapp.di
 
 import com.example.picktimeapp.auth.TokenManager
+import com.example.picktimeapp.network.GameListsApi
 import com.example.picktimeapp.network.LoginApi
 import com.example.picktimeapp.network.PracticeApi
 import com.example.picktimeapp.network.LogoutApi
@@ -76,7 +77,7 @@ object NetworkModule {
     // SignUpApi
     @Provides
     @Singleton
-    fun provideSignUpApi(retrofit: Retrofit) : SignUpApi =
+    fun provideSignUpApi(retrofit: Retrofit): SignUpApi =
         retrofit.create(SignUpApi::class.java)
 
     // UserApi 마이페이지
@@ -112,10 +113,15 @@ object NetworkModule {
     fun providePasswordUpdateApi(retrofit: Retrofit): PasswordUpdateApi =
         retrofit.create(PasswordUpdateApi::class.java)
 
+    // 게임 가져오기
+    @Provides
+    @Singleton
+    fun provideGameListsApi(retrofit: Retrofit): GameListsApi =
+        retrofit.create(GameListsApi::class.java)
+
     @Provides
     @Singleton
     fun provideLogoutApi(retrofit: Retrofit): LogoutApi =
         retrofit.create(LogoutApi::class.java)
 }
-
 

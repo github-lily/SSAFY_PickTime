@@ -39,11 +39,12 @@ class MyPageViewModel @Inject constructor(
                 Log.d("MyPageVM", "토큰 받아옴: $token")
                 if (!token.isNullOrEmpty()) {
                     loadUserInfo()
+                    loadPickDays()
                 }
             }
         }
-        //모델 뷰가 처음 만들어질 때 로딩
-        loadPickDays()
+        //모델 뷰가 처음 만들어질 때 로딩 // 이 코드는 토큰이 반영되기 전에 실행이 돼서 전의 값이 나옴
+//        loadPickDays()
     }
     private suspend fun loadUserInfo() {
         val result = repository.getUserInfo()
