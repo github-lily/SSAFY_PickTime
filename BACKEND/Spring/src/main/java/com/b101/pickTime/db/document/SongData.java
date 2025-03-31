@@ -32,16 +32,16 @@ public class SongData {
     @AllArgsConstructor
     public static class Measure {
         private int measureIndex;
-        private List<ChordBlock> chordBlocks;
+        private List<String> chordBlocks;
     }
 
-    @Getter @Setter
-    @ToString
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ChordBlock {
-        private String name;         // 예: "C", "Am"
-        private int durationBeats;   // 코드가 연주되는 박자 수
-    }
+//    @Getter @Setter
+//    @ToString
+//    @NoArgsConstructor
+//    @AllArgsConstructor
+//    public static class ChordBlock {
+//        private String name;         // 예: "C", "Am"
+//        private int durationBeats;   // 코드가 연주되는 박자 수
+//    }
 
 }
