@@ -6,6 +6,8 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
@@ -24,64 +26,108 @@ import com.example.picktimeapp.ui.tunning.TuningViewModel
 @Composable
 fun AudioVisualizerBar(
     viewModel: TuningViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    selectedIndex: Int
 ) {
-    // 1) ViewModel에서 주파수 관찰
     val frequency = viewModel.frequencyState.value
+    val standardFrequencies = listOf(146.83, 110.0, 82.41, 196.0, 246.94, 329.63)
 
-    // 2) 시각화 범위 (예: 0Hz ~ 500Hz)
-    val minFreq = 0.0
-    val maxFreq = 500.0
+    // 동적 주파수 범위 설정
+    val (minFreq, maxFreq) = if (selectedIndex in standardFrequencies.indices) {
+        val h = standardFrequencies[selectedIndex]
+        (h * 0.2) to (h * 1.2)
+    } else {
+        0.0 to 500.0
+    }
 
-    // 3) 0..1 사이 fraction 계산
+    // 0..1 사이 fraction 계산 (애니메이션용)
     val fraction = ((frequency - minFreq) / (maxFreq - minFreq))
         .toFloat()
         .coerceIn(0f, 1f)
-
-    // 4) 막대 애니메이션
     val animatedFraction by animateFloatAsState(
         targetValue = fraction,
         animationSpec = tween(durationMillis = 300)
     )
 
-    // BoxWithConstraints를 사용해 부모의 실제 크기(픽셀)를 얻음
-    BoxWithConstraints(
-        modifier = modifier.fillMaxSize()
-    ) {
-        // 부모의 폭/높이 (px 단위)
-        val parentWidthPx = constraints.maxWidth.toFloat()
-        val parentHeightPx = constraints.maxHeight.toFloat()
+    // Hit Area: ±5Hz 범위
+    val hitRange = 5.0
+    val (hitMinFreq, hitMaxFreq) = if (selectedIndex in standardFrequencies.indices) {
+        val centerFreq = standardFrequencies[selectedIndex]
+        (centerFreq - hitRange) to (centerFreq + hitRange)
+    } else {
+        0.0 to -1.0
+    }
 
-        // 막대 높이(px)
-        val barHeightPx = parentHeightPx * animatedFraction
-        // 막대 윗변 y 좌표(px) = 전체높이 - 막대높이
-        val barTopPx = parentHeightPx - barHeightPx
+    val tuningBarPainter = painterResource(id = R.drawable.tunning_bar)
+    val imageRatio = with(tuningBarPainter.intrinsicSize) {
+        if (height > 0) width / height else 1f
+    }
 
-        // (A) Canvas에 “빨간 막대” 그리기
-        //     - Canvas의 size도 결국 parentWidthPx, parentHeightPx와 동일
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            drawRect(
-                color = Color.Transparent,
-                topLeft = Offset(x = 0f, y = barTopPx),
-                size = Size(width = parentWidthPx, height = barHeightPx)
-            )
-        }
-
-        // (B) 기린 이미지
-        //     기린 머리가 막대 윗변(barTopPx)와 만날 수 있도록, 기린의 상단을 barTopPx에 위치시킴
-        val giraffePainter = painterResource(id = R.drawable.tunning_girin)
-
-        // barTopPx를 DP로 변환
-        val giraffeTopDp = with(LocalDensity.current) { barTopPx.toDp() }
-        val giraffeOffsetX = -45.dp
-
-        // 기린의 top을 barTopDp 지점에 배치
-        Image(
-            painter = giraffePainter,
-            contentDescription = "Giraffe with bar",
+    BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+        // 튜닝 바 이미지를 일정 크기로 제한 (세로 전체, 비율 유지)
+        Box(
             modifier = Modifier
-                .align(Alignment.TopCenter)       // 부모의 상단 중앙을 기준(anchor)으로 삼음
-                .offset(x = giraffeOffsetX, y = giraffeTopDp)         // 거기서부터 아래로 barTopDp만큼 이동
-        )
+                .align(Alignment.Center)
+                .fillMaxHeight()
+                .aspectRatio(imageRatio)
+        ) {
+            // 튜닝 바 이미지
+            Image(
+                painter = tuningBarPainter,
+                contentDescription = null,
+                modifier = Modifier.matchParentSize()
+            )
+
+            // Canvas: 이미지와 동일한 크기로 겹침
+            BoxWithConstraints(Modifier.matchParentSize()) {
+                val canvasWidthPx = constraints.maxWidth.toFloat()
+                val canvasHeightPx = constraints.maxHeight.toFloat()
+
+                // 막대 높이 계산 (아래에서 위로 채워짐)
+                val barHeightPx = canvasHeightPx * animatedFraction
+                val barTopPx = canvasHeightPx - barHeightPx
+
+                Canvas(modifier = Modifier.matchParentSize()) {
+                    // Hit Area 그리기
+                    if (hitMaxFreq > hitMinFreq) {
+                        val fractionLow = ((hitMinFreq - minFreq) / (maxFreq - minFreq))
+                            .toFloat().coerceIn(0f, 1f)
+                        val fractionHigh = ((hitMaxFreq - minFreq) / (maxFreq - minFreq))
+                            .toFloat().coerceIn(0f, 1f)
+                        val yLowPx = canvasHeightPx * (1f - fractionLow)
+                        val yHighPx = canvasHeightPx * (1f - fractionHigh)
+                        val topY = yHighPx.coerceAtMost(yLowPx)
+                        val rectHeight = yLowPx - topY
+
+                        drawRect(
+                            // 변경된 색상: #F9D952 → 0xFFF9D952
+                            color = Color(0xFFF9D952).copy(alpha = 0.2f),
+                            topLeft = Offset(x = 0f, y = topY),
+                            size = Size(width = canvasWidthPx, height = rectHeight)
+                        )
+                    }
+
+                    // 막대 (투명 처리; 필요시 색상 변경 가능)
+                    drawRect(
+                        color = Color.Transparent,
+                        topLeft = Offset(x = 0f, y = barTopPx),
+                        size = Size(width = canvasWidthPx, height = barHeightPx)
+                    )
+                }
+
+                // 기린 이미지 배치: 막대의 윗변에 맞춰 움직임
+                val giraffePainter = painterResource(id = R.drawable.tunning_girin)
+                val giraffeTopDp = with(LocalDensity.current) { barTopPx.toDp() }
+                val giraffeOffsetX = (-45).dp
+
+                Image(
+                    painter = giraffePainter,
+                    contentDescription = "Giraffe with bar",
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .offset(x = giraffeOffsetX, y = giraffeTopDp)
+                )
+            }
+        }
     }
 }

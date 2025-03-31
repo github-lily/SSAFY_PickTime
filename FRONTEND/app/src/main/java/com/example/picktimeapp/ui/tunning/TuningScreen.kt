@@ -96,8 +96,8 @@ fun TuningScreen(
             contentAlignment = Alignment.Center
         ) {
             // ★ TuningBar: 선택된 줄의 주파수 범위를 빨간색으로 표시
-            TuningBar(selectedIndex = selectedIndex)
-            AudioVisualizerBar(viewModel = viewModel, modifier = Modifier.fillMaxSize())
+            //TuningBar(selectedIndex = selectedIndex)
+            AudioVisualizerBar(viewModel = viewModel, modifier = Modifier.fillMaxSize(), selectedIndex)
 
         }
 
