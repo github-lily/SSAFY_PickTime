@@ -63,6 +63,8 @@ public class SongDataServiceImpl implements SongDataService {
             chords.addAll(measure.getChordBlocks());
         }
 
+        chords.remove("X");
+
         return chords.stream().toList();
     }
 
