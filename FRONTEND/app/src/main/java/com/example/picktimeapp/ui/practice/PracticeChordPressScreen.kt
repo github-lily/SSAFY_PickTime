@@ -60,8 +60,8 @@ fun PracticeChordPressScreen(navController: NavController) {
                 // 상단 - 피드백 박스
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth(0.85f)
                         .align(Alignment.CenterHorizontally)
+                        .fillMaxWidth(0.85f)
                         .height(screenHeight * 0.1f)
                         .padding(top = screenHeight * 0.01f)
                         .background(Brown20, shape = RoundedCornerShape(screenHeight * 0.035f)),
@@ -140,10 +140,10 @@ fun PracticeChordPressScreen(navController: NavController) {
                 ) {
                     CameraPreview(
                         modifier = Modifier
-                            .align(Alignment.BottomEnd)
+                            .align(Alignment.BottomCenter)
                             .offset {
                                 with(density) {
-                                    IntOffset(x = (-screenWidth * 0.05f).toPx().toInt(), y = 0)
+                                    IntOffset(x = (screenWidth * 0.3f).toPx().toInt(), y = 0)
                                 }
                             }
                             .size(

@@ -151,7 +151,7 @@ fun AppNavGraph() {
 
         // 🔥 Guitar Position 🔥
         composable(Routes.GUITAR_POSITION) {
-            GuitarPositionScreen()
+            GuitarPositionScreen(navController = navController)
         }
 
 

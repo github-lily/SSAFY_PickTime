@@ -47,15 +47,17 @@ fun PracticeChordInfoScreen(navController: NavController) {
                )
             },
             content = { innerPadding ->
-                Box(
+                Column (
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
+
                     Row(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(screenWidth * 0.02f),
+                            .fillMaxHeight()
+//                            .padding(screenWidth * 0.02f),
+                            .weight(1f),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         // 왼쪽 영역
@@ -123,21 +125,24 @@ fun PracticeChordInfoScreen(navController: NavController) {
                     }
 
                     // 다음 버튼
-                    IconButton(
-                        onClick = { navController.navigate(Routes.PRACTICE_CHORDPRESS) }, // ✅ 다음 화면으로 이동
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(
-                                end = screenWidth * 0.03f,
-                                bottom = screenHeight * 0.03f
-                            )
+                            .fillMaxWidth()
+                            .padding(end = screenWidth * 0.03f, bottom = screenHeight * 0.03f)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowForward,
-                            contentDescription = "다음으로",
-                            modifier = Modifier.size(screenWidth * 0.2f), // 아이콘 크기 조절
-                            tint = Gray90 // 아이콘 색 (원하는 색상으로 바꿔도 돼요)
-                        )
+                        IconButton(
+                            onClick = { navController.navigate(Routes.PRACTICE_CHORDPRESS) },
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .offset(y = (-screenHeight * 0.01f))
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowForward,
+                                contentDescription = "다음으로",
+                                modifier = Modifier.size(screenWidth * 0.2f),
+                                tint = Gray90
+                            )
+                        }
                     }
 
                     // 일시정지 모달

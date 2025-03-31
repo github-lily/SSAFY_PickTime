@@ -91,7 +91,7 @@ fun PracticeStep4Screen(
 
 
 
-            Box(
+            Column (
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
@@ -100,10 +100,10 @@ fun PracticeStep4Screen(
                 // 피드백 텍스트 박스
                 Box(
                     modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(top = screenHeight * 0.03f)
-                        .width(screenWidth * 0.8f)
-                        .height(screenHeight * 0.07f)
+                        .align(Alignment.CenterHorizontally)
+                        .fillMaxWidth(0.85f)
+                        .height(screenHeight * 0.1f)
+                        .padding(top = screenHeight * 0.01f)
                         .background(Brown20, shape = RoundedCornerShape(screenHeight * 0.035f)),
                     contentAlignment = Alignment.Center
                 ) {
@@ -136,22 +136,26 @@ fun PracticeStep4Screen(
 //                    Spacer(modifier = Modifier.height(16.dp))
 //                }
 
-
-                // 프렛보드 이미지
-                Image(
-                    painter = painterResource(id = R.drawable.guitar_practice_neck),
-                    contentDescription = "기타 프렛보드",
+                Box(
                     modifier = Modifier
-                        .align(Alignment.Center)
-                        .offset(y = -screenHeight * 0.05f)
-                        .fillMaxWidth()
-                        .height(screenHeight * 0.40f),
-                    contentScale = ContentScale.FillBounds
-                )
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // 프렛보드 이미지
+                    Image(
+                        painter = painterResource(id = R.drawable.guitar_practice_neck),
+                        contentDescription = "기타 프렛보드",
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .fillMaxWidth()
+                            .height(screenHeight * 0.40f),
+                        contentScale = ContentScale.FillBounds
+                    )
 
 
-                // 🎸 코드 노트 반복 출력 (프레임 기반 시간 동기화 방식)
-                Box(modifier = Modifier.fillMaxSize()) {
+                    // 🎸 코드 노트 반복 출력 (프레임 기반 시간 동기화 방식)
+                    Box(modifier = Modifier.fillMaxSize()) {
 //                    val context = LocalContext.current
 //                    val mediaPlayer = remember {
 //                        MediaPlayer().apply {
@@ -160,91 +164,115 @@ fun PracticeStep4Screen(
 //                        }
 //                    }
 
-                    var musicTime by remember { mutableStateOf(0L) }
-                    LaunchedEffect(Unit) {
+                        var musicTime by remember { mutableStateOf(0L) }
+                        LaunchedEffect(Unit) {
 //                        mediaPlayer.start()
-                        while (true) {
+                            while (true) {
 //                            musicTime = mediaPlayer.currentPosition.toLong()
-                            musicTime += 16L
-                            delay(16L) // 60fps
+                                musicTime += 16L
+                                delay(16L) // 60fps
+                            }
                         }
-                    }
 
-                    val judgeLineX = screenWidth.value * 0.2f // 🎯 정타선 위치
-                    val startX = screenWidth.value + (screenWidth.value * 0.1f) // 시작 위치
+                        val judgeLineX = screenWidth.value * 0.2f // 🎯 정타선 위치
+                        val startX = screenWidth.value + (screenWidth.value * 0.1f) // 시작 위치
 
-                    val bpm = song?.bpm ?: 120
-                    val beatDurationMs = 60_000 / bpm
-                    val screenTravelBeats = song?.timeSignature?.split("/")?.getOrNull(0)?.toFloatOrNull() ?: 4f
+                        val bpm = song?.bpm ?: 120
+                        val beatDurationMs = 60_000 / bpm
+                        val screenTravelBeats =
+                            song?.timeSignature?.split("/")?.getOrNull(0)?.toFloatOrNull() ?: 4f
 
-                    // 모든 코드 블록을 실제 등장 순서대로 정리
-                    val allChordBlocks = remember(song) {
-                        buildList {
-                            var currentBeat = 0
-                            song?.chordProgression?.forEach { measure ->
-                                measure.chordBlocks.forEach { chord ->
-                                    if (chord.name != "X") {
-                                        val hitTime = currentBeat * beatDurationMs
-                                        val appearTime = hitTime - (screenTravelBeats * beatDurationMs).toLong()
-                                        add(Triple(chord.name, appearTime, hitTime))
+                        // 모든 코드 블록을 실제 등장 순서대로 정리
+                        val allChordBlocks = remember(song) {
+                            buildList {
+                                var currentBeat = 0
+                                song?.chordProgression?.forEach { measure ->
+                                    measure.chordBlocks.forEach { chord ->
+                                        if (chord.name != "X") {
+                                            val hitTime = currentBeat * beatDurationMs
+                                            val appearTime =
+                                                hitTime - (screenTravelBeats * beatDurationMs).toLong()
+                                            add(Triple(chord.name, appearTime, hitTime))
+                                        }
+                                        currentBeat += chord.durationBeats
                                     }
-                                    currentBeat += chord.durationBeats
                                 }
                             }
                         }
-                    }
 
-                    allChordBlocks.forEach { (chordName, appearTime, hitTime) ->
-                        val progress = ((musicTime - appearTime) / (hitTime - appearTime).toFloat()).coerceIn(0f, 1f)
-                        val currentX = lerp(startX, judgeLineX, progress)
-
-                        if (musicTime in appearTime.toLong()..hitTime.toLong()) {
-                            Box(
-                                modifier = Modifier
-                                    .offset {
-                                        IntOffset(
-                                            currentX.toInt(),
-                                            (screenHeight * 0.3f).value.toInt()
-                                        )
-                                    }
-                                    .size(
-                                        width = screenWidth * 0.07f,
-                                        height = screenHeight * 0.40f
-                                    )
-                                    .clip(RoundedCornerShape(24.dp))
-                                    .background(Brown20),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = chordName,
-                                    color = Color.White,
-                                    fontSize = (screenWidth * 0.040f).value.sp,
-                                    fontWeight = FontWeight.Bold
+                        allChordBlocks.forEach { (chordName, appearTime, hitTime) ->
+                            val progress =
+                                ((musicTime - appearTime) / (hitTime - appearTime).toFloat()).coerceIn(
+                                    0f,
+                                    1f
                                 )
+                            val currentX = lerp(startX, judgeLineX, progress)
+
+                            if (musicTime in appearTime.toLong()..hitTime.toLong()) {
+                                Box(
+                                    modifier = Modifier
+                                        .offset {
+                                            IntOffset(
+                                                currentX.toInt(),
+                                                (screenHeight * 0.3f).value.toInt()
+                                            )
+                                        }
+                                        .size(
+                                            width = screenWidth * 0.07f,
+                                            height = screenHeight * 0.40f
+                                        )
+                                        .clip(RoundedCornerShape(24.dp))
+                                        .background(Brown20),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = chordName,
+                                        color = Color.White,
+                                        fontSize = (screenWidth * 0.040f).value.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
                             }
                         }
                     }
                 }
 
 
-
-                // 카메라 프리뷰
-                CameraPreview(
+                // 하단 - 카메라 프리뷰 + 다음 버튼
+                Box(
                     modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .offset {
-                            with(density) {
-                                IntOffset(x = (screenWidth * 0.3f).toPx().toInt(), y = 0)
+                        .fillMaxWidth()
+                        .padding(end = screenWidth * 0.03f, bottom = screenHeight * 0.03f)
+                ) {
+                    CameraPreview(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .offset {
+                                with(density) {
+                                    IntOffset(x = (screenWidth * 0.3f).toPx().toInt(), y = 0)
+                                }
                             }
-                        }
-                        .padding(40.dp)
-                        .size(
-                            width = screenWidth * 0.20f,
-                            height = screenHeight * 0.20f
-                        )
-                        .clip(RoundedCornerShape(12.dp))
-                )
+                            .size(
+                                width = screenWidth * 0.20f,
+                                height = screenHeight * 0.20f
+                            )
+                            .clip(RoundedCornerShape(12.dp))
+                    )
 
+                    IconButton(
+                        onClick = { navController.navigate(Routes.PRACTICE_STEP_4) },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(bottom = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = "다음으로",
+                            modifier = Modifier.size(screenWidth * 0.2f),
+                            tint = Gray90
+                        )
+                    }
+                }
 
                 // 일시정지 모달
                 if (showPauseDialog.value) {
