@@ -2,13 +2,14 @@ package com.example.picktimeapp.ui.game
 
 import com.example.picktimeapp.R
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,6 +25,9 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.picktimeapp.ui.theme.Brown20
 import com.example.picktimeapp.ui.theme.Gray70
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import com.example.picktimeapp.ui.theme.Brown40
 
 data class SongData(
     val songId: Int,
@@ -41,6 +45,9 @@ fun GameCard(
     onPlayClick: (SongData) -> Unit,
     onSoundClick: (SongData) -> Unit
 ) {
+    // 음악 재생중인지 확인하는 상태
+    var isPlaying by remember { mutableStateOf(false) }
+
     Card(
         shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(8.dp),
@@ -65,11 +72,14 @@ fun GameCard(
                     contentAlignment = Alignment.TopEnd
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_sound),
+                        painter = painterResource(id = if (isPlaying) R.drawable.speaker else R.drawable.play_btn),
                         contentDescription = "Sound",
+                        tint = Brown40,
                         modifier = Modifier
                             .size(40.dp)
-                            .clickable { onSoundClick(song) }
+                            .clickable {
+                                isPlaying = !isPlaying
+                                onSoundClick(song) }
                     )
                 }
 
@@ -99,7 +109,7 @@ fun GameCard(
                             ),
                             contentDescription = "Star",
                             modifier = Modifier
-                                .size(if (index < song.star) 50.dp else 55.dp),
+                                .size(50.dp),
                                 tint = Color.Unspecified //
                         )
                     }
