@@ -1,139 +1,119 @@
 package com.example.picktimeapp.ui.mypage
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.example.picktimeapp.data.model.PickDay
 import androidx.compose.material3.Text
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
-import com.example.picktimeapp.ui.theme.Brown40
-import com.example.picktimeapp.ui.theme.Pretendard
 
 @Composable
 fun PickDaysGrid(
     pickDays: List<PickDay>,
     modifier: Modifier = Modifier
         .fillMaxWidth()
-        .padding(top = 16.dp, start = 8.dp)
 ) {
-    val selectedPickDay = remember { mutableStateOf<PickDay?>(null) }
-    Row (
-        modifier = Modifier
-            .horizontalScroll(rememberScrollState()),
-        verticalAlignment = Alignment.Top
-    ){
-        Column (
-            // 가운데 정렬
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            val daysOfWeek = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
-            daysOfWeek.forEach {day ->
-                Text(
-                    text = day,
-                    fontSize = 18.sp,
-                    modifier = Modifier.height(27.dp)
-                )
-            }
-        }
-        // 요일이랑 잔디 사이 간격주기
-        Spacer(modifier = Modifier.width(8.dp))
 
-        // 잔디 그리드 만들기 일단 45주만 출력
-        val columns = List(45) { columnIndex ->
-            List(7) { rowIndex ->
-                val index = columnIndex * 7 + rowIndex
-                pickDays.getOrNull(index)
-            }
-        }
+    BoxWithConstraints (modifier = modifier) {
 
-        // 잔디 그리드 출력하기 (가로로 배치 )
-        Row {
-            columns.forEach { column ->
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(1.dp),
-                    modifier = Modifier.padding(end = 1.dp)
-                ) {
-                    column.forEach { pickDay ->
-                        if (pickDay != null) {
-                            Box(
-                                contentAlignment = Alignment.TopCenter,
-                                modifier = Modifier.size(26.dp),
-                            ) {
-                                if (selectedPickDay.value == pickDay) {
-                                    TooltipBalloon(pickDay = pickDay)
+        val screenWidth = maxWidth
+        val screenHeight = maxHeight
+
+        val boxSize = screenWidth * 0.018f
+        val textSize = screenWidth.value * 0.016f
+        val columnSpacing = screenWidth * 0.002f
+        val rowSpacing = screenWidth * 0.002f
+        val dayLabelSpacing = screenWidth * 0.01f
+
+        Row (
+            modifier = Modifier
+                .horizontalScroll(rememberScrollState()),
+            verticalAlignment = Alignment.CenterVertically
+        ){
+            Column (
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                val daysOfWeek = listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
+                daysOfWeek.forEach {day ->
+                    Text(
+                        text = day,
+                        fontSize = textSize.sp,
+                        modifier = Modifier.height(screenHeight * 0.085f)
+                    )
+                }
+            }
+            // 요일이랑 잔디 사이 간격주기
+            Spacer(modifier = Modifier.width(dayLabelSpacing))
+
+            // 잔디 그리드 만들기 일단 45주만 출력
+            val columns = List(45) { columnIndex ->
+                List(7) { rowIndex ->
+                    val index = columnIndex * 7 + rowIndex
+                    pickDays.getOrNull(index)
+                }
+            }
+
+            // 잔디 그리드 출력하기 (가로로 배치 )
+            Row {
+                columns.forEach { column ->
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(rowSpacing),
+                        modifier = Modifier
+                            .padding(end = columnSpacing)
+                    ) {
+                        column.forEach { pickDay ->
+                            if (pickDay != null) {
+                                Box(
+                                    contentAlignment = Alignment.Center,
+                                    modifier = Modifier
+                                        .size(boxSize)
+                                ) {
+                                    PickDayBox(
+                                        pickDay = pickDay,
+                                    )
                                 }
-                                PickDayBox(
-                                    pickDay = pickDay,
-                                    onClick = { selectedPickDay.value = it }
-                                )
+                            } else {
+                                Spacer(modifier = Modifier.size(boxSize))
                             }
-                        } else {
-                            Spacer(modifier = Modifier.size(26.dp))
                         }
                     }
                 }
             }
         }
-    }
-}
-@Composable
-fun TooltipBalloon(pickDay: PickDay) {
-    Box(
-        modifier = Modifier
-            .zIndex(2f) // 다른 요소 위에 올라가게
-            .offset(y = (-36).dp) // 박스 위로 떠오르게
-            .background(Color(0xFF996633), shape = RoundedCornerShape(16.dp))
-            .padding(horizontal = 12.dp, vertical = 6.dp)
-    ) {
-        Text(
-            text = "${pickDay.pickCount}회 pick - ${pickDay.completedDate}",
-            color = Color.White,
-            fontSize = 14.sp,
-            lineHeight = 16.sp
-        )
+
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PickDaysGridPreview() {
-    val dummyData = listOf(
-        PickDay("2025-03-01", 0),
-        PickDay("2025-03-02", 2),
-        PickDay("2025-03-03", 1),
-        PickDay("2025-03-04", 0),
-        PickDay("2025-03-05", 3),
-        PickDay("2025-03-06", 2),
-        PickDay("2025-03-07", 0),
-        PickDay("2025-03-08", 1),
-        PickDay("2025-03-09", 2),
-        PickDay("2025-03-10", 3),
-        PickDay("2025-03-11", 0),
-        PickDay("2025-03-12", 0),
-        PickDay("2025-03-13", 1),
-        PickDay("2025-03-14", 2)
-    )
-
-    PickDaysGrid(pickDays = dummyData)
-}
+//@Composable
+//fun TooltipBalloon(
+//    pickDay: PickDay,
+//    fontSize: TextUnit,
+//    modifier: Modifier = Modifier
+//) {
+//    Box(
+//        modifier = modifier
+//            .background(
+//                color = Color(0xFF996633),
+//            )
+//    ) {
+//        Text(
+//            text = "${pickDay.pickCount}회 pick - ${pickDay.completedDate}",
+//            color = Color.White,
+//            fontSize = fontSize,
+//        )
+//    }
+//}

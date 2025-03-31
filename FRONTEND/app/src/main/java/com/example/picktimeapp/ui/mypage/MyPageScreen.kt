@@ -82,221 +82,226 @@ fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: Na
             color = DarkGreen10
         ) {
             //BoxWithConstraints - 화면의 최대 너비 / 높이 값을 알아낼 수 있게 해주는 컴포저블
-            BoxWithConstraints (
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(start = 200.dp, top = 130.dp, end = 32.dp, bottom = 24.dp),
-                contentAlignment = Alignment.TopCenter
-            ){
+            BoxWithConstraints {
                 val screenWidth = maxWidth
                 val screenHeight = maxHeight
 
-                //텍스트는 sp 형태라서 Float.sp로 바꿔주는 value를 붙여야함
-                val textSizeLarge = screenWidth.value * 0.05f // 약 5%
-                val textSizeSmall = screenWidth.value * 0.025f
-                val buttonWidth = screenWidth * 0.15f
-                val buttonHeight = screenHeight * 0.06f
-                val buttonFontSize = screenWidth.value * 0.015f
+                Box(
+                    modifier = Modifier.padding(
+                        start = (screenWidth.value * 0.07f).dp,
+                        top = (screenHeight.value * 0.1f).dp,
+                        end = (screenWidth.value * 0.02f).dp,
+                        bottom = (screenHeight.value * 0.01f).dp
+                    )
+                ){
+                    //텍스트는 sp 형태라서 Float.sp로 바꿔주는 value를 붙여야함
+                    val textSizeLarge = screenWidth.value * 0.04f // 약 5%
+                    val textSizeSmall = screenWidth.value * 0.025f
+                    val buttonWidth = screenWidth * 0.15f
+                    val buttonHeight = screenHeight * 0.06f
+                    val buttonFontSize = screenWidth.value * 0.015f
 
-                Column (
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    // 상단영역
-                    Row (
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .padding(start = 100.dp, end = 100.dp)
-                            .fillMaxWidth()
+                    Column (
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-
-                        // 이미지 영역
-                        Box(
+                        // 상단영역
+                        Row (
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
-                                .weight(0.38f) // 전체의 35%차지
-                                .aspectRatio(1f) //정사각형 비율을 유지한다.
-                                .background(color = Color.White, shape = CircleShape)
-                                .border(width = 8.dp, color = Brown40, shape = CircleShape),
-                            contentAlignment = Alignment.Center
-                        ){
-                            //Painter - 이미지를 화면에 그릴 준비를 하는 타입
-                            val profileImage: Painter  = painterResource(
-                                id = when (userInfo?.level) {
-                                    1 -> R.drawable.profile_level_1
-                                    2 -> R.drawable.profile_level_2
-                                    3 -> R.drawable.profile_level_3
-                                    4 -> R.drawable.profile_level_4
-                                    5 -> R.drawable.profile_level_5
-                                    6 -> R.drawable.profile_level_6
-                                    else -> R.drawable.profile_level_1
-                                }
-                            )
-                            Image(
-                                painter = profileImage,
-                                contentDescription = "Profile Image",
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(CircleShape),
-                                // contentScale.Crop - 지정한 사이즈에서 넘치면 자르기
-                                contentScale = ContentScale.Crop
-                            )
-
-                        }
-
-                        // 이미지와 오른쪽 텍스트 영역의 간격
-                        Spacer(modifier = Modifier.width(10.dp))
-
-                        // 사진 오른쪽 영역
-                        Column(
-                            modifier = Modifier
-                                .weight(0.6f),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                                .padding(horizontal = screenWidth * 0.07f)
+                                .fillMaxWidth()
                         ) {
-                            Text(
-                                text = "피크타임",
-                                fontSize = textSizeLarge.sp,
-                                fontFamily = TitleFont,
-                                modifier = Modifier.padding(top = 4.dp)
-                            )
-                            Text(
-                                text = "${pickDayData?.continued ?: 8}일 연속 유지중",
-                                fontFamily = TitleFont,
-                                fontSize = textSizeLarge.sp,
-                            )
 
-                            Spacer(modifier = Modifier.height(screenHeight * 0.07f))
-
-                            // 유저 정보 출력하기
-                            Row (
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                userInfo?.let {
-                                    Text(
-                                        text = it.name,
-                                        fontFamily = TitleFont,
-                                        fontSize = textSizeSmall.sp,
-                                        modifier = Modifier
-                                            .padding(top = 4.dp)
-                                    )
-                                    IconButton(
-                                        onClick = {
-                                            navController.navigate(Routes.EDIT_NICKNAME)
-                                        },
-                                        modifier = Modifier
-                                            .padding(start = 15.dp)
-                                            .size(30.dp)
-                                    ) {
-                                        Icon(
-//                                        painter = painterResource(id = R.drawable.edit),
-                                            imageVector = Icons.Default.Edit,
-                                            contentDescription = "Edit Nickname",
-                                        )
+                            // 이미지 영역
+                            Box(
+                                modifier = Modifier
+                                    .weight(0.35f) // 전체의 35%차지
+                                    .aspectRatio(1f) //정사각형 비율을 유지한다.
+                                    .background(color = Color.White, shape = CircleShape)
+                                    .border(width = screenWidth * 0.005f, color = Brown40, shape = CircleShape),
+                                contentAlignment = Alignment.Center
+                            ){
+                                //Painter - 이미지를 화면에 그릴 준비를 하는 타입
+                                val profileImage: Painter  = painterResource(
+                                    id = when (userInfo?.level) {
+                                        1 -> R.drawable.profile_level_1
+                                        2 -> R.drawable.profile_level_2
+                                        3 -> R.drawable.profile_level_3
+                                        4 -> R.drawable.profile_level_4
+                                        5 -> R.drawable.profile_level_5
+                                        6 -> R.drawable.profile_level_6
+                                        else -> R.drawable.profile_level_1
                                     }
+                                )
+                                Image(
+                                    painter = profileImage,
+                                    contentDescription = "Profile Image",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(CircleShape),
+                                    contentScale = ContentScale.Crop
+                                )
+
+                            }
+                            // 이미지와 오른쪽 텍스트 영역의 간격
+                            Spacer(modifier = Modifier.width(screenWidth * 0.02f))
+
+                            // 사진 오른쪽 영역
+                            Column(
+                                modifier = Modifier
+                                    .weight(0.6f),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "피크타임",
+                                    fontSize = textSizeLarge.sp,
+                                    fontFamily = TitleFont,
+                                    modifier = Modifier.padding(top = screenHeight * 0.005f)
+                                )
+
+                                Text(
+                                    text = "${pickDayData?.continued ?: 8}일 연속 유지중",
+                                    fontFamily = TitleFont,
+                                    fontSize = textSizeLarge.sp,
+                                )
+
+                                Spacer(modifier = Modifier.height(screenHeight * 0.07f))
+
+                                // 유저 정보 출력하기
+                                Row (
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    userInfo?.let {
+                                        Text(
+                                            text = it.name,
+                                            fontFamily = TitleFont,
+                                            fontSize = textSizeSmall.sp,
+                                            modifier = Modifier
+                                                .padding(top = screenHeight * 0.001f)
+                                        )
+                                        IconButton(
+                                            onClick = {
+                                                navController.navigate(Routes.EDIT_NICKNAME)
+                                            },
+                                            modifier = Modifier
+                                                .padding(start = screenWidth * 0.01f)
+                                                .size(screenWidth * 0.03f)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Edit,
+                                                contentDescription = "Edit Nickname",
+                                            )
+                                        }
+                                    }
+                                }
+
+                                // 비밀번호 수정 버튼
+                                Button(
+                                    onClick = {
+                                        navController.navigate(Routes.PASSWORD_CHECK)
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0x33E0CDA8),
+                                        contentColor = Gray70
+                                    ),
+                                    modifier = Modifier
+                                        .padding(top = screenHeight * 0.02f)
+                                        .width(buttonWidth)
+                                        .height(buttonHeight)
+                                ){
+                                    Text(
+                                        text = "비밀번호 수정",
+                                        fontSize = buttonFontSize.sp,
+                                        fontFamily = Pretendard,
+                                        fontWeight = FontWeight.Medium
+                                    )
                                 }
                             }
 
-                            // 비밀번호 수정 버튼
-                            Button(
-                                onClick = {
-                                    navController.navigate(Routes.PASSWORD_CHECK)
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0x33E0CDA8),
-                                    contentColor = Gray70
-                                ),
+                        }
+
+                        // 피크데이와 프로필 사이 간격
+                        Spacer(modifier = Modifier.height(screenHeight * 0.05f))
+
+                        // 피크데이
+                        Box (
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            Column (
                                 modifier = Modifier
-                                    .padding(top = 16.dp)
-                                    .width(buttonWidth)
-                                    .height(buttonHeight)
-                            ){
+                                    .padding(start = screenWidth * 0.015f)
+                                    .align(Alignment.CenterStart),
+                                horizontalAlignment = Alignment.Start
+                            ) {
                                 Text(
-                                    text = "비밀번호 수정",
-                                    fontSize = buttonFontSize.sp,
-                                    fontFamily = Pretendard,
-                                    fontWeight = FontWeight.Medium
+                                    text = "PickDays",
+                                    fontFamily = TitleFont,
+                                    fontWeight = FontWeight.Normal,
+                                    fontSize = (screenWidth.value * 0.025f).sp,
+                                    modifier = Modifier.padding(bottom = screenHeight * 0.01f)
+                                )
+                                Spacer(modifier = Modifier.height(screenHeight * 0.02f))
+
+                                PickDaysGrid(
+                                    pickDays = fullpickDays,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
                                 )
                             }
                         }
 
-                    }
-
-                    // 피크데이와 프로필 사이 간격
-                    Spacer(modifier = Modifier.height(screenHeight * 0.1f))
-
-                    // 피크데이
-                    Box (
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        Column (
+                        Box(
                             modifier = Modifier
-                                .padding(start = 24.dp)
-                                .align(Alignment.CenterStart),
-                            horizontalAlignment = Alignment.Start
+                                .fillMaxSize(),
+                            contentAlignment = Alignment.BottomEnd
                         ) {
-                            Text(
-                                text = "PickDays",
-                                fontFamily = TitleFont,
-                                fontWeight = FontWeight.Normal,
-                                fontSize = (screenWidth.value * 0.025f).sp,
-                                modifier = Modifier.padding(bottom = 8.dp)
-                            )
-                            Spacer(modifier = Modifier.height(screenHeight * 0.02f))
-
-                            PickDaysGrid(
-                                pickDays = fullpickDays,
+                            Image(
+                                painter = painterResource(id = R.drawable.logout),
+                                contentDescription = "Logout Image",
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(screenHeight * 0.25f)
+                                    .padding(
+                                        end = screenWidth * 0.01f,
+                                        bottom = screenHeight * 0.001f
+                                    )
+                                    .size(screenWidth * 0.07f)
+                                    .clickable {
+                                        showLogoutDialog.value = true
+                                    }
                             )
                         }
                     }
 
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        contentAlignment = Alignment.BottomEnd
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.logout),
-                            contentDescription = "Logout Image",
-                            modifier = Modifier
-                                .padding(end = 12.dp, bottom = 12.dp)
-                                .size(130.dp)
-                                .clickable {
-                                    showLogoutDialog.value = true
-                                }
-                        )
-                    }
-                }
-
-                // 로그아웃 모달창
-                if (showLogoutDialog.value) {
-                    LogoutDialogCustom(
-                        screenWidth = screenWidth,
-                        onDismiss = { showLogoutDialog.value = false },
-                        onLogout = {
-                            coroutineScope.launch {
-                                logoutViewModel.logout {
-                                    showLogoutDialog.value = false
-                                    navController.navigate(Routes.WELCOME) {
-                                        popUpTo(0) { inclusive = true }
-                                        launchSingleTop = true
+                    // 로그아웃 모달창
+                    if (showLogoutDialog.value) {
+                        LogoutDialogCustom(
+                            screenWidth = screenWidth,
+                            onDismiss = { showLogoutDialog.value = false },
+                            onLogout = {
+                                coroutineScope.launch {
+                                    logoutViewModel.logout {
+                                        showLogoutDialog.value = false
+                                        navController.navigate(Routes.WELCOME) {
+                                            popUpTo(0) { inclusive = true }
+                                            launchSingleTop = true
+                                        }
                                     }
                                 }
                             }
-                        }
-                    )
+                        )
+                    }
+
+
+
                 }
 
-
-
             }
-
         }
-    }
 
-}
+    }
+                }
+
 
 //로그아웃 팝업창
 @Composable
@@ -311,7 +316,7 @@ fun LogoutDialogCustom(
     ) {
         BoxWithConstraints(
             modifier = Modifier
-                .width(screenWidth * 0.45f)
+                .width(screenWidth * 0.4f)
                 .padding(horizontal = screenWidth * 0.02f)
         ) {
             val maxWidthDp = maxWidth
