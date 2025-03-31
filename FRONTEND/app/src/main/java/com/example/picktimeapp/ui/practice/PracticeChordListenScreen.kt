@@ -35,7 +35,7 @@ import androidx.compose.runtime.mutableStateOf
 
 
 @Composable
-fun PracticeChordPressScreen(navController: NavController) {
+fun PracticeChordListenScreen(navController: NavController) {
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val screenWidth = maxWidth
         val screenHeight = maxHeight
@@ -68,7 +68,7 @@ fun PracticeChordPressScreen(navController: NavController) {
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "G코드를 눌러볼까요?",
+                        text = "잘했어요! 이번엔 소리를 내볼까요?",
                         style = MaterialTheme.typography.bodySmall,
                         color = Gray90,
                         fontWeight = FontWeight.Normal,
@@ -154,7 +154,7 @@ fun PracticeChordPressScreen(navController: NavController) {
                     )
 
                     IconButton(
-                        onClick = { navController.navigate(Routes.PRACTICE_CHORDLISTEN) },
+                        onClick = { navController.navigate(Routes.PRACTICE_STEP_4) },
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(bottom = 8.dp)
