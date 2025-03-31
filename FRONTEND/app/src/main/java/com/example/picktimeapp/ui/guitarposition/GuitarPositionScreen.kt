@@ -29,6 +29,7 @@ import androidx.navigation.NavController
 
 
 import androidx.compose.material3.Text
+import androidx.compose.ui.layout.ContentScale
 import com.example.picktimeapp.ui.components.PauseDialogCustom
 import com.example.picktimeapp.ui.nav.Routes
 
@@ -97,15 +98,20 @@ fun GuitarPositionScreen(
                                 .clip(RoundedCornerShape(12.dp)),
                             contentAlignment = Alignment.Center
                         ) {
-                            CameraPreview(modifier = Modifier.fillMaxSize())
+                            CameraPreview(modifier = Modifier .matchParentSize())
 
                             Image(
                                 painter = painterResource(id = R.drawable.guitar_overlay),
                                 contentDescription = "기타 위치 안내 이미지",
+                                contentScale = ContentScale.FillBounds, // 카메라에 맞게 사진 강제로 채우기
                                 modifier = Modifier
-                                    .fillMaxSize()
+                                    .matchParentSize()
                                     .align(Alignment.Center)
                             )
+
+
+
+
                         }
                     }
                 }
@@ -138,7 +144,7 @@ fun GuitarPositionScreen(
                                 onExit = {
                                     showPauseDialog.value = false
                                     navController.navigate(Routes.WELCOME) {
-                                        popUpTo(Routes.PRACTICE_CHORDINFO) { inclusive = true }
+                                        popUpTo(Routes.WELCOME) { inclusive = true }
                                     }
                                 }
                             )
