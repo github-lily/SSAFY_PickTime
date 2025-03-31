@@ -60,9 +60,7 @@ public class SongDataServiceImpl implements SongDataService {
         Set<String> chords = new HashSet<>();
 
         for(SongData.Measure measure : chordProgression){
-            for(SongData.ChordBlock chordBlock : measure.getChordBlocks()){
-                chords.add(chordBlock.getName());
-            }
+            chords.addAll(measure.getChordBlocks());
         }
 
         return chords.stream().toList();
