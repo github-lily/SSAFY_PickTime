@@ -19,6 +19,7 @@ import com.example.picktimeapp.ui.mypage.EditNicknameScreen
 import com.example.picktimeapp.ui.mypage.EditPasswordScreen
 import com.example.picktimeapp.ui.mypage.PasswordCheckScreen
 import com.example.picktimeapp.ui.practice.PracticeChordInfoScreen
+import com.example.picktimeapp.ui.practice.PracticeChordListenScreen
 import com.example.picktimeapp.ui.practice.PracticeChordPressScreen
 import com.example.picktimeapp.ui.practice.PracticeStep4Screen
 import com.example.picktimeapp.ui.tunning.TuningScreen
@@ -39,7 +40,9 @@ object Routes {
     const val GUITAR_TUNNING = "guitartunning"
     const val PRACTICE_CHORDINFO = "practicechordinfo"
     const val PRACTICE_CHORDPRESS = "practicechordpress"
+    const val PRACTICE_CHORDLISTEN = "practicechordlisten"
     const val PRACTICE_STEP_4 = "practice/{stepId}"
+
 
 
 }
@@ -74,11 +77,6 @@ fun AppNavGraph() {
                 },
                 onNavigateToStep4 = {
                     navController.navigate(Routes.PRACTICE_STEP_4) {
-                        popUpTo(Routes.WELCOME) { inclusive = false }
-                    }
-                },
-                onNavigateToChordInfo = {
-                    navController.navigate(Routes.PRACTICE_CHORDINFO) {
                         popUpTo(Routes.WELCOME) { inclusive = false }
                     }
                 },
@@ -182,6 +180,11 @@ fun AppNavGraph() {
         // 🔥 Practice Chord Press🔥
         composable(Routes.PRACTICE_CHORDPRESS) {
             PracticeChordPressScreen(navController)
+        }
+
+        // 🔥 Practice Chord Listen🔥
+        composable(Routes.PRACTICE_CHORDLISTEN) {
+            PracticeChordListenScreen(navController)
         }
 
         // 🔥 Practice step4 Mode 🔥
