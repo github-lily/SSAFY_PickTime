@@ -21,7 +21,8 @@ import com.example.picktimeapp.ui.mypage.PasswordCheckScreen
 import com.example.picktimeapp.ui.practice.PracticeChordInfoScreen
 import com.example.picktimeapp.ui.practice.PracticeChordPressScreen
 import com.example.picktimeapp.ui.practice.PracticeStep4Screen
-import com.example.picktimeapp.ui.tunning.TunningScreen
+import com.example.picktimeapp.ui.tunning.TuningScreen
+import com.example.picktimeapp.ui.tunning.TuningViewModel
 
 // Update Routes object
 object Routes {
@@ -197,7 +198,8 @@ fun AppNavGraph() {
 
         // 🔥 Tunning Mode 🔥
         composable(Routes.GUITAR_TUNNING) {
-            TunningScreen()
+            val viewModel: TuningViewModel = hiltViewModel()
+            TuningScreen(viewModel)
         }
 
     }
