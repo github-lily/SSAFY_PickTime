@@ -21,6 +21,7 @@ import com.example.picktimeapp.ui.mypage.PasswordCheckScreen
 import com.example.picktimeapp.ui.practice.PracticeChordInfoScreen
 import com.example.picktimeapp.ui.practice.PracticeChordListenScreen
 import com.example.picktimeapp.ui.practice.PracticeChordPressScreen
+import com.example.picktimeapp.ui.practice.PracticeListScreen
 import com.example.picktimeapp.ui.practice.PracticeStep4Screen
 import com.example.picktimeapp.ui.tunning.TuningScreen
 import com.example.picktimeapp.ui.tunning.TuningViewModel
@@ -38,6 +39,7 @@ object Routes {
     const val GAME = "game"
     const val GAME_PLAY = "gameplay"
     const val GUITAR_TUNNING = "guitartunning"
+    const val PRACTICE_LIST = "practicelist"
     const val PRACTICE_CHORDINFO = "practicechordinfo"
     const val PRACTICE_CHORDPRESS = "practicechordpress"
     const val PRACTICE_CHORDLISTEN = "practicechordlisten"
@@ -146,6 +148,10 @@ fun AppNavGraph() {
             EditPasswordScreen(navController = navController, originalPassword = originalPassword)
         }
 
+        // 🔥 PracticeList Position 🔥
+        composable(Routes.PRACTICE_LIST) {
+            PracticeListScreen(navController = navController)
+        }
 
         // 🔥 Guitar Position 🔥
         composable(Routes.GUITAR_POSITION) {
@@ -202,7 +208,7 @@ fun AppNavGraph() {
         // 🔥 Tunning Mode 🔥
         composable(Routes.GUITAR_TUNNING) {
             val viewModel: TuningViewModel = hiltViewModel()
-            TuningScreen(viewModel)
+            TuningScreen(viewModel =  viewModel, navController = navController)
         }
 
     }
