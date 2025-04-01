@@ -45,121 +45,150 @@ fun GameCard(
     onPlayClick: (SongData) -> Unit,
     onSoundClick: (SongData) -> Unit
 ) {
-    // 음악 재생중인지 확인하는 상태
-    var isPlaying by remember { mutableStateOf(false) }
+    BoxWithConstraints {
 
-    Card(
-        shape = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        ),
-        modifier = Modifier
-            .width(300.dp)
-            .height(800.dp)
-            .padding(16.dp)
-    ) {
-        Box(modifier = Modifier.padding(30.dp)) {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                // 음향 버튼
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = 5.dp),
-                    contentAlignment = Alignment.TopEnd
+        // 음악 재생중인지 확인하는 상태
+        var isPlaying by remember { mutableStateOf(false) }
+
+        val boxWidth = maxWidth
+        val boxheight = maxHeight
+
+        // 전체 카드 묶음
+        val cardWidth = boxWidth * 1f
+        val cardHeight = boxheight * 1.5f
+
+        // 각각의 카드
+        val cardpadding = boxWidth * 0.07f
+        val playBtn = cardWidth * 0.08f
+
+        // 각각의 카드 요소 사이즈
+        val playBtnSize = cardWidth * 0.08f
+        val smallMargin = cardHeight * 0.05f
+        val imageSize = cardWidth * 0.6f
+        val starSize = cardWidth * 0.15f
+        val titleFont = cardWidth.value * 0.09f
+        val chordFont = cardWidth.value * 0.07f
+        val bpmFont = cardWidth.value * 0.06f
+        val buttonHeight = cardHeight * 0.1f
+        val buttonFont = cardWidth.value * 0.08f
+
+        val spacingSmall = cardHeight * 0.03f
+
+        Card(
+            shape = RoundedCornerShape(cardWidth * 0.07f),
+            elevation = CardDefaults.cardElevation(cardWidth * 0.02f),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            ),
+            modifier = Modifier
+                .width(cardWidth)
+                .height(cardHeight)
+        ) {
+            Box(modifier = Modifier.padding(cardpadding)) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Icon(
-                        painter = painterResource(id = if (isPlaying) R.drawable.speaker else R.drawable.play_btn),
-                        contentDescription = "Sound",
-                        tint = Brown40,
+                    // 음향 버튼
+                    Box(
                         modifier = Modifier
-                            .size(40.dp)
-                            .clickable {
-                                isPlaying = !isPlaying
-                                onSoundClick(song) }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                // 이미지 async는 uri를 받아올 때 사용함
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(song.songThumbnailUri)
-                        .crossfade(true) // 서서히 보여지는 효과
-                        .build(), // 이미지 요청을 최종적으로 완성하라는 뜻
-                    contentDescription = "Thumbnail",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(300.dp)
-                        .clip(CircleShape)
-                )
-
-                Spacer(modifier = Modifier.height(30.dp))
-
-                // 별점
-                Row {
-                    repeat(3) { index ->
+                            .fillMaxWidth(),
+                        contentAlignment = Alignment.TopEnd
+                    ) {
                         Icon(
-                            painter = painterResource(
-                                id = if (index < song.star) R.drawable.ic_star_filled else R.drawable.ic_star_outline
-                            ),
-                            contentDescription = "Star",
+                            painter = painterResource(id = if (isPlaying) R.drawable.speaker else R.drawable.play_btn),
+                            contentDescription = "Sound",
+                            tint = Brown40,
                             modifier = Modifier
-                                .size(50.dp),
-                                tint = Color.Unspecified //
+                                .size(playBtnSize)
+                                .clickable {
+                                    isPlaying = !isPlaying
+                                    onSoundClick(song) }
                         )
                     }
-                }
 
-                Spacer(modifier = Modifier.height(30.dp))
+                    Spacer(modifier = Modifier.height(smallMargin))
 
-                // 제목
-                Text(
-                    text = song.title,
-                    fontSize = 40.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center
-                )
+                    // 이미지 async는 uri를 받아올 때 사용함
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(song.songThumbnailUri)
+                            .crossfade(true) // 서서히 보여지는 효과
+                            .build(), // 이미지 요청을 최종적으로 완성하라는 뜻
+                        contentDescription = "Thumbnail",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(imageSize)
+                            .clip(CircleShape)
+                    )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
-                // 코드
-                Text(
-                    text = song.songChords.joinToString(" "),
-                    fontSize = 35.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
+                    // 별점
+                    Row {
+                        repeat(3) { index ->
+                            Icon(
+                                painter = painterResource(
+                                    id = if (index < song.star) R.drawable.ic_star_filled else R.drawable.ic_star_outline
+                                ),
+                                contentDescription = "Star",
+                                modifier = Modifier
+                                    .size(starSize),
+                                tint = Color.Unspecified //
+                            )
+                        }
+                    }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(20.dp))
 
-                // BPM
-                Text(
-                    text = "${song.bpm} BPM",
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Gray70
-                )
+                    // 제목
+                    Text(
+                        text = song.title,
+                        fontSize = titleFont.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
 
-                Spacer(modifier = Modifier.height(40.dp))
+                    Spacer(modifier = Modifier.height(spacingSmall))
 
-                // PLAY 버튼
-                Button(
-                    onClick = { onPlayClick(song) },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Brown20
-                    ),
-                    shape = RoundedCornerShape(50.dp),
-                    modifier = Modifier
-                        .fillMaxWidth(0.8f)
-                        .height(90.dp)
-                ) {
-                    Text(text = "PLAY", fontSize = 35.sp, fontWeight = FontWeight.Bold)
+                    // 코드
+                    Text(
+                        text = song.songChords.joinToString(" "),
+                        fontSize =  chordFont.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // BPM
+                    Text(
+                        text = "${song.bpm} BPM",
+                        fontSize = bpmFont.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Gray70
+                    )
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    // PLAY 버튼
+                    Button(
+                        onClick = { onPlayClick(song) },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Brown20
+                        ),
+                        shape = RoundedCornerShape(cardWidth * 0.2f),
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                            .height(buttonHeight)
+                    ) {
+                        Text(text = "PLAY", fontSize = buttonFont.sp, fontWeight = FontWeight.Bold)
+                    }
                 }
             }
         }
+
+
     }
+
+
 }
