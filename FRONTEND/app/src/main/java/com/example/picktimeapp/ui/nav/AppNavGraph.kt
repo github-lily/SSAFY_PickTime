@@ -202,7 +202,7 @@ fun AppNavGraph() {
         // 🔥 Tunning Mode 🔥
         composable(Routes.GUITAR_TUNNING) {
             val viewModel: TuningViewModel = hiltViewModel()
-            TuningScreen(viewModel)
+            TuningScreen(viewModel =  viewModel, navController = navController)
         }
 
     }
