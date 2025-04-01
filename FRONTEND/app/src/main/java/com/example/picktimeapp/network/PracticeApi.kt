@@ -4,14 +4,10 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.Response
 
-data class ChordBlock(
-    val name: String,
-    val durationBeats: Int
-)
 
 data class Measure(
     val measureIndex: Int,
-    val chordBlocks: List<ChordBlock>
+    val chordBlocks: List<String>
 )
 
 data class SongResponse(

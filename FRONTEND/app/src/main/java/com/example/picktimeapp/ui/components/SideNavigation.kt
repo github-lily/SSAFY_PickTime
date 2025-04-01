@@ -86,9 +86,11 @@ fun SideNavigation(navController: NavController) {
                     size = iconSize,
                     imageSize = imageSize,
                     onClick = {
-                        navController.navigate("practice-test") {
-                            popUpTo(Routes.MYPAGE) { inclusive = true }
-                        }
+                        navController.navigate(Routes.PRACTICE_LIST)
+//                        Step4 테스트용
+//                        navController.navigate("practice-test") {
+//                            popUpTo(Routes.MYPAGE) { inclusive = true }
+
                     }
                 )
             }

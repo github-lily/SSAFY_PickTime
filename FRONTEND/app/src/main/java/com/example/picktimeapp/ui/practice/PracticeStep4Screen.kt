@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.picktimeapp.network.ChordBlock
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.IntOffset
 import kotlinx.coroutines.delay
@@ -55,9 +54,9 @@ fun PracticeStep4Screen(
     val song = viewModel.songData.value
     val error = viewModel.errorMessage.value
 
-    // 코드 노트를 한 줄로 펴기
-    val chordBlocks: List<ChordBlock> = song?.chordProgression
-        ?.flatMap { it.chordBlocks } ?: emptyList()
+
+
+
 
     // 파라미터로 stepId 전달해주기
     LaunchedEffect(key1 = stepId) {
@@ -187,14 +186,17 @@ fun PracticeStep4Screen(
                             buildList {
                                 var currentBeat = 0
                                 song?.chordProgression?.forEach { measure ->
-                                    measure.chordBlocks.forEach { chord ->
-                                        if (chord.name != "X") {
+                                    val blocks = measure.chordBlocks
+                                    val beatsPerChord =
+                                        (song.timeSignature.split("/").getOrNull(0)?.toIntOrNull() ?: 4) / blocks.size
+
+                                    blocks.forEach { chord ->
+                                        if (chord != "X") {
                                             val hitTime = currentBeat * beatDurationMs
-                                            val appearTime =
-                                                hitTime - (screenTravelBeats * beatDurationMs).toLong()
-                                            add(Triple(chord.name, appearTime, hitTime))
+                                            val appearTime = hitTime - (screenTravelBeats * beatDurationMs).toLong()
+                                            add(Triple(chord, appearTime, hitTime))
                                         }
-                                        currentBeat += chord.durationBeats
+                                        currentBeat += beatsPerChord
                                     }
                                 }
                             }
@@ -287,6 +289,8 @@ fun PracticeStep4Screen(
                         }
                     )
                 }
+
+
 
             }
         }
