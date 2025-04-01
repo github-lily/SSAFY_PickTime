@@ -57,7 +57,9 @@ public class PracticeApplicationServiceImpl implements PracticeApplicationServic
         StepInfoResDto stepInfo = stepService.getStepInfo(stepId);
         PracticeResDto step = new PracticeResDto();
 
-        switch (stepInfo.getStepType()){
+        step.setStepType(stepInfo.getStepType());
+
+        switch (step.getStepType()){
             case 1:
                 ChordDataResDto chord = chordDataService.getChord(stepInfo.getChordId());
                 List<ChordDataResDto> chordForPractice = List.of(chord);
