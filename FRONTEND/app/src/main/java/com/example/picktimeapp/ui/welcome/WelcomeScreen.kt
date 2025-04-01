@@ -2,28 +2,20 @@ package com.example.picktimeapp.ui.welcome
 
 import androidx.compose.runtime.Composable
 
-
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.rememberNavController
 import com.example.picktimeapp.R
+import com.example.picktimeapp.ui.nav.Routes
 import com.example.picktimeapp.ui.theme.*
-import com.example.picktimeapp.ui.login.LoginViewModel
-import com.example.picktimeapp.ui.login.LoginScreen
-import com.example.picktimeapp.ui.signup.SignupViewModel
-import com.example.picktimeapp.ui.signup.SignupScreen
+
 
 @Composable
 fun WelcomeScreen(
