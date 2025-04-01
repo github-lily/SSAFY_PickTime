@@ -26,6 +26,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.picktimeapp.R
 import com.example.picktimeapp.audio.AudioVisualizerBar
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -35,8 +36,8 @@ import com.google.accompanist.permissions.rememberPermissionState
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun TuningScreen(
-    viewModel: TuningViewModel,
-    onBackClick: () -> Unit = {}
+    navController: NavController,
+    viewModel: TuningViewModel
 ) {
     // 오디오 수음 권한 변수
     val permissionState = rememberPermissionState(Manifest.permission.RECORD_AUDIO)
@@ -75,7 +76,10 @@ fun TuningScreen(
             contentAlignment = Alignment.TopCenter
         ) {
             IconButton(
-                onClick = onBackClick,
+                onClick = {
+                    viewModel.stopAudioProcessing()
+                    navController.popBackStack()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
@@ -202,53 +206,6 @@ fun TuningScreen(
         }
     }
 }
-
-/**
- * 튜닝 바 영역을 그리는 컴포저블
- * - 배경으로 튜닝 바 이미지를 깔고,
- * - selectedIndex에 해당하는 주파수 범위를 Canvas로 표시 (빨간색 hit area)
- */
-@Composable
-fun TuningBar(
-    modifier: Modifier = Modifier,
-    selectedIndex: Int
-) {
-    // ★ 표준 튜닝 주파수
-    val standardFrequencies = listOf(146.83, 110.0, 82.41, 196.0, 246.94, 329.63)
-
-    // 선택된 줄에 대응하는 주파수 범위만 바꿀 것.
-    // 예: (targetFreq - 10Hz) ~ (targetFreq + 10Hz)
-    val defaultRange = 10.0
-    // null-safe하게 처리
-    val (minFreq, maxFreq) = if (selectedIndex in standardFrequencies.indices) {
-        val center = standardFrequencies[selectedIndex]
-        (center - defaultRange) to (center + defaultRange)
-    } else {
-        // 선택되지 않았을 때는 더미(0..1)로 설정
-        0.0 to 1.0
-    }
-
-    LaunchedEffect(selectedIndex) {
-        android.util.Log.d(
-            "TuningBar",
-            "selectedIndex=$selectedIndex, minFreq=$minFreq, maxFreq=$maxFreq"
-        )
-    }
-
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        // (1) 배경 이미지(튜닝 바)
-        Image(
-            painter = painterResource(id = R.drawable.tunning_bar),
-            contentDescription = "튜닝 바 배경",
-            modifier = Modifier.fillMaxSize()
-        )
-
-    }
-}
-
 
 @Composable
 fun TunningPegsColumn(
