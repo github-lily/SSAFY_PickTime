@@ -34,89 +34,103 @@ fun GameModeScreen(navController: NavController, viewModel: GameListsViewModel =
         }
     }
 
-    Row(modifier = Modifier.fillMaxSize()) {
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val maxW = maxWidth
+        val titleFontSize = maxW.value * 0.05f
+        val subTitleFontSize = maxW.value * 0.02f
+        val loadingFontSize = maxW.value * 0.025f
+        val paddingHorizontal = maxW * 0.05f
+        val spacingVertical = maxW * 0.015f
+        val gridItemSpacing = maxW * 0.03f
 
-        //네비게이션 만들기
-        SideNavigation(navController = navController)
+        Row(modifier = Modifier.fillMaxSize()) {
 
-        // 오른쪽 메인 콘텐츠
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 80.dp, end = 80.dp, top = 0.dp, bottom = 0.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            // 텍스트 영역
-            item {
-                Column {
-                    Text(
-                        text = "GAME",
-                        fontSize = 90.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .padding(top = 20.dp, start = 10.dp)
-                    )
-                    Text(
-                        text = "기타 챌린지! 얼마나 정확하게 연주할 수 있을까요?",
-                        fontSize = 40.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier
-                            .padding(start = 15.dp)
-                    )
-                }
-            }
-            // 로딩 중 - 없어도 됨
-            if (isLoading) {
+            //네비게이션 만들기
+            SideNavigation(navController = navController)
+
+            // 오른쪽 메인 콘텐츠
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = paddingHorizontal, end = paddingHorizontal),
+                verticalArrangement = Arrangement.spacedBy(spacingVertical)
+            ) {
+                // 텍스트 영역
                 item {
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        Text("로딩 중...", fontSize = 30.sp)
+                    Column {
+                        Text(
+                            text = "GAME",
+                            fontSize = titleFontSize.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .padding(top = 15.dp, start = 10.dp)
+                        )
+                        Text(
+                            text = "기타 챌린지! 얼마나 정확하게 연주할 수 있을까요?",
+                            fontSize = subTitleFontSize.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier
+                                .padding(start = 15.dp)
+                        )
                     }
                 }
-            }
-
-            // 에러 메시지 - 없어도 됨
-            errorMessage?.let { message ->
-                item {
-                    Text(
-                        text = message,
-                        color = MaterialTheme.colorScheme.error,
-                        fontSize = 30.sp
-                    )
+                // 로딩 중 - 없어도 됨
+                if (isLoading) {
+                    item {
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            Text("로딩 중...", fontSize = loadingFontSize.sp)
+                        }
+                    }
                 }
-            }
 
-
-            // 카드 그리드
-            item {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
-                    verticalArrangement = Arrangement.spacedBy(10.dp),
-                    horizontalArrangement = Arrangement.spacedBy(50.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 0.dp, max = 4000.dp)
-                ) {
-                    items(gameLists) { song ->
-                        GameCard(
-                            song = SongData(
-                                songId = song.songId,
-                                title = song.title,
-                                bpm = song.bpm,
-                                songUri = song.songUri,
-                                songThumbnailUri = song.songThumbnailUri,
-                                songChords = song.chords,
-                                star = song.star
-                            ),
-                            onPlayClick = {
-                                navController.navigate(Routes.GAME_PLAY)
-                            },
-                            onSoundClick = {
-                                PreviewSoundPlayer.toggleSound(context, song.songUri)
-                            }
+                // 에러 메시지 - 없어도 됨
+                errorMessage?.let { message ->
+                    item {
+                        Text(
+                            text = message,
+                            color = MaterialTheme.colorScheme.error,
+                            fontSize = loadingFontSize.sp
                         )
+                    }
+                }
+
+
+                // 카드 그리드
+                item {
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(3),
+                        verticalArrangement = Arrangement.spacedBy(gridItemSpacing),
+                        horizontalArrangement = Arrangement.spacedBy(gridItemSpacing),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 0.dp, max = 4000.dp)
+                    ) {
+                        items(gameLists) { song ->
+                            GameCard(
+                                song = SongData(
+                                    songId = song.songId,
+                                    title = song.title,
+                                    bpm = song.bpm,
+                                    songUri = song.songUri,
+                                    songThumbnailUri = song.songThumbnailUri,
+                                    songChords = song.chords,
+                                    star = song.star
+                                ),
+                                onPlayClick = {
+                                    navController.navigate(Routes.GAME_PLAY)
+                                },
+                                onSoundClick = {
+                                    PreviewSoundPlayer.toggleSound(context, song.songUri)
+                                }
+                            )
+                        }
                     }
                 }
             }
         }
     }
+
+
 }
