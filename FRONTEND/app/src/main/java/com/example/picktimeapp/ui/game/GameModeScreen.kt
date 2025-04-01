@@ -36,8 +36,8 @@ fun GameModeScreen(navController: NavController, viewModel: GameListsViewModel =
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val maxW = maxWidth
-        val titleFontSize = maxW.value * 0.05f
-        val subTitleFontSize = maxW.value * 0.02f
+        val titleFontSize = maxW.value * 0.04f
+        val subTitleFontSize = maxW.value * 0.015f
         val loadingFontSize = maxW.value * 0.025f
         val paddingHorizontal = maxW * 0.05f
         val spacingVertical = maxW * 0.015f
@@ -63,14 +63,12 @@ fun GameModeScreen(navController: NavController, viewModel: GameListsViewModel =
                             fontSize = titleFontSize.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier
-                                .padding(top = 15.dp, start = 10.dp)
+                                .padding(top = 10.dp)
                         )
                         Text(
                             text = "기타 챌린지! 얼마나 정확하게 연주할 수 있을까요?",
                             fontSize = subTitleFontSize.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier
-                                .padding(start = 15.dp)
                         )
                     }
                 }

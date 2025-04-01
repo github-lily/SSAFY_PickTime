@@ -88,8 +88,8 @@ fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: Na
 
                 Box(
                     modifier = Modifier.padding(
-                        start = (screenWidth.value * 0.07f).dp,
-                        top = (screenHeight.value * 0.1f).dp,
+                        start = (screenWidth.value * 0.075f).dp,
+                        top = (screenHeight.value * 0.06f).dp,
                         end = (screenWidth.value * 0.02f).dp,
                         bottom = (screenHeight.value * 0.01f).dp
                     )

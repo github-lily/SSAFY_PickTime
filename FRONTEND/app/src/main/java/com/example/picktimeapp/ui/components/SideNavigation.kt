@@ -39,8 +39,8 @@ fun SideNavigation(navController: NavController) {
         val iconSize = boxWidth * 0.07f
         val imageSize = iconSize * 0.65f
 
-        val topSpacerHeight = boxHeight * 0.03f
-        val midSpacerHeight = boxHeight * 0.415f
+        val topSpacerHeight = boxHeight * 0.02f
+        val midSpacerHeight = boxHeight * 0.4f
         val smallSpacer = boxHeight * 0.02f
 
         Column (
