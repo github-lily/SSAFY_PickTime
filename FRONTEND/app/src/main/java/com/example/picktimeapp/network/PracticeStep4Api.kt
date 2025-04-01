@@ -25,7 +25,7 @@ data class PracticeStepResponse(
     val song: SongResponse
 )
 
-interface PracticeApi {
+interface PracticeStep4Api {
     @GET("practice/{stepId}")
     suspend fun getPracticeStep(@Path("stepId") stepId: Int): Response<PracticeStepResponse>
 }

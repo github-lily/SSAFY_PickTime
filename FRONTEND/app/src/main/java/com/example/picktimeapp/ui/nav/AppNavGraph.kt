@@ -35,11 +35,13 @@ object Routes {
     const val EDIT_NICKNAME = "editNickname"
     const val EDIT_PASSWORD = "editPassword"
     const val PASSWORD_CHECK = "passwordCheck"
-    const val GUITAR_POSITION = "guitarposition"
     const val GAME = "game"
     const val GAME_PLAY = "gameplay"
     const val GUITAR_TUNNING = "guitartunning"
+    
+    // 연습모드
     const val PRACTICE_LIST = "practicelist"
+    const val GUITAR_POSITION = "guitarposition/{stepId}"
     const val PRACTICE_CHORDINFO = "practicechordinfo"
     const val PRACTICE_CHORDPRESS = "practicechordpress"
     const val PRACTICE_CHORDLISTEN = "practicechordlisten"
@@ -148,15 +150,7 @@ fun AppNavGraph() {
             EditPasswordScreen(navController = navController, originalPassword = originalPassword)
         }
 
-        // 🔥 PracticeList Position 🔥
-        composable(Routes.PRACTICE_LIST) {
-            PracticeListScreen(navController = navController)
-        }
 
-        // 🔥 Guitar Position 🔥
-        composable(Routes.GUITAR_POSITION) {
-            GuitarPositionScreen(navController = navController)
-        }
 
 
         // 🔥 Game Mode 🔥
@@ -175,6 +169,18 @@ fun AppNavGraph() {
 //        }
 
 
+// 🔥🔥🔥🔥🔥 연습모드 🔥🔥🔥🔥🔥
+
+        // 🔥 PracticeList 🔥
+        composable(Routes.PRACTICE_LIST) {
+            PracticeListScreen(navController = navController)
+        }
+
+        // 🔥 Guitar Position 🔥
+        composable(Routes.GUITAR_POSITION) { backStackEntry ->
+            val stepId = backStackEntry.arguments?.getString("stepId")?.toIntOrNull() ?: -1
+            GuitarPositionScreen(navController = navController, stepId = stepId)
+        }
 
 
         // 🔥 Practice Chord Info🔥

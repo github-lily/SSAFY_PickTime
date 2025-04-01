@@ -28,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,34 +46,49 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.picktimeapp.R
+import com.example.picktimeapp.network.*
 import com.example.picktimeapp.ui.components.SideNavigation
 import com.example.picktimeapp.ui.theme.*
 
 
 @Composable
-fun PracticeListScreen(navController: NavController) {
-    val stageList = remember {
-        List(7) { index ->
-            val stageId = index + 1
-            StageItem(
-                id = stageId,
-                description = if (stageId == 1) "G A 코드" else "D C 코드",
-                isClear = stageId == 1,
-                steps = listOf(
-                    StepItem(1, "D코드 연습", true, 2),
-                    StepItem(2, "C코드 연습", false, 2),
-                    StepItem(3, "DC- CD 전환연습", false, 0),
-                    StepItem(4, "D, C 코드로 연주", false, 0)
-                )
-            )
+fun PracticeListScreen(navController: NavController, viewModel: PracticeListViewModel = hiltViewModel()) {
+    val stageList = viewModel.stageList
+
+// ✅ 초기값은 null로
+    var selectedStage by remember { mutableStateOf<StageItem?>(null) }
+
+// ✅ stageList가 바뀔 때마다 선택 스테이지 갱신
+    LaunchedEffect(stageList) {
+        if (stageList.isNotEmpty()) {
+            selectedStage = stageList
+                .filter { !it.isClear } // isClear == false 값 필터링
+                .minByOrNull { it.stageId } // 그 중 stageId가 가장 작은 값 선택
+                ?: stageList.maxByOrNull { it.stageId } // 없다면 전체 중 가장 큰 값(마지막 stage)ㅅ 선택
         }
     }
 
-    var selectedStage by remember { mutableStateOf(stageList[1]) }
 
-    // 1. Column으로 두개의 영역으로 구분(빨간색)
+    // ✅ 유저 정보 받아오기
+    val userInfo = viewModel.userInfo.value
+
+    // ✅ 프로필 이미지 변경
+    val level = userInfo?.level ?: 1
+    val profileResId = when (level) {
+        1 -> R.drawable.profile_level_1
+        2 -> R.drawable.profile_level_2
+        3 -> R.drawable.profile_level_3
+        4 -> R.drawable.profile_level_4
+        5 -> R.drawable.profile_level_5
+        6 -> R.drawable.profile_level_6
+        else -> R.drawable.profile_level_1
+    }
+
+
+
     Row(modifier = Modifier.fillMaxSize()) {
         SideNavigation(navController = navController)
         Surface(
@@ -115,11 +131,10 @@ fun PracticeListScreen(navController: NavController) {
                                         color = Brown40,
                                         shape = CircleShape
                                     ),
-//                                        .size(60.dp),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.profile_level_1),
+                                    painter = painterResource(id = profileResId),
                                     contentDescription = "기린 프로필",
                                     modifier = Modifier
                                         .fillMaxSize()
@@ -140,7 +155,7 @@ fun PracticeListScreen(navController: NavController) {
                                     text = buildAnnotatedString {
                                         append("안녕하세요 ")
                                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                                            append("기타둥둥기린이")
+                                            append(userInfo?.name ?: "기린이")
                                         }
                                         append("님,\n")
                                         append("오늘도 피크타임을 즐기러 가볼까요?")
@@ -176,7 +191,7 @@ fun PracticeListScreen(navController: NavController) {
                                 stageList.forEach { stage ->
                                     StageListItem(
                                         stage = stage,
-                                        isSelected = stage.id == selectedStage.id,
+                                        isSelected = stage.stageId == selectedStage?.stageId,
                                         scale = scale,
                                         onClick = { selectedStage = stage }
                                     )
@@ -192,7 +207,13 @@ fun PracticeListScreen(navController: NavController) {
                                     .weight(0.5f)
                                     .wrapContentHeight()
                             ) {
-                                StageDetailPanel(stage = selectedStage, scale = scale)
+                                selectedStage?.let { stage ->
+                                    StageDetailPanel(
+                                        stage = stage,
+                                        navController = navController,
+                                        scale = scale
+                                    )
+                                }
                             }
                         }
                     }
@@ -249,7 +270,7 @@ fun StageListItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Stage ${stage.id}",
+                text = "Stage ${stage.stageId}",
                 fontWeight = FontWeight.Bold,
                 color = if (isSelected) DarkGreen10 else Brown60,
                 textAlign = TextAlign.Start,
@@ -259,7 +280,7 @@ fun StageListItem(
             Spacer(modifier = Modifier.width(16.dp * scale))
 
             Text(
-                text = stage.description,
+                text = stage.stageDescription,
                 color = if (isSelected) Color.White else Brown60,
                 modifier = Modifier.fillMaxWidth(0.8f),
                 textAlign = TextAlign.Center,
@@ -268,6 +289,7 @@ fun StageListItem(
             )
 
             Spacer(modifier = Modifier.weight(1f))
+
 
             if (stage.isClear) {
                 Icon(
@@ -287,7 +309,7 @@ fun StageListItem(
 
 
 @Composable
-fun StageDetailPanel(stage: StageItem, scale: Float) {
+fun StageDetailPanel(stage: StageItem, scale: Float, navController: NavController) {
     Column(
         modifier = Modifier
             .wrapContentHeight()
@@ -304,18 +326,17 @@ fun StageDetailPanel(stage: StageItem, scale: Float) {
 
         ) {
             Text(
-                text = "Stage ${stage.id} ",
+                text = "Stage ${stage.stageId} ",
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp * scale,
-//                textAlign = TextAlign.Start
 
             )
 
             Spacer(modifier = Modifier.weight(1f))
 
             Text(
-                text = " ${stage.description}",
+                text = " ${stage.stageDescription}",
                 color = Color.White,
                 fontWeight = FontWeight.Medium,
                 fontSize = 14.sp * scale,
@@ -334,7 +355,9 @@ fun StageDetailPanel(stage: StageItem, scale: Float) {
                 .padding(horizontal = 24.dp)
         ) {
             stage.steps.forEach { step ->
-                StepItem(step, scale = scale)
+                StepItem(step, scale = scale) { stepId ->
+                    navController.navigate("guitarPosition/$stepId")
+                }
                 if (step.stepNumber < stage.steps.size) {
                     Spacer(
                         modifier = Modifier
@@ -343,16 +366,18 @@ fun StageDetailPanel(stage: StageItem, scale: Float) {
                             .background(Color.Gray.copy(alpha = 0.3f))
                     )
                 }
+
             }
         }
     }
 }
 
 @Composable
-fun StepItem(step: StepItem, scale: Float) {
+fun StepItem(step: StepItem, scale: Float,  onClick: (Int) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick(step.stepId) }
             .padding(vertical = 8.dp * scale, horizontal = 18.dp * scale),
 
         verticalAlignment = Alignment.CenterVertically
@@ -368,37 +393,28 @@ fun StepItem(step: StepItem, scale: Float) {
         Spacer(modifier = Modifier.width(16.dp))
 
         Text(
-            text = step.description,
+            text = step.stepDescription,
             color = Brown60,
             fontSize = (14.sp * scale),
-            modifier = Modifier.fillMaxWidth(0.8f),
+            modifier = Modifier.fillMaxWidth(0.7f),
             textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // 별 출력
-        Row {
-                Icon(
-                    painter = painterResource(id = R.drawable.star_one),
-                    contentDescription = "Star",
-                    tint = Brown60,
-                    modifier = Modifier.size(40.dp * scale)
-                )
-
+        // ⭐ Step 자신의 star 값 기준
+        val starResId = when (step.star) {
+            1 -> R.drawable.ic_star_one
+            2 -> R.drawable.ic_star_two
+            3 -> R.drawable.ic_star_three
+            else -> R.drawable.ic_star_zero
         }
 
-        Spacer(modifier = Modifier.width(24.dp))
-
-        if (step.isCompleted) {
-            Icon(
-                painter = painterResource(id = R.drawable.check_circle),
-                contentDescription = "Completed",
-                tint = Brown60,
-                modifier = Modifier
-                    .size(32.dp * scale)
-                    .offset((-20.dp * scale))
-            )
-        }
+        Icon(
+            painter = painterResource(id = starResId),
+            contentDescription = "Star",
+            tint = Brown60,
+            modifier = Modifier.size((44 * scale).dp)
+        )
     }
 }

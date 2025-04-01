@@ -2,7 +2,7 @@ package com.example.picktimeapp.ui.practice
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.picktimeapp.network.PracticeApi
+import com.example.picktimeapp.network.PracticeStep4Api
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -13,7 +13,7 @@ import com.example.picktimeapp.network.SongResponse
 
 @HiltViewModel
 class PracticeStepViewModel @Inject constructor(
-    private val practiceApi: PracticeApi
+    private val practiceApi: PracticeStep4Api
 ) : ViewModel() {
 
     private val _songData = mutableStateOf<SongResponse?>(null)
