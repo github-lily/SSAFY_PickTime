@@ -1,10 +1,8 @@
 package com.example.picktimeapp.ui.mypage
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -22,23 +20,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.rememberNavController
+import com.example.picktimeapp.ui.components.BackButton
 import com.example.picktimeapp.ui.theme.Brown40
-import com.example.picktimeapp.ui.theme.DarkGreen10
 import com.example.picktimeapp.ui.theme.Gray30
 import com.example.picktimeapp.ui.theme.Gray50
 import com.example.picktimeapp.ui.theme.Gray70
-import com.example.picktimeapp.ui.theme.Pretendard
 
 @Composable
 fun PasswordCheckScreen(
@@ -48,65 +45,97 @@ fun PasswordCheckScreen(
     var password by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
+    BoxWithConstraints (
+        modifier = Modifier.fillMaxSize()
     ){
-        Column(horizontalAlignment = Alignment.Start) {
-            PasswordTitle()
-            Spacer(modifier = Modifier.height(20.dp))
+        val screenWidth = maxWidth
+        val screenHeight = maxHeight
 
-            //텍스트 필드랑 확인버튼은 가로배치
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                PasswordInputField(password) { password = it }
-                Spacer(modifier = Modifier.width(30.dp))
-                PasswordSubmitButton(
-                    password = password,
-                    onCheckPassword = { inputPassword ->
-                        viewModel.checkPassword(
-                            password = inputPassword,
-                            onSuccess = {
-                                errorMessage = null
-                                navController.navigate("editPassword/$password")
-                            },
-                            onFailure = {
-                                errorMessage = "비밀번호가 일치하지 않습니다."
-                            }
-                        )
-                    }
-                )
-            }
+        val inputWidth = screenWidth * 0.3f
+        val inputHeight = screenHeight * 0.1f
+        val buttonWidth = screenWidth * 0.08f
+        val buttonHeight = inputHeight
+        val spacing = screenHeight * 0.02f
+        val fontSize = (inputHeight.value * 0.4f).sp
+        val titleFontSize = (inputHeight.value * 0.5f).sp
 
-            //비밀번호가 일치하지 않을 경우
-            errorMessage?.let {
-                Spacer(modifier = Modifier.height(24.dp))
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(screenWidth * 0.02f)) {
+            BackButton(navController = navController)
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ){
+            Column(horizontalAlignment = Alignment.Start) {
                 Text(
-                    text = it,
-                    color = Color.Red,
-                    fontSize = 30.sp
+                    text = "비밀번호 확인",
+                    fontWeight = FontWeight.Normal,
+                    fontSize = (buttonHeight.value * 0.4f).sp
                 )
+                Spacer(modifier = Modifier.height(spacing))
+
+                //텍스트 필드랑 확인버튼은 가로배치
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ){
+                    PasswordInputField(
+                        password = password,
+                        onValueChange = { password = it },
+                        width = inputWidth,
+                        height = inputHeight,
+                        fontSize = (fontSize * 0.7f))
+
+                    Spacer(modifier = Modifier.width(screenWidth * 0.03f))
+
+                    PasswordSubmitButton(
+                        password = password,
+                        width = buttonWidth,
+                        height = buttonHeight,
+                        fontSize = fontSize,
+                        onCheckPassword = { inputPassword ->
+                            viewModel.checkPassword(
+                                password = inputPassword,
+                                onSuccess = {
+                                    errorMessage = null
+                                    navController.navigate("editPassword/$password")
+                                },
+                                onFailure = {
+                                    errorMessage = "비밀번호가 일치하지 않습니다."
+                                }
+                            )
+                        }
+                    )
+                }
+
+                //비밀번호가 일치하지 않을 경우
+                errorMessage?.let {
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Text(
+                        text = it,
+                        color = Color.Red,
+                        fontSize = (fontSize * 0.8f)
+                    )
+                }
             }
         }
-    }
-    }
 
 
-@Composable
-fun PasswordTitle() {
-    Text(
-        text = "비밀번호 확인",
-        fontWeight = FontWeight.Normal,
-        fontSize = 45.sp
-    )
-}
+    }
+    }
 
 @Composable
 // string -> Unit 은 string으로 받는데 Unit(아무것도 반환하지 않음)을 의미 void랑 비슷
 //왜 아무것도 반환하지 않냐면 변경하는 것이 목적이고 새로운 값을 반환하기 보단 기존 상태를 수정하는거니까
-fun PasswordInputField(password: String, onValueChange: (String) -> Unit) {
+fun PasswordInputField(
+    password: String,
+    onValueChange: (String) -> Unit,
+    width: Dp,
+    height: Dp,
+    fontSize: TextUnit
+) {
     var isPasswordVisible by remember { mutableStateOf(false) }
 
     OutlinedTextField(
@@ -115,7 +144,7 @@ fun PasswordInputField(password: String, onValueChange: (String) -> Unit) {
         placeholder = {
             Text(
                 text = "현재 비밀번호를 입력해주세요.",
-                fontSize = 40.sp,
+                fontSize = fontSize,
                 color = Gray50
             ) },
         singleLine = true, //줄바꿈 방지
@@ -134,12 +163,12 @@ fun PasswordInputField(password: String, onValueChange: (String) -> Unit) {
                 Icon(
                     imageVector = icon,
                     contentDescription = description,
-                    modifier = Modifier.size(32.dp))
+                    modifier = Modifier.size(height * 0.3f))
             }
         },
         modifier = Modifier
-            .width(600.dp)
-            .height(100.dp)
+            .width(width)
+            .height(height)
             .background(Color.White)
             .shadow(1.dp, shape = RoundedCornerShape(12.dp)),
 
@@ -154,7 +183,7 @@ fun PasswordInputField(password: String, onValueChange: (String) -> Unit) {
 
         //이건 사용자가 입력할 때 나오는 텍스트 스타일
         textStyle = LocalTextStyle.current.copy(
-            fontSize = 40.sp,
+            fontSize = fontSize,
             textDecoration = null,
             color = Gray70)
     )
@@ -163,9 +192,10 @@ fun PasswordInputField(password: String, onValueChange: (String) -> Unit) {
 @Composable
 fun PasswordSubmitButton(
     password: String,
-    onCheckPassword: (String) -> Unit,
-//    onSuccess: () -> Unit,
-//    onError: (String?) -> Unit
+    width: Dp,
+    height: Dp,
+    fontSize: TextUnit,
+    onCheckPassword: (String) -> Unit
 ){
     Button(
         onClick = {
@@ -177,10 +207,10 @@ fun PasswordSubmitButton(
         ),
         shape = MaterialTheme.shapes.medium,
         modifier = Modifier
-            .height(100.dp)
-            .width(150.dp)
+            .height(height)
+            .width(width)
     ) {
-        Text("확인", fontSize = 40.sp)
+        Text("확인", fontSize = fontSize)
     }
 }
 

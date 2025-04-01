@@ -59,17 +59,18 @@ fun GameCard(
 
         // 각각의 카드
         val cardpadding = boxWidth * 0.07f
-        val playBtn = cardWidth * 0.08f
 
         // 각각의 카드 요소 사이즈
         val playBtnSize = cardWidth * 0.08f
         val smallMargin = cardHeight * 0.05f
         val imageSize = cardWidth * 0.6f
         val starSize = cardWidth * 0.15f
-        val titleFont = cardWidth.value * 0.09f
-        val chordFont = cardWidth.value * 0.07f
-        val bpmFont = cardWidth.value * 0.06f
+        val titleFont = cardWidth.value * 0.07f
+        val chordFont = cardWidth.value * 0.05f
+        val bpmFont = cardWidth.value * 0.048f
         val buttonHeight = cardHeight * 0.1f
+
+
         val buttonFont = cardWidth.value * 0.08f
 
         val spacingSmall = cardHeight * 0.03f
@@ -139,7 +140,7 @@ fun GameCard(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(20.dp))
+                    Spacer(modifier = Modifier.height(15.dp))
 
                     // 제목
                     Text(
@@ -158,7 +159,7 @@ fun GameCard(
                         fontWeight = FontWeight.SemiBold
                     )
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(spacingSmall))
 
                     // BPM
                     Text(
