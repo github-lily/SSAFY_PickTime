@@ -32,15 +32,16 @@ fun AudioVisualizerBar(
     val frequency = viewModel.frequencyState.value
     val standardFrequencies = listOf(146.83, 110.0, 82.41, 196.0, 246.94, 329.63)
 
-    // 동적 주파수 범위 설정
+    // 고정된 전체 표시 범위: target을 중심으로 ±10Hz (총 20Hz)
+    val displayRangeHz = 20.0
     val (minFreq, maxFreq) = if (selectedIndex in standardFrequencies.indices) {
-        val h = standardFrequencies[selectedIndex]
-        (h * 0.2) to (h * 1.2)
+        val target = standardFrequencies[selectedIndex]
+        (target - displayRangeHz / 2) to (target + displayRangeHz / 2)
     } else {
         0.0 to 500.0
     }
 
-    // 0..1 사이 fraction 계산 (애니메이션용)
+    // 주파수 값을 0~1 범위의 fraction으로 변환
     val fraction = ((frequency - minFreq) / (maxFreq - minFreq))
         .toFloat()
         .coerceIn(0f, 1f)
@@ -49,11 +50,11 @@ fun AudioVisualizerBar(
         animationSpec = tween(durationMillis = 300)
     )
 
-    // Hit Area: ±5Hz 범위
-    val hitRange = 5.0
+    // hit area: ±1Hz 고정 (각 스트링에서 동일한 비율로 표시됨)
+    val hitRange = 1.0
     val (hitMinFreq, hitMaxFreq) = if (selectedIndex in standardFrequencies.indices) {
-        val centerFreq = standardFrequencies[selectedIndex]
-        (centerFreq - hitRange) to (centerFreq + hitRange)
+        val target = standardFrequencies[selectedIndex]
+        (target - hitRange) to (target + hitRange)
     } else {
         0.0 to -1.0
     }
@@ -64,21 +65,19 @@ fun AudioVisualizerBar(
     }
 
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
-        // 튜닝 바 이미지를 일정 크기로 제한 (세로 전체, 비율 유지)
+        // 튜닝 바 이미지 영역
         Box(
             modifier = Modifier
                 .align(Alignment.Center)
                 .fillMaxHeight()
                 .aspectRatio(imageRatio)
         ) {
-            // 튜닝 바 이미지
             Image(
                 painter = tuningBarPainter,
                 contentDescription = null,
                 modifier = Modifier.matchParentSize()
             )
 
-            // Canvas: 이미지와 동일한 크기로 겹침
             BoxWithConstraints(Modifier.matchParentSize()) {
                 val canvasWidthPx = constraints.maxWidth.toFloat()
                 val canvasHeightPx = constraints.maxHeight.toFloat()
@@ -88,7 +87,7 @@ fun AudioVisualizerBar(
                 val barTopPx = canvasHeightPx - barHeightPx
 
                 Canvas(modifier = Modifier.matchParentSize()) {
-                    // Hit Area 그리기
+                    // 기존 hit area 계산
                     if (hitMaxFreq > hitMinFreq) {
                         val fractionLow = ((hitMinFreq - minFreq) / (maxFreq - minFreq))
                             .toFloat().coerceIn(0f, 1f)
@@ -96,18 +95,22 @@ fun AudioVisualizerBar(
                             .toFloat().coerceIn(0f, 1f)
                         val yLowPx = canvasHeightPx * (1f - fractionLow)
                         val yHighPx = canvasHeightPx * (1f - fractionHigh)
-                        val topY = yHighPx.coerceAtMost(yLowPx)
-                        val rectHeight = yLowPx - topY
+
+                        // 오프셋: 튜닝 바 높이의 1/4 만큼 위로 이동
+                        val offsetPx = canvasHeightPx / 4f
+                        val newYLowPx = (yLowPx - offsetPx).coerceAtLeast(0f)
+                        val newYHighPx = (yHighPx - offsetPx).coerceAtLeast(0f)
+                        val topY = newYHighPx.coerceAtMost(newYLowPx)
+                        val rectHeight = newYLowPx - topY
 
                         drawRect(
-                            // 변경된 색상: #F9D952 → 0xFFF9D952
-                            color = Color(0xFFF9D952).copy(alpha = 0.2f),
+                            color = Color(0xFFF9D952).copy(alpha = 0.3f),
                             topLeft = Offset(x = 0f, y = topY),
                             size = Size(width = canvasWidthPx, height = rectHeight)
                         )
                     }
 
-                    // 막대 (투명 처리; 필요시 색상 변경 가능)
+                    // 투명 막대: 필요시 여기에 색상을 추가 가능
                     drawRect(
                         color = Color.Transparent,
                         topLeft = Offset(x = 0f, y = barTopPx),
@@ -115,7 +118,7 @@ fun AudioVisualizerBar(
                     )
                 }
 
-                // 기린 이미지 배치: 막대의 윗변에 맞춰 움직임
+                // 기린 이미지: 막대의 윗부분에 고정 배치
                 val giraffePainter = painterResource(id = R.drawable.tunning_girin)
                 val giraffeTopDp = with(LocalDensity.current) { barTopPx.toDp() }
                 val giraffeOffsetX = (-45).dp

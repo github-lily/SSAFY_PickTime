@@ -1,8 +1,5 @@
-// TuningViewModel.kt
 package com.example.picktimeapp.ui.tunning
 
-import android.util.Log
-import androidx.compose.animation.core.Animatable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -11,8 +8,6 @@ import com.example.picktimeapp.audio.AudioAnalyzerYIN
 import com.example.picktimeapp.audio.AudioCapture
 import com.example.picktimeapp.audio.AudioPlayer
 import javax.inject.Inject
-import kotlin.math.abs
-import kotlin.math.sqrt
 
 @HiltViewModel
 class TuningViewModel @Inject constructor() : ViewModel() {
@@ -41,7 +36,7 @@ class TuningViewModel @Inject constructor() : ViewModel() {
     private val _frequencyState = mutableStateOf(0.0)
     val frequencyState: State<Double> = _frequencyState
 
-    private val _noteName = mutableStateOf("Unknown")
+    private val _noteName = mutableStateOf("버튼을 클릭하여 튜닝을 시작하세요!")
     val noteName: State<String> = _noteName
 
     // ★ 추가: 튜닝 피드백 (ex: "E2 - 음이 높습니다")
@@ -86,31 +81,29 @@ class TuningViewModel @Inject constructor() : ViewModel() {
      */
     private fun processFrequency(newFreq: Double) {
         val currentTime = System.currentTimeMillis()
-//        if (currentTime - lastUpdateTime < updateIntervalMillis) return
-//        if (kotlin.math.abs(newFreq - _frequencyState.value) < frequencyUpdateThreshold) return
-
         lastUpdateTime = currentTime
+
+        // 새로운 주파수 값은 항상 업데이트
         _frequencyState.value = newFreq
-        val name = AudioAnalyzerYIN.frequencyToNoteName(newFreq)
-        _noteName.value = name
 
-        Log.d("TuningViewModel", "현재 주파수: $newFreq Hz, 감지된 음: $name")
-        //Log.d("TuningViewModel", "targetFrequency=$targetFrequency, targetNoteName=$targetNoteName")
-        // 목표 주파수와 비교
-        if (targetFrequency > 0 && targetNoteName.isNotEmpty()) {
-            Log.d("Test", "33333333333333333333333333")
-            val difference = newFreq - targetFrequency
-            // tolerance 범위를 어떻게 잡을지에 따라 달라짐 (예: ±1Hz)
-            val tolerance = 1.0
+        // 유효한 주파수(예: 0보다 큰 값)일 때만 noteName 업데이트
+        if (newFreq > 0.0) {
+            val name = AudioAnalyzerYIN.frequencyToNoteName(newFreq)
+            _noteName.value = name
 
-            _tuningFeedback.value = when {
-                newFreq <= 0.0 -> "" // 분석 실패
-                difference > tolerance -> "$targetNoteName - 음이 높습니다."
-                difference < -tolerance -> "$targetNoteName - 음이 낮습니다."
-                else -> "$targetNoteName - 음이 맞습니다."
+            // 목표 주파수와 비교 후 튜닝 피드백 업데이트
+            if (targetFrequency > 0 && targetNoteName.isNotEmpty()) {
+                val difference = newFreq - targetFrequency
+                val tolerance = 1.0
+
+                _tuningFeedback.value = when {
+                    difference > tolerance -> "$targetNoteName - 음이 높습니다."
+                    difference < -tolerance -> "$targetNoteName - 음이 낮습니다."
+                    else -> "$targetNoteName - 음이 맞습니다."
+                }
             }
-            Log.d("TuningViewModel", "$tuningFeedback")
         }
+        // 만약 newFreq가 0.0 이하이면 기존 noteName 값을 유지 (업데이트하지 않음)
     }
 
     /**
