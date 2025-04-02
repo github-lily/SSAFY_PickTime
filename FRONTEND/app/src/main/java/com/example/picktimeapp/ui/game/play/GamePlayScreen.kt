@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -13,11 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.picktimeapp.R
 import com.example.picktimeapp.ui.components.PauseDialogCustom
@@ -25,39 +30,90 @@ import com.example.picktimeapp.ui.theme.Brown40
 import com.example.picktimeapp.ui.theme.Brown80
 
 @Composable
-fun GamePlayScreen(navController: NavController) {
+fun GamePlayScreen(
+    navController: NavController,
+    songId: Int
+    ) {
+
+    val viewModel : GamePlayViewModel = hiltViewModel()
 
     // 현재 멈춤을 눌렀는지 안눌렀는지 확인할 변수
     val (showPauseDialog, setShowPauseDialog) = remember { mutableStateOf(false) }
 
+    LaunchedEffect(songId) {
+        viewModel.loadGamePlay(songId)
+    }
+
     BoxWithConstraints (
         modifier = Modifier
             .fillMaxWidth()
-            // 위에 여백
-            .padding(top = 40.dp, bottom = 40.dp)
+            .graphicsLayer {
+                clip = false
+            }
+            .padding(top = 20.dp, bottom = 20.dp)
     ){
         val screenWidth = maxWidth
         val screenHeight = maxHeight
 
-        Column (modifier = Modifier.fillMaxSize()) {
+        // 게임 데이터 불러오기
+        val gameData = viewModel.gameData.collectAsState().value
+        // 모든 코드 가지고오기
+        val chordProgression = gameData?.chordProgression ?: emptyList()
 
-            // 상단
+        println("✅ 전체 코드 개수: ${chordProgression.size}")
+        println("✅ 코드 리스트: $chordProgression.chordBlocks")
+
+        Column (modifier = Modifier
+            .fillMaxSize()
+            .graphicsLayer {
+                clip = false
+            }
+        ) {
             TopBar(
-                //popBackStack 은 뒤로갈 수 있음
-                onBackClick = {navController.popBackStack()},
-                //클릭하면 팝업창을 보여줍니다.
                 onPauseClick = { setShowPauseDialog(true)},
-                screenWidth = screenWidth
-            )
-
-            GuitarImage(
-                imageRes = R.drawable.guitar_neck,
                 screenWidth = screenWidth,
-                screenHeight = screenHeight
+                modifier = Modifier
+                    .zIndex(3f)
             )
 
+            // 코드 애니메이션 쪽
+            Box (modifier = Modifier
+                .fillMaxSize()
+                .weight(1f)
+                .graphicsLayer {
+                    clip = false  // overflow 허용!
+                }
+            ){
+                Spacer(Modifier.height(screenHeight * 0.05f))
+
+                GuitarImage(
+                    imageRes = R.drawable.guitar_neck,
+                    screenWidth = screenWidth,
+                    screenHeight = screenHeight,
+                    modifier = Modifier.zIndex(1f)
+                )
+
+                if (gameData != null) {
+                    SlidingCodeBar(
+                        screenWidth = screenWidth,
+                        durationSec = gameData.durationSec,
+                        chordProgression = gameData.chordProgression,
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .padding(top = screenHeight * 0.14f)
+                            .zIndex(2f)
+                            .graphicsLayer {
+                                clip = false
+                            }
+                    )
+                }
+
+            }
+
+            // 코드 & 영상 나오는 쪽
             Box(modifier = Modifier
                 .fillMaxSize()
+                .weight(1f)
             ) {
                 ChordSection(
                     modifier = Modifier
@@ -79,7 +135,6 @@ fun GamePlayScreen(navController: NavController) {
                     }
                 )
             }
-
         }
     }
 }
@@ -88,26 +143,17 @@ fun GamePlayScreen(navController: NavController) {
 // 위에 상단 버튼
 @Composable
 fun TopBar(
-    onBackClick: () -> Unit,
     onPauseClick: () -> Unit,
-    screenWidth: Dp
+    screenWidth: Dp,
+    modifier: Modifier = Modifier
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = screenWidth * 0.02f),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.Absolute.Right,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // 뒤로 가기 버튼
-        Image(
-            painter = painterResource(id = R.drawable.back_icon), // ← 여기에 뒤로가기 이미지 아이콘 넣기
-            contentDescription = "Back",
-            modifier = Modifier
-                .size(screenWidth * 0.02f)
-                .clickable { onBackClick() }
-        )
-
         // 멈춤 버튼
         Image(
             painter = painterResource(id = R.drawable.pause_btn),
@@ -122,7 +168,7 @@ fun TopBar(
 
 // 기타 넥 이미지
 @Composable
-fun GuitarImage(imageRes: Int, screenWidth: Dp, screenHeight: Dp) {
+fun GuitarImage(imageRes: Int, screenWidth: Dp, screenHeight: Dp,modifier: Modifier = Modifier) {
     Image(
         painter = painterResource(id = imageRes),
         contentDescription = "Guitar Neck",
@@ -152,10 +198,10 @@ fun ChordSection(modifier: Modifier = Modifier, imageSize: Dp, screenWidth: Dp) 
         ChordBlock(
             title = "Am",
             imageRes = R.drawable.code_am,
-            imageSize = imageSize * 0.8f,
+            imageSize = imageSize,
             titleColor = Brown40,
-            alpha = 0.6f,
-            screenWidth = screenWidth
+            screenWidth = screenWidth,
+            modifier = Modifier.alpha(0.5f)
         )
         // 여기에다가 사용자 영상 띄우기!!
     }
@@ -168,19 +214,22 @@ fun ChordBlock(
     imageRes: Int,
     imageSize: Dp,
     titleColor: Color,
-    alpha: Float = 1.0f,
     isHighlighted: Boolean = false,
-    screenWidth: Dp
+    screenWidth: Dp,
+    modifier: Modifier = Modifier
 ) {
-    val fontSize = if (isHighlighted) (screenWidth * 0.04f).value.sp else (screenWidth * 0.03f).value.sp
+//    val fontSize = if (isHighlighted) (screenWidth * 0.04f).value.sp else (screenWidth * 0.02f).value.sp
 
-    Column(horizontalAlignment = Alignment.Start) {
+
+    Column(horizontalAlignment = Alignment.Start, modifier = modifier) {
         Text(
             text = title,
             modifier = Modifier.padding(start = screenWidth * 0.02f),
             style = MaterialTheme.typography.headlineMedium.copy(
-                fontSize = fontSize,
-                fontWeight = if (isHighlighted) FontWeight.Bold else FontWeight.Normal
+                fontSize = (screenWidth * 0.04f).value.sp,
+//                fontWeight = if (isHighlighted) FontWeight.Bold else FontWeight.Normal
+                fontWeight = FontWeight.Bold
+
             ),
             color = titleColor
 
@@ -190,9 +239,7 @@ fun ChordBlock(
             contentDescription = "Chord Diagram: $title",
             modifier = Modifier
                 .size(imageSize)
-                .alpha(alpha)
         )
     }
 }
 
-// 팝업창
