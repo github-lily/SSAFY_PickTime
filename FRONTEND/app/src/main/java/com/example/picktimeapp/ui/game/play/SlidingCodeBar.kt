@@ -1,5 +1,5 @@
 package com.example.picktimeapp.ui.game.play
-//시도 4: 하는 중
+//시도 4: 하는 중 가능성 있다.
 // 일단 5개만 보여주고 한 음의 시간을 계산하여 해당 시간이 지날 때마다 그 다음 음을 보여주는 슬라이드
 
 import androidx.compose.animation.core.Animatable
@@ -76,7 +76,7 @@ fun SlidingCodeBar(
             modifier = Modifier
                 .offset { IntOffset(offsetX.value.toInt(), 0) } // 현재 5개를 왼쪽으로 움직임
                 .padding(start = screenWidth * 0.12f),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(1.dp)
 
         ) {
             visibleNotes.forEachIndexed() { index, chord ->

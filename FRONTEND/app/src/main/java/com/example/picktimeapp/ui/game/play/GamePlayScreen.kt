@@ -1,11 +1,14 @@
 package com.example.picktimeapp.ui.game.play
 
+import android.media.MediaPlayer
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -16,6 +19,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -36,6 +40,9 @@ fun GamePlayScreen(
     ) {
 
     val viewModel : GamePlayViewModel = hiltViewModel()
+    // 노래 불러오기 위해
+    val context = LocalContext.current
+
 
     // 현재 멈춤을 눌렀는지 안눌렀는지 확인할 변수
     val (showPauseDialog, setShowPauseDialog) = remember { mutableStateOf(false) }
@@ -59,6 +66,26 @@ fun GamePlayScreen(
         val gameData = viewModel.gameData.collectAsState().value
         // 모든 코드 가지고오기
         val chordProgression = gameData?.chordProgression ?: emptyList()
+        // 음악 재생하기
+        DisposableEffect(gameData?.songUri) {
+            val mediaPlayer = MediaPlayer()
+            if (gameData?.songUri != null) {
+                try {
+                    mediaPlayer.setDataSource(context, Uri.parse(gameData.songUri))
+                    mediaPlayer.prepare()
+                    mediaPlayer.start()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+            // 🧹 컴포저블이 dispose될 때 음악도 정리
+            onDispose {
+                if (mediaPlayer.isPlaying) {
+                    mediaPlayer.stop()
+                }
+                mediaPlayer.release()
+            }
+        }
 
         println("✅ 전체 코드 개수: ${chordProgression.size}")
         println("✅ 코드 리스트: $chordProgression.chordBlocks")
