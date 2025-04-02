@@ -45,8 +45,8 @@ object Routes {
     const val PRACTICE_LIST = "practicelist"
     const val GUITAR_POSITION = "guitarposition/{stepId}"
     const val PRACTICE_CHORDINFO = "practicechordinfo"
-    const val PRACTICE_CHORDPRESS = "practicechordpress/{stepId}"
-    const val PRACTICE_CHORDLISTEN = "practicechordlisten/{stepId}"
+    const val PRACTICE_CHORDPRESS = "practicechordpress"
+    const val PRACTICE_CHORDLISTEN = "practicechordlisten"
     const val PRACTICE_MUSIC = "practice/{stepId}"
 
 
@@ -200,14 +200,24 @@ fun AppNavGraph() {
 
 
         // 🔥 Practice Chord Press🔥
-        composable(Routes.PRACTICE_CHORDPRESS) { backStackEntry ->
-            val stepId = backStackEntry.arguments?.getString("stepId")?.toIntOrNull() ?: -1
+        composable(
+            route = "${Routes.PRACTICE_CHORDPRESS}/{stepId}",
+            arguments = listOf(navArgument("stepId") {
+                type = NavType.IntType
+            })
+        ) { backStackEntry ->
+            val stepId = backStackEntry.arguments?.getInt("stepId") ?: -1
             PracticeChordPressScreen(navController = navController, stepId = stepId)
         }
 
         // 🔥 Practice Chord Listen🔥
-        composable(Routes.PRACTICE_CHORDLISTEN) { backStackEntry ->
-            val stepId = backStackEntry.arguments?.getString("stepId")?.toIntOrNull() ?: -1
+        composable(
+            route = "${Routes.PRACTICE_CHORDLISTEN}/{stepId}",
+            arguments = listOf(navArgument("stepId") {
+                type = NavType.IntType
+            })
+        ) { backStackEntry ->
+            val stepId = backStackEntry.arguments?.getInt("stepId") ?: -1
             PracticeChordListenScreen(navController = navController, stepId = stepId)
         }
 

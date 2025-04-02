@@ -210,7 +210,7 @@ fun PracticeChordPressScreen(
                     )
 
                     IconButton(
-                        onClick = { navController.navigate(Routes.PRACTICE_CHORDLISTEN) },
+                        onClick = { navController.navigate("practicechordlisten/$stepId") },
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(bottom = 8.dp)
