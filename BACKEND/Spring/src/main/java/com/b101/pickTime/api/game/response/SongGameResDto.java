@@ -17,5 +17,6 @@ public class SongGameResDto {
     private String timeSignature;
     private List<SongData.Measure> chordProgression;
     private String songUri;
+    private String[] organizedChords;
 
 }
