@@ -47,4 +47,19 @@ data class GameListsResponse(
     val star: Int
 )
 
+//게임 플레이 화면
+data class GamePlayResponse(
+    val title: String,
+    val bpm: Int,
+    val artist: String,
+    val durationSec: Int,
+    val timeSignature: String,
+    val chordProgression: List<ChordMeasure>,
+    val songUri: String,
+    val organizedChords: List<String>
+)
 
+data class ChordMeasure(
+    val measureIndex: Int,
+    val chordBlocks: List<String>
+)
