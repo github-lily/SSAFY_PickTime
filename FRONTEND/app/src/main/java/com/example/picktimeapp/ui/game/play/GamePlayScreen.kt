@@ -42,8 +42,6 @@ fun GamePlayScreen(
     val viewModel : GamePlayViewModel = hiltViewModel()
     // 노래 불러오기 위해
     val context = LocalContext.current
-
-
     // 현재 멈춤을 눌렀는지 안눌렀는지 확인할 변수
     val (showPauseDialog, setShowPauseDialog) = remember { mutableStateOf(false) }
 
@@ -66,6 +64,7 @@ fun GamePlayScreen(
         val gameData = viewModel.gameData.collectAsState().value
         // 모든 코드 가지고오기
         val chordProgression = gameData?.chordProgression ?: emptyList()
+
         // 음악 재생하기
         DisposableEffect(gameData?.songUri) {
             val mediaPlayer = MediaPlayer()
@@ -86,6 +85,35 @@ fun GamePlayScreen(
                 mediaPlayer.release()
             }
         }
+
+        // 코드들 일단 싹 다 불러오기
+        val allChords = remember(chordProgression) {
+            chordProgression.flatMap { it.chordBlocks }
+        }
+        // 코드 몇 초동안 보여야하는지 계산하기
+        val durationPerNoteSec = remember (chordProgression, gameData?.durationSec) {
+            val totalNotes = allChords.size
+            (gameData?.durationSec?.toFloat() ?: 1f) / totalNotes
+        }
+        // 현재 코드 몇 번째인지
+        val currentChordIndex = remember { mutableStateOf(0) }
+        // 시간 계산해서 현재 코드 몇 번쨰인지 업데이트
+        LaunchedEffect (allChords, gameData?.durationSec) {
+            val startTime = System.currentTimeMillis()
+            while (currentChordIndex.value < allChords.size) {
+                val elapsedSec = (System.currentTimeMillis() - startTime) / 1000f
+                val newIndex = (elapsedSec / durationPerNoteSec).toInt()
+                if (newIndex != currentChordIndex.value) {
+                    currentChordIndex.value = newIndex
+                }
+                kotlinx.coroutines.delay(100)
+            }
+        }
+        // 🔥 X를 제외한 실제 코드 2개 가져오기
+        val (current, next) = getNextVisibleChords(allChords, currentChordIndex.value, 2)
+
+//        val current = allChords.getOrNull(currentChordIndex.value)
+//        val next = allChords.getOrNull(currentChordIndex.value + 1)
 
         println("✅ 전체 코드 개수: ${chordProgression.size}")
         println("✅ 코드 리스트: $chordProgression.chordBlocks")
@@ -123,6 +151,7 @@ fun GamePlayScreen(
                 if (gameData != null) {
                     SlidingCodeBar(
                         screenWidth = screenWidth,
+//                        currentIndex = currentChordIndex.value,
                         durationSec = gameData.durationSec,
                         chordProgression = gameData.chordProgression,
                         modifier = Modifier
@@ -143,6 +172,8 @@ fun GamePlayScreen(
                 .weight(1f)
             ) {
                 ChordSection(
+                    currentChord = current,
+                    nextChord = next,
                     modifier = Modifier
                         .align(Alignment.TopCenter)
                         .padding(end = screenWidth * 0.3f),
@@ -208,32 +239,76 @@ fun GuitarImage(imageRes: Int, screenWidth: Dp, screenHeight: Dp,modifier: Modif
 
 // 코드 나오는 부분
 @Composable
-fun ChordSection(modifier: Modifier = Modifier, imageSize: Dp, screenWidth: Dp) {
+fun ChordSection(
+    modifier: Modifier = Modifier,
+    imageSize: Dp,
+    screenWidth: Dp,
+    currentChord: String?,
+    nextChord: String?,
+) {
     Row(
         modifier = modifier,
     ) {
-        // 왼쪽 코드
-        ChordBlock(
-            title = "G",
-            imageRes = R.drawable.code_g,
-            imageSize = imageSize,
-            titleColor = Brown80,
-            isHighlighted = true,
-            screenWidth = screenWidth
-        )
+        if(!currentChord.isNullOrBlank() && currentChord != "X") {
+            // 왼쪽 코드
+            ChordBlock(
+                title = currentChord,
+                imageRes = getChordImageRes(currentChord),
+                imageSize = imageSize,
+                titleColor = Brown80,
+                isHighlighted = true,
+                screenWidth = screenWidth
+            )
+        }
+
         Spacer(modifier = Modifier.width(screenWidth * 0.05f))
-        ChordBlock(
-            title = "Am",
-            imageRes = R.drawable.code_am,
-            imageSize = imageSize,
-            titleColor = Brown40,
-            screenWidth = screenWidth,
-            modifier = Modifier.alpha(0.5f)
-        )
+
+        if(!nextChord.isNullOrBlank() && nextChord != "X") {
+            ChordBlock(
+                title = nextChord,
+                imageRes = getChordImageRes(nextChord),
+                imageSize = imageSize,
+                titleColor = Brown40,
+                screenWidth = screenWidth,
+                modifier = Modifier.alpha(0.5f)
+            )
+        }
         // 여기에다가 사용자 영상 띄우기!!
     }
 }
 
+@Composable
+fun getChordImageRes(chord: String): Int {
+    return when (chord.uppercase()) {
+        "G" -> R.drawable.code_g
+        "C" -> R.drawable.code_c
+        "D" -> R.drawable.code_d
+        "A" -> R.drawable.code_a
+        "AM" -> R.drawable.code_am
+        else -> R.drawable.code_c
+    }
+}
+
+@Composable
+fun getNextVisibleChords(allChords: List<String>, fromIndex: Int, count: Int): List<String?> {
+    val result = mutableListOf<String?>()
+    var index = fromIndex
+
+    while (index < allChords.size && result.size < count) {
+        val chord = allChords[index]
+        if (chord != "X") {
+            result.add(chord)
+        }
+        index++
+    }
+
+    // 부족하면 null로 채움
+    while (result.size < count) {
+        result.add(null)
+    }
+
+    return result
+}
 
 @Composable
 fun ChordBlock(
