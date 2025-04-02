@@ -2,32 +2,38 @@ package com.example.picktimeapp.ui.practice
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.picktimeapp.network.PracticeStep4Api
+import com.example.picktimeapp.network.PracticeStepApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.State
 import android.util.Log
+import com.example.picktimeapp.network.PracticeStepResponse
 import com.example.picktimeapp.network.SongResponse
+
+
 
 @HiltViewModel
 class PracticeStepViewModel @Inject constructor(
-    private val practiceApi: PracticeStep4Api
+    private val practiceStepApi: PracticeStepApi
 ) : ViewModel() {
 
-    private val _songData = mutableStateOf<SongResponse?>(null)
-    val songData: State<SongResponse?> = _songData
+    private val _stepData = mutableStateOf<PracticeStepResponse?>(null)
+    val stepData: State<PracticeStepResponse?> = _stepData
 
     private val _errorMessage = mutableStateOf<String?>(null)
     val errorMessage: State<String?> = _errorMessage
 
-    fun fetchStepSong(stepId: Int) {
+    fun fetchPracticeStep(stepId: Int) {
         viewModelScope.launch {
+            Log.d("PracticeStep", "stepId=$stepId → 호출 시작")
             try {
-                val response = practiceApi.getPracticeStep(stepId)
+                val response = practiceStepApi.getPracticeStep(stepId)
                 if (response.isSuccessful) {
-                    _songData.value = response.body()?.song
+                    _stepData.value = response.body()
+                    Log.d("PracticeStep", "chords = ${_stepData.value?.chords}")
+
                 } else {
                     _errorMessage.value = "오류: ${response.code()}"
                 }
@@ -38,3 +44,5 @@ class PracticeStepViewModel @Inject constructor(
         }
     }
 }
+
+

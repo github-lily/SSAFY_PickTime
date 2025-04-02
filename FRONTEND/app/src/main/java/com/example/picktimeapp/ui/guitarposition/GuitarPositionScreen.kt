@@ -124,7 +124,7 @@ fun GuitarPositionScreen(
                                 .padding(end = screenWidth * 0.03f, bottom = screenHeight * 0.03f)
                         ) {
                             IconButton(
-                                onClick = { navController.navigate(Routes.PRACTICE_CHORDPRESS) },
+                                onClick = { navController.navigate("practicechordinfo/$stepId") },
                                 modifier = Modifier
                                     .align(Alignment.BottomEnd)
                                     .offset(y = (-screenHeight * 0.01f))

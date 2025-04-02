@@ -35,7 +35,7 @@ import androidx.compose.runtime.mutableStateOf
 
 
 @Composable
-fun PracticeChordListenScreen(navController: NavController) {
+fun PracticeChordListenScreen(navController: NavController, stepId : Int) {
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val screenWidth = maxWidth
         val screenHeight = maxHeight
@@ -154,7 +154,7 @@ fun PracticeChordListenScreen(navController: NavController) {
                     )
 
                     IconButton(
-                        onClick = { navController.navigate(Routes.PRACTICE_STEP_4) },
+                        onClick = { navController.navigate(Routes.PRACTICE_MUSIC) },
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(bottom = 8.dp)
