@@ -35,7 +35,8 @@ import com.example.picktimeapp.ui.nav.Routes
 
 @Composable
 fun GuitarPositionScreen(
-    navController: NavController
+    navController: NavController,
+    stepId : Int
 ) {
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val screenWidth = maxWidth
@@ -79,7 +80,7 @@ fun GuitarPositionScreen(
 
 
                 // 중간 영역(카메라)
-                BoxWithConstraints(
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
@@ -123,7 +124,7 @@ fun GuitarPositionScreen(
                                 .padding(end = screenWidth * 0.03f, bottom = screenHeight * 0.03f)
                         ) {
                             IconButton(
-                                onClick = { navController.navigate(Routes.PRACTICE_CHORDPRESS) },
+                                onClick = { navController.navigate("practicechordinfo/$stepId") },
                                 modifier = Modifier
                                     .align(Alignment.BottomEnd)
                                     .offset(y = (-screenHeight * 0.01f))

@@ -23,7 +23,7 @@ fun WelcomeScreen(
     onNavigateToSignup: () -> Unit,
     onNavigateToMyPage: () -> Unit,
     onNavigateToGuitarPosition: () -> Unit,
-    onNavigateToStep4:() -> Unit,
+    onNavigateToMusic:() -> Unit,
 ) {
             // 좌우로 나누는 Row
             Row(
@@ -141,7 +141,7 @@ fun WelcomeScreen(
                     // 연습모드 step4
                     Button(
                         onClick = {
-                            onNavigateToStep4()
+                            onNavigateToMusic()
                         },
                         modifier = buttonModifier,
                         colors = ButtonDefaults.buttonColors(
