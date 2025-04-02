@@ -5,6 +5,7 @@ import retrofit2.http.GET
 // 전체 응답
 
 data class PracticeStepResponse(
+    val stepType : Int,
     val chords: List<ChordResponse>?,
     val song: SongResponse?
 )

@@ -36,7 +36,7 @@ fun PracticeChordInfoScreen(
     val chords = stepData?.chords.orEmpty()
 
 
-    // API 최초 호출
+    // ✅ API 최초 호출
     LaunchedEffect(stepId) {
         viewModel.fetchPracticeStep(stepId)
     }
