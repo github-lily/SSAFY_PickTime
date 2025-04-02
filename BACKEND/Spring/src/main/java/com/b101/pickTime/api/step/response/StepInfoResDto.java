@@ -14,5 +14,6 @@ public class StepInfoResDto {
     private Integer chordId;
     private Integer songId;
     private Integer stageId;
+    private String description;
 
 }

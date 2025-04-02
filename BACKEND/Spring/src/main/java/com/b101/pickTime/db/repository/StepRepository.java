@@ -23,7 +23,8 @@ public interface StepRepository extends JpaRepository<Step, Integer> {
     @Query(value = "SELECT s.step_type AS stepType, " +
             "       s.chord_id AS chordId, " +
             "       s.song_id AS songId, " +
-            "       s.stage_id AS stageId " +
+            "       s.stage_id AS stageId, " +
+            "       s.description " +
             "FROM steps s " +
             "WHERE s.step_id = :stepId",
             nativeQuery = true)
