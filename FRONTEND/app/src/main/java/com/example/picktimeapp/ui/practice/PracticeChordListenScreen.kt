@@ -1,6 +1,9 @@
 package com.example.picktimeapp.ui.practice
 
 
+import android.media.MediaPlayer
+import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -24,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalDensity
 import androidx.navigation.NavController
 import com.example.picktimeapp.ui.components.PauseDialogCustom
@@ -31,11 +35,38 @@ import com.example.picktimeapp.ui.components.PracticeTopBar
 import com.example.picktimeapp.ui.nav.Routes
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.picktimeapp.util.ChordImageMap
 
 
 
 @Composable
-fun PracticeChordListenScreen(navController: NavController, stepId : Int) {
+fun PracticeChordListenScreen(
+    navController: NavController,
+    stepId : Int,
+    viewModel: PracticeStepViewModel = hiltViewModel()
+) {
+
+    val stepData = viewModel.stepData.value
+    val chords = stepData?.chords.orEmpty()
+
+    val chordName = if (chords.isNotEmpty()) chords.first().chordName else "로딩 중..."
+
+
+    // 소리 설정
+    val chordSoundUri = if (chords.isNotEmpty()) chords.first().chordSoundUri else ""
+
+    val context = LocalContext.current
+    val mediaPlayer = remember { MediaPlayer() }
+
+
+    // ✅ API 호출
+    LaunchedEffect(stepId) {
+        viewModel.fetchPracticeStep(stepId)
+    }
+
+
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val screenWidth = maxWidth
         val screenHeight = maxHeight
@@ -97,7 +128,7 @@ fun PracticeChordListenScreen(navController: NavController, stepId : Int) {
                                 .align(Alignment.Top)
                         ) {
                             Text(
-                                text = "G",
+                                text = chordName,
                                 fontSize = (screenWidth * 0.04f).value.sp,
                                 fontWeight = FontWeight.Bold,
                                 fontFamily = TitleFont,
@@ -105,10 +136,23 @@ fun PracticeChordListenScreen(navController: NavController, stepId : Int) {
                                 modifier = Modifier.padding(bottom = 12.dp)
                             )
 
-                            IconButton(onClick = {
-                                // TODO: 코드 사운드 재생 로직
-
-                            },
+                            IconButton(
+                                onClick = {
+                                    val chordSoundUri = viewModel.stepData.value?.chords?.firstOrNull()?.chordSoundUri
+                                    if (!chordSoundUri.isNullOrBlank()) {
+                                        try {
+                                            val uri = Uri.parse(chordSoundUri) // ✅ 여기 추가
+                                            mediaPlayer.reset()
+                                            mediaPlayer.setDataSource(context, uri) // ✅ context 기반으로 설정
+                                            mediaPlayer.prepare()
+                                            mediaPlayer.start()
+                                        } catch (e: Exception) {
+                                            Log.e("ChordPress", "사운드 재생 실패: ${e.message}")
+                                        }
+                                    } else {
+                                        Log.w("ChordPress", "chordSoundUri가 null 또는 비어 있음")
+                                    }
+                                },
                                 modifier = Modifier.size(56.dp)
                                 ) {
                                 Image(
@@ -119,14 +163,22 @@ fun PracticeChordListenScreen(navController: NavController, stepId : Int) {
                             }
                         }
 
+
+                        // 이미지 가져오기
+                        val chordImageResId = ChordImageMap.getResId(chordName)
+
                         // 오른쪽: 코드 이미지
-                        Image(
-                            painter = painterResource(id = R.drawable.code_g),
-                            contentDescription = "G 코드 이미지",
-                            modifier = Modifier
-                                .height(screenHeight * 0.4f),
-                            contentScale = ContentScale.Fit
-                        )
+                        if (chordImageResId != 0) {
+                            Image(
+                                painter = painterResource(id = chordImageResId),
+                                contentDescription = "$chordName 코드 이미지",
+                                modifier = Modifier
+                                    .height(screenHeight * 0.4f),
+                                contentScale = ContentScale.Fit
+                            )
+                        } else {
+                            Text(text = "이미지 없음: $chordName")
+                        }
                     }
                 }
 
