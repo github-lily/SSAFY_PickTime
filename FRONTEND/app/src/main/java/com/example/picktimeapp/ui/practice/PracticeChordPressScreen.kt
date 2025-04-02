@@ -35,7 +35,7 @@ import androidx.compose.runtime.mutableStateOf
 
 
 @Composable
-fun PracticeChordPressScreen(navController: NavController) {
+fun PracticeChordPressScreen(navController: NavController, stepId : Int) {
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val screenWidth = maxWidth
         val screenHeight = maxHeight

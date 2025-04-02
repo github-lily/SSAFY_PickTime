@@ -1,102 +1,91 @@
 package com.example.picktimeapp.ui.practice
 
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.picktimeapp.R
 import com.example.picktimeapp.ui.camera.CameraPreview
-import com.example.picktimeapp.ui.theme.*
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.unit.IntOffset
-import kotlinx.coroutines.delay
-import android.media.MediaPlayer
-import android.net.Uri
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
-import com.example.picktimeapp.ui.components.PracticeTopBar
-import com.example.picktimeapp.ui.nav.Routes
-
-import androidx.navigation.NavController
 import com.example.picktimeapp.ui.components.PauseDialogCustom
 import com.example.picktimeapp.ui.components.PracticeTopBar
-
-
+import com.example.picktimeapp.ui.nav.Routes
+import com.example.picktimeapp.ui.theme.Brown20
+import com.example.picktimeapp.ui.theme.Gray90
+import com.example.picktimeapp.ui.theme.TitleFont
+import kotlinx.coroutines.delay
 
 @Composable
-fun PracticeStep4Screen(
+fun PracticeMusicScreen(
     stepId: Int,
     navController: NavController,
     viewModel: PracticeStepViewModel = hiltViewModel()
 ) {
-
-
-    val song = viewModel.songData.value
+    val stepData = viewModel.stepData.value
+    val song = stepData?.song
     val error = viewModel.errorMessage.value
 
-
-
-
-
-    // 파라미터로 stepId 전달해주기
-    LaunchedEffect(key1 = stepId) {
-        viewModel.fetchStepSong(stepId)
+    val chordBlocks: List<Triple<String, Long, Long>> = remember(song) {
+        buildList {
+            var currentBeat = 0
+            song?.chordProgression?.forEach { measure ->
+                measure.chordBlocks.forEach { chord ->
+                    if (chord != "X") {
+                        val hitTime = (currentBeat * (60_000 / (song.bpm))).toLong()
+                        val appearTime = hitTime - ((song.timeSignature.split("/")[0].toFloatOrNull() ?: 4f) * 60_000 / song.bpm).toLong()
+                        add(Triple(chord, appearTime, hitTime))
+                    }
+                    currentBeat++
+                }
+            }
+        }
     }
 
-    //lerp
+    LaunchedEffect(stepId) {
+        viewModel.fetchPracticeStep(stepId)
+    }
+
     fun lerp(start: Float, stop: Float, fraction: Float): Float {
         return (1 - fraction) * start + fraction * stop
     }
 
-
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val screenWidth = maxWidth
         val screenHeight = maxHeight
+        val density = LocalDensity.current
 
-        // 일시정지
         val showPauseDialog = remember { mutableStateOf(false) }
 
         Scaffold(
             topBar = {
                 PracticeTopBar(
                     titleText = "코드연습",
-//                    iconSize = (screenWidth * 0.05f).coerceAtLeast(32.dp),
-                    onPauseClick = {
-                        showPauseDialog.value = true
-                    }
+                    onPauseClick = { showPauseDialog.value = true }
                 )
             }
         ) { innerPadding ->
-
-
-
-            Column (
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
             ) {
-
-                // 피드백 텍스트 박스
                 Box(
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
@@ -116,32 +105,12 @@ fun PracticeStep4Screen(
                     )
                 }
 
-                // 노래 정보(API 테스트용)
-//                if (song != null) {
-//                    Text(
-//                        text = "${song.title} by ${song.artist}",
-//                        modifier = Modifier.align(Alignment.TopCenter),
-//                        color = Color.Black
-//                    )
-//                    Spacer(modifier = Modifier.height(16.dp))
-//                }
-//
-//                if (error != null) {
-//                    Text(
-//                        text = error,
-//                        modifier = Modifier.align(Alignment.TopCenter),
-//                        color = Color.Red
-//                    )
-//                    Spacer(modifier = Modifier.height(16.dp))
-//                }
-
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    // 프렛보드 이미지
                     Image(
                         painter = painterResource(id = R.drawable.guitar_practice_neck),
                         contentDescription = "기타 프렛보드",
@@ -152,65 +121,23 @@ fun PracticeStep4Screen(
                         contentScale = ContentScale.FillBounds
                     )
 
-
-                    // 🎸 코드 노트 반복 출력 (프레임 기반 시간 동기화 방식)
                     Box(modifier = Modifier.fillMaxSize()) {
-//                    val context = LocalContext.current
-//                    val mediaPlayer = remember {
-//                        MediaPlayer().apply {
-//                            setDataSource(context, Uri.parse(song?.songUri ?: ""))
-//                            prepare()
-//                        }
-//                    }
-
                         var musicTime by remember { mutableStateOf(0L) }
                         LaunchedEffect(Unit) {
-//                        mediaPlayer.start()
                             while (true) {
-//                            musicTime = mediaPlayer.currentPosition.toLong()
                                 musicTime += 16L
-                                delay(16L) // 60fps
+                                delay(16L)
                             }
                         }
 
-                        val judgeLineX = screenWidth.value * 0.2f // 🎯 정타선 위치
-                        val startX = screenWidth.value + (screenWidth.value * 0.1f) // 시작 위치
+                        val judgeLineX = screenWidth.value * 0.2f
+                        val startX = screenWidth.value + (screenWidth.value * 0.1f)
 
-                        val bpm = song?.bpm ?: 120
-                        val beatDurationMs = 60_000 / bpm
-                        val screenTravelBeats =
-                            song?.timeSignature?.split("/")?.getOrNull(0)?.toFloatOrNull() ?: 4f
-
-                        // 모든 코드 블록을 실제 등장 순서대로 정리
-                        val allChordBlocks = remember(song) {
-                            buildList {
-                                var currentBeat = 0
-                                song?.chordProgression?.forEach { measure ->
-                                    val blocks = measure.chordBlocks
-                                    val beatsPerChord =
-                                        (song.timeSignature.split("/").getOrNull(0)?.toIntOrNull() ?: 4) / blocks.size
-
-                                    blocks.forEach { chord ->
-                                        if (chord != "X") {
-                                            val hitTime = currentBeat * beatDurationMs
-                                            val appearTime = hitTime - (screenTravelBeats * beatDurationMs).toLong()
-                                            add(Triple(chord, appearTime, hitTime))
-                                        }
-                                        currentBeat += beatsPerChord
-                                    }
-                                }
-                            }
-                        }
-
-                        allChordBlocks.forEach { (chordName, appearTime, hitTime) ->
-                            val progress =
-                                ((musicTime - appearTime) / (hitTime - appearTime).toFloat()).coerceIn(
-                                    0f,
-                                    1f
-                                )
+                        chordBlocks.forEach { (chordName, appearTime, hitTime) ->
+                            val progress = ((musicTime - appearTime) / (hitTime - appearTime).toFloat()).coerceIn(0f, 1f)
                             val currentX = lerp(startX, judgeLineX, progress)
 
-                            if (musicTime in appearTime.toLong()..hitTime.toLong()) {
+                            if (musicTime in appearTime..hitTime) {
                                 Box(
                                     modifier = Modifier
                                         .offset {
@@ -239,8 +166,6 @@ fun PracticeStep4Screen(
                     }
                 }
 
-
-                // 하단 - 카메라 프리뷰 + 다음 버튼
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -262,7 +187,7 @@ fun PracticeStep4Screen(
                     )
 
                     IconButton(
-                        onClick = { navController.navigate(Routes.PRACTICE_STEP_4) },
+                        onClick = { navController.navigate(Routes.WELCOME) },
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(bottom = 8.dp)
@@ -276,7 +201,6 @@ fun PracticeStep4Screen(
                     }
                 }
 
-                // 일시정지 모달
                 if (showPauseDialog.value) {
                     PauseDialogCustom(
                         screenWidth = screenWidth,
@@ -289,9 +213,6 @@ fun PracticeStep4Screen(
                         }
                     )
                 }
-
-
-
             }
         }
     }

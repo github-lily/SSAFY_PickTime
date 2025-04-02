@@ -8,7 +8,7 @@ import com.example.picktimeapp.network.PasswordConfirmApi
 import com.example.picktimeapp.network.PasswordUpdateApi
 import com.example.picktimeapp.network.PickTimeApi
 import com.example.picktimeapp.network.PracticeListApi
-import com.example.picktimeapp.network.PracticeStep4Api
+import com.example.picktimeapp.network.PracticeStepApi
 import com.example.picktimeapp.network.SignUpApi
 import com.example.picktimeapp.network.UserApi
 import com.google.gson.Gson
@@ -101,8 +101,8 @@ object NetworkModule {
     // Practice Step4
     @Provides
     @Singleton
-    fun providePracticeApi(retrofit: Retrofit): PracticeStep4Api =
-        retrofit.create(PracticeStep4Api::class.java)
+    fun providePracticeStepApi(retrofit: Retrofit): PracticeStepApi =
+        retrofit.create(PracticeStepApi::class.java)
 
 
 

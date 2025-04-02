@@ -2,9 +2,11 @@ package com.example.picktimeapp.ui.nav
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.picktimeapp.ui.login.LoginScreen
 import com.example.picktimeapp.ui.login.LoginViewModel
 import com.example.picktimeapp.ui.signup.SignupScreen
@@ -22,7 +24,7 @@ import com.example.picktimeapp.ui.practice.PracticeChordInfoScreen
 import com.example.picktimeapp.ui.practice.PracticeChordListenScreen
 import com.example.picktimeapp.ui.practice.PracticeChordPressScreen
 import com.example.picktimeapp.ui.practice.PracticeListScreen
-import com.example.picktimeapp.ui.practice.PracticeStep4Screen
+import com.example.picktimeapp.ui.practice.PracticeMusicScreen
 import com.example.picktimeapp.ui.tunning.TuningScreen
 import com.example.picktimeapp.ui.tunning.TuningViewModel
 
@@ -43,9 +45,9 @@ object Routes {
     const val PRACTICE_LIST = "practicelist"
     const val GUITAR_POSITION = "guitarposition/{stepId}"
     const val PRACTICE_CHORDINFO = "practicechordinfo"
-    const val PRACTICE_CHORDPRESS = "practicechordpress"
-    const val PRACTICE_CHORDLISTEN = "practicechordlisten"
-    const val PRACTICE_STEP_4 = "practice/{stepId}"
+    const val PRACTICE_CHORDPRESS = "practicechordpress/{stepId}"
+    const val PRACTICE_CHORDLISTEN = "practicechordlisten/{stepId}"
+    const val PRACTICE_MUSIC = "practice/{stepId}"
 
 
 
@@ -79,8 +81,8 @@ fun AppNavGraph() {
                         popUpTo(Routes.WELCOME) { inclusive = false }
                     }
                 },
-                onNavigateToStep4 = {
-                    navController.navigate(Routes.PRACTICE_STEP_4) {
+                onNavigateToMusic = {
+                    navController.navigate(Routes.PRACTICE_MUSIC) {
                         popUpTo(Routes.WELCOME) { inclusive = false }
                     }
                 },
@@ -184,30 +186,40 @@ fun AppNavGraph() {
 
 
         // 🔥 Practice Chord Info🔥
-        composable(Routes.PRACTICE_CHORDINFO) {
-            PracticeChordInfoScreen(navController)
+        composable(
+            route = "${Routes.PRACTICE_CHORDINFO}/{stepId}",
+            arguments = listOf(navArgument("stepId") {
+                type = NavType.IntType
+            })
+        ) { backStackEntry ->
+            val stepId = backStackEntry.arguments?.getInt("stepId") ?: -1
+            PracticeChordInfoScreen(navController = navController, stepId = stepId)
         }
+
+
 
 
         // 🔥 Practice Chord Press🔥
-        composable(Routes.PRACTICE_CHORDPRESS) {
-            PracticeChordPressScreen(navController)
+        composable(Routes.PRACTICE_CHORDPRESS) { backStackEntry ->
+            val stepId = backStackEntry.arguments?.getString("stepId")?.toIntOrNull() ?: -1
+            PracticeChordPressScreen(navController = navController, stepId = stepId)
         }
 
         // 🔥 Practice Chord Listen🔥
-        composable(Routes.PRACTICE_CHORDLISTEN) {
-            PracticeChordListenScreen(navController)
+        composable(Routes.PRACTICE_CHORDLISTEN) { backStackEntry ->
+            val stepId = backStackEntry.arguments?.getString("stepId")?.toIntOrNull() ?: -1
+            PracticeChordListenScreen(navController = navController, stepId = stepId)
         }
 
-        // 🔥 Practice step4 Mode 🔥
-        composable(Routes.PRACTICE_STEP_4) { backStackEntry ->
+        // 🔥 Practice Music 🔥
+        composable(Routes.PRACTICE_MUSIC) { backStackEntry ->
             val stepId = backStackEntry.arguments?.getString("stepId")?.toIntOrNull() ?: -1
-            PracticeStep4Screen(stepId = stepId, navController = navController)
+            PracticeMusicScreen(stepId = stepId, navController = navController)
         }
 
         // 연습모드 API test용
         composable("practice-test") {
-            PracticeStep4Screen(stepId = 4, navController = navController)
+            PracticeMusicScreen(stepId = 4, navController = navController)
         }
 
 
