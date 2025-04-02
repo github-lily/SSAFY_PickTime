@@ -187,7 +187,7 @@ fun PracticeMusicScreen(
                     )
 
                     IconButton(
-                        onClick = { navController.navigate(Routes.WELCOME) },
+                        onClick = { navController.navigate(Routes.PRACTICE_LIST) },
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(bottom = 8.dp)
