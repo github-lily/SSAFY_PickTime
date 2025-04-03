@@ -2,6 +2,7 @@ package com.example.picktimeapp.ui.game.play
 
 import android.media.MediaPlayer
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -34,6 +35,7 @@ import com.example.picktimeapp.ui.theme.Brown40
 import com.example.picktimeapp.ui.theme.Brown80
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.picktimeapp.ui.components.ScoreDialogCustom
 
 @Composable
 fun GamePlayScreen(
@@ -45,6 +47,11 @@ fun GamePlayScreen(
     val context = LocalContext.current
     // 현재 멈춤을 눌렀는지 안눌렀는지 확인할 변수
     val (showPauseDialog, setShowPauseDialog) = remember { mutableStateOf(false) }
+
+    // 게임 끝났을 때
+    var hasSentResult by remember { mutableStateOf(false) }
+    var showScoreDialog by remember { mutableStateOf(false) }
+    var score by remember { mutableStateOf(0) }
 
     LaunchedEffect(songId) {
         viewModel.loadGamePlay(songId)
@@ -107,14 +114,35 @@ fun GamePlayScreen(
         // 시간 계산해서 현재 코드 몇 번쨰인지 업데이트 및 경과 시간 추적
         LaunchedEffect(allChords, gameData?.durationSec) {
             val startTime = System.currentTimeMillis()
-            while (currentChordIndex.value < allChords.size) {
+            val totalChords = allChords.size
+
+            while (currentChordIndex.value <= allChords.size -1) {
                 val current = (System.currentTimeMillis() - startTime) / 1000f
                 elapsedTime = current
                 val newIndex = (current / durationPerNoteSec).toInt()
-                if (newIndex != currentChordIndex.value && newIndex < allChords.size) {
-                    currentChordIndex.value = newIndex
+//                if (newIndex != currentChordIndex.value && newIndex < allChords.size) {
+//                    currentChordIndex.value = newIndex
+//                }
+                if (newIndex < totalChords) {
+                    if (newIndex != currentChordIndex.value) {
+                        currentChordIndex.value = newIndex
+//                        Log.d("GamePlayScreen", "📍 현재 인덱스 = $newIndex / 전체 = $totalChords")
+                    }
+                } else {
+                    break
                 }
                 kotlinx.coroutines.delay(16) // 약 60fps
+            }
+
+            // 마지막 코드까지 도달했을 때 종료
+            if (!hasSentResult  && totalChords > 0 ) {
+                hasSentResult = true
+
+                score = 3
+                Log.d("GamePlayScreen", "🎯 게임 끝났습니다. 점수 = $score")
+                viewModel.sendGameResult(songId, score) {
+                    showScoreDialog = true
+                }
             }
         }
 
@@ -196,6 +224,21 @@ fun GamePlayScreen(
                     }
                 )
             }
+            if (showScoreDialog) {
+                ScoreDialogCustom(
+                    score = score,
+                    screenWidth = screenWidth,
+                    onDismiss = {
+                        showScoreDialog = false
+                        navController.popBackStack()
+                    },
+                    onExit = {
+                        showScoreDialog = false
+                        navController.popBackStack()
+                    }
+                )
+            }
+
         }
     }
 }
@@ -285,7 +328,7 @@ fun getChordImageRes(chord: String): Int {
         "C" -> R.drawable.code_c
         "D" -> R.drawable.code_d
         "A" -> R.drawable.code_a
-        "B" -> R.drawable.code_a
+        "B" -> R.drawable.code_b
         "E" -> R.drawable.code_e
         "F" -> R.drawable.code_f
 
@@ -293,7 +336,7 @@ fun getChordImageRes(chord: String): Int {
         "C7" -> R.drawable.code_c7
         "D7" -> R.drawable.code_d7
         "A7" -> R.drawable.code_a7
-        "B7" -> R.drawable.code_a7
+        "B7" -> R.drawable.code_b7
         "E7" -> R.drawable.code_e7
         "F7" -> R.drawable.code_f7
 

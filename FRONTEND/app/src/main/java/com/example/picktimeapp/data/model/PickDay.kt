@@ -56,10 +56,15 @@ data class GamePlayResponse(
     val timeSignature: String,
     val chordProgression: List<ChordMeasure>,
     val songUri: String,
-    val organizedChords: List<String>
+    val organizedChords: List<String>? = null
 )
 
 data class ChordMeasure(
     val measureIndex: Int,
     val chordBlocks: List<String>
+)
+
+// 게임 끝났을 때
+data class GameScoreRequest(
+    val score: Int
 )
