@@ -1,8 +1,10 @@
 package com.example.picktimeapp.ui.tunning
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.example.picktimeapp.audio.AudioAnalyzerFFT
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.example.picktimeapp.audio.AudioAnalyzerYIN
 import com.example.picktimeapp.audio.AudioCapture
@@ -49,12 +51,18 @@ class TuningViewModel @Inject constructor() : ViewModel() {
     private val audioCapture = AudioCapture { audioData ->
         val rms = calculateRMS(audioData)
         if (rms < amplitudeThreshold) {
-            //Log.d("TuningViewModel", "신호 세기 낮음 (RMS: $rms) -> 건너뛰기")
             return@AudioCapture
         }
-        //Log.d("TuningViewModel", "targetFrequency=$targetFrequency, targetNoteName=$targetNoteName")
-        val newFreq = AudioAnalyzerYIN.analyzeFrequency(audioData)
-        processFrequency(newFreq)
+        // 튜닝 처리
+//        val newFreq = AudioAnalyzerYIN.analyzeFrequency(audioData)
+//        processFrequency(newFreq)
+
+        // 코드 처리
+        val detectionResults = AudioAnalyzerFFT.processAudioData(audioData)
+        detectionResults.forEach { result ->
+            Log.d("viewModel", "측정 음 : ${result.notes} 측정 코드 : ${result.chord}")
+        }
+        showChord(detectionResults[0].chord)
     }
 
     private val audioPlayer = AudioPlayer()
@@ -104,6 +112,10 @@ class TuningViewModel @Inject constructor() : ViewModel() {
             }
         }
         // 만약 newFreq가 0.0 이하이면 기존 noteName 값을 유지 (업데이트하지 않음)
+    }
+
+    private fun showChord(chord: String) {
+        _noteName.value = chord;
     }
 
     /**
