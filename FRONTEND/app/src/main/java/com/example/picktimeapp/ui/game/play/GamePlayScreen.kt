@@ -280,12 +280,61 @@ fun ChordSection(
 
 @Composable
 fun getChordImageRes(chord: String): Int {
-    return when (chord.uppercase()) {
+    return when (chord) {
         "G" -> R.drawable.code_g
         "C" -> R.drawable.code_c
         "D" -> R.drawable.code_d
         "A" -> R.drawable.code_a
-        "AM" -> R.drawable.code_am
+        "B" -> R.drawable.code_a
+        "E" -> R.drawable.code_e
+        "F" -> R.drawable.code_f
+
+        "G7" -> R.drawable.code_g7
+        "C7" -> R.drawable.code_c7
+        "D7" -> R.drawable.code_d7
+        "A7" -> R.drawable.code_a7
+        "B7" -> R.drawable.code_a7
+        "E7" -> R.drawable.code_e7
+        "F7" -> R.drawable.code_f7
+
+        "Cm" -> R.drawable.code_cm
+        "Dm" -> R.drawable.code_dm
+        "Em" -> R.drawable.code_em
+        "Fm" -> R.drawable.code_fm
+        "Gm" -> R.drawable.code_gm
+        "Am" -> R.drawable.code_am
+        "Bm" -> R.drawable.code_bm
+
+        "Cm7" -> R.drawable.code_cm7
+        "Dm7" -> R.drawable.code_dm7
+        "Em7" -> R.drawable.code_em7
+        "Fm7" -> R.drawable.code_fm7
+        "Gm7" -> R.drawable.code_gm7
+        "Am7" -> R.drawable.code_am7
+        "Bm7" -> R.drawable.code_bm7
+
+        "CM7" -> R.drawable.code_cm7
+        "DM7" -> R.drawable.code_dbigm7
+        "EM7" -> R.drawable.code_ebigm7
+        "FM7" -> R.drawable.code_fbigm7
+        "GM7" -> R.drawable.code_gbigm7
+        "AM7" -> R.drawable.code_abigm7
+        "BM7" -> R.drawable.code_bbigm7
+
+        "F#m" -> R.drawable.code_fsm
+        "C#m" -> R.drawable.code_csm
+        "F#m7" -> R.drawable.code_fsm7
+        "Dsus4" -> R.drawable.code_dsus4
+        "Asus4" -> R.drawable.code_asus4
+        "Cadd9" -> R.drawable.code_cadd9
+        "Gadd9" -> R.drawable.code_gadd9
+        "Fmaj7" -> R.drawable.code_fmaj7
+        "Emaj7" -> R.drawable.code_emaj7
+        "G#m7" -> R.drawable.code_gsm7
+        "C#m7" -> R.drawable.code_csm7
+
+
+
         else -> R.drawable.code_c
     }
 }
