@@ -36,6 +36,7 @@ import com.example.picktimeapp.ui.theme.Brown80
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import com.example.picktimeapp.ui.components.ScoreDialogCustom
+import com.example.picktimeapp.ui.nav.Routes
 
 @Composable
 fun GamePlayScreen(
@@ -230,11 +231,15 @@ fun GamePlayScreen(
                     screenWidth = screenWidth,
                     onDismiss = {
                         showScoreDialog = false
-                        navController.popBackStack()
+                        navController.navigate("game/$songId") {
+                            popUpTo("game/$songId") { inclusive = true } // 현재 화면 제거 후 재시작하겠다.
+                        }
                     },
                     onExit = {
                         showScoreDialog = false
-                        navController.popBackStack()
+                        navController.navigate(Routes.GAME) {
+                            popUpTo("game/$songId") { inclusive = true } // 현재 화면 제거
+                        }
                     }
                 )
             }
