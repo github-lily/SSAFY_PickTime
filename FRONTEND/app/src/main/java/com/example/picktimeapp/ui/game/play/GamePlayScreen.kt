@@ -32,13 +32,14 @@ import com.example.picktimeapp.R
 import com.example.picktimeapp.ui.components.PauseDialogCustom
 import com.example.picktimeapp.ui.theme.Brown40
 import com.example.picktimeapp.ui.theme.Brown80
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 
 @Composable
 fun GamePlayScreen(
     navController: NavController,
     songId: Int
-    ) {
-
+) {
     val viewModel : GamePlayViewModel = hiltViewModel()
     // 노래 불러오기 위해
     val context = LocalContext.current
@@ -90,33 +91,35 @@ fun GamePlayScreen(
         val allChords = remember(chordProgression) {
             chordProgression.flatMap { it.chordBlocks }
         }
+
+        // 경과 시간 상태 추가
+        var elapsedTime by remember { mutableStateOf(0f) }
+
         // 코드 몇 초동안 보여야하는지 계산하기
-        val durationPerNoteSec = remember (chordProgression, gameData?.durationSec) {
+        val durationPerNoteSec = remember(chordProgression, gameData?.durationSec) {
             val totalNotes = allChords.size
             (gameData?.durationSec?.toFloat() ?: 1f) / totalNotes
         }
+
         // 현재 코드 몇 번째인지
         val currentChordIndex = remember { mutableStateOf(0) }
-        // 시간 계산해서 현재 코드 몇 번쨰인지 업데이트
-        LaunchedEffect (allChords, gameData?.durationSec) {
+
+        // 시간 계산해서 현재 코드 몇 번쨰인지 업데이트 및 경과 시간 추적
+        LaunchedEffect(allChords, gameData?.durationSec) {
             val startTime = System.currentTimeMillis()
             while (currentChordIndex.value < allChords.size) {
-                val elapsedSec = (System.currentTimeMillis() - startTime) / 1000f
-                val newIndex = (elapsedSec / durationPerNoteSec).toInt()
-                if (newIndex != currentChordIndex.value) {
+                val current = (System.currentTimeMillis() - startTime) / 1000f
+                elapsedTime = current
+                val newIndex = (current / durationPerNoteSec).toInt()
+                if (newIndex != currentChordIndex.value && newIndex < allChords.size) {
                     currentChordIndex.value = newIndex
                 }
-                kotlinx.coroutines.delay(100)
+                kotlinx.coroutines.delay(16) // 약 60fps
             }
         }
+
         // 🔥 X를 제외한 실제 코드 2개 가져오기
         val (current, next) = getNextVisibleChords(allChords, currentChordIndex.value, 2)
-
-//        val current = allChords.getOrNull(currentChordIndex.value)
-//        val next = allChords.getOrNull(currentChordIndex.value + 1)
-
-        println("✅ 전체 코드 개수: ${chordProgression.size}")
-        println("✅ 코드 리스트: $chordProgression.chordBlocks")
 
         Column (modifier = Modifier
             .fillMaxSize()
@@ -151,8 +154,9 @@ fun GamePlayScreen(
                 if (gameData != null) {
                     SlidingCodeBar(
                         screenWidth = screenWidth,
-//                        currentIndex = currentChordIndex.value,
-                        durationSec = gameData.durationSec,
+                        currentIndex = currentChordIndex.value,
+                        elapsedTime = elapsedTime,
+                        totalDuration = gameData.durationSec.toFloat(),
                         chordProgression = gameData.chordProgression,
                         modifier = Modifier
                             .wrapContentWidth()
@@ -163,7 +167,6 @@ fun GamePlayScreen(
                             }
                     )
                 }
-
             }
 
             // 코드 & 영상 나오는 쪽
@@ -197,7 +200,6 @@ fun GamePlayScreen(
     }
 }
 
-
 // 위에 상단 버튼
 @Composable
 fun TopBar(
@@ -222,7 +224,6 @@ fun TopBar(
         )
     }
 }
-
 
 // 기타 넥 이미지
 @Composable
@@ -320,21 +321,15 @@ fun ChordBlock(
     screenWidth: Dp,
     modifier: Modifier = Modifier
 ) {
-//    val fontSize = if (isHighlighted) (screenWidth * 0.04f).value.sp else (screenWidth * 0.02f).value.sp
-
-
     Column(horizontalAlignment = Alignment.Start, modifier = modifier) {
         Text(
             text = title,
             modifier = Modifier.padding(start = screenWidth * 0.02f),
             style = MaterialTheme.typography.headlineMedium.copy(
                 fontSize = (screenWidth * 0.04f).value.sp,
-//                fontWeight = if (isHighlighted) FontWeight.Bold else FontWeight.Normal
                 fontWeight = FontWeight.Bold
-
             ),
             color = titleColor
-
         )
         Image(
             painter = painterResource(id = imageRes),
@@ -344,4 +339,3 @@ fun ChordBlock(
         )
     }
 }
-
