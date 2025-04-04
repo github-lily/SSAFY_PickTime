@@ -1,5 +1,6 @@
 package com.example.picktimeapp.ui.guitarposition
 
+import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,6 +31,8 @@ import androidx.navigation.NavController
 
 import androidx.compose.material3.Text
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalView
 import com.example.picktimeapp.ui.components.PauseDialogCustom
 import com.example.picktimeapp.ui.nav.Routes
 
@@ -89,13 +92,32 @@ fun GuitarPositionScreen(
 
                     // 카메라 + 오버레이
                     CameraPermissionScreen {
-                        val cameraWidth = screenWidth * 0.65f
-                        val cameraHeight = cameraWidth * 16f / 9f
+                        // 고정된 9:16 비율로 설정
+                        val aspectRatio = 16f / 9f
+
+                        // 사용 가능한 최대 높이와 너비 계산
+                        val screenWidth = LocalConfiguration.current.screenWidthDp.dp * 0.9f
+                        val screenHeight = LocalConfiguration.current.screenHeightDp.dp * 0.6f
+
+                        // 너비를 기준으로 높이 계산
+                        val widthBasedHeight = screenWidth / aspectRatio
+
+                        // 높이를 기준으로 너비 계산
+                        val heightBasedWidth = screenHeight * aspectRatio
+
+                        // 화면에 맞는 최적의 크기 선택
+                        val (finalWidth, finalHeight) = if (widthBasedHeight <= screenHeight) {
+                            // 너비 기준으로 맞추기
+                            Pair(screenWidth, widthBasedHeight)
+                        } else {
+                            // 높이 기준으로 맞추기
+                            Pair(heightBasedWidth, screenHeight)
+                        }
 
                         Box(
                             modifier = Modifier
-                                .width(cameraWidth)
-                                .height(cameraHeight)
+                                .width(finalWidth)
+                                .height(finalHeight)
                                 .clip(RoundedCornerShape(12.dp)),
                             contentAlignment = Alignment.Center
                         ) {
