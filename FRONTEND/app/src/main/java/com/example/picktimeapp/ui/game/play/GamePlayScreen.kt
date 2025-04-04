@@ -44,8 +44,14 @@ fun GamePlayScreen(
     songId: Int
 ) {
     val viewModel : GamePlayViewModel = hiltViewModel()
+
     // 노래 불러오기 위해
     val context = LocalContext.current
+    val mediaPlayer = remember { MediaPlayer() }
+
+    // 일시정시 버튼을 눌렀을 때
+    val isPaused = remember { mutableStateOf(false) }
+
     // 현재 멈춤을 눌렀는지 안눌렀는지 확인할 변수
     val (showPauseDialog, setShowPauseDialog) = remember { mutableStateOf(false) }
 
@@ -74,20 +80,9 @@ fun GamePlayScreen(
         // 모든 코드 가지고오기
         val chordProgression = gameData?.chordProgression ?: emptyList()
 
-        // 음악 재생하기
-        DisposableEffect(gameData?.songUri) {
-            val mediaPlayer = MediaPlayer()
-            if (gameData?.songUri != null) {
-                try {
-                    mediaPlayer.setDataSource(context, Uri.parse(gameData.songUri))
-                    mediaPlayer.prepare()
-                    mediaPlayer.start()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-            // 🧹 컴포저블이 dispose될 때 음악도 정리
+        DisposableEffect(Unit) {
             onDispose {
+                Log.d("GamePlay", "🧹 mediaPlayer 정리")
                 if (mediaPlayer.isPlaying) {
                     mediaPlayer.stop()
                 }
@@ -103,6 +98,11 @@ fun GamePlayScreen(
         // 경과 시간 상태 추가
         var elapsedTime by remember { mutableStateOf(0f) }
 
+        // 일시정지한 시간 상태 감지용
+        var pauseOffset by remember { mutableStateOf(0L) }
+        // 마지막 일시정지 시작 시간 감지용
+        var pauseStartTime by remember { mutableStateOf<Long?>(null) }
+
         // 코드 몇 초동안 보여야하는지 계산하기
         val durationPerNoteSec = remember(chordProgression, gameData?.durationSec) {
             val totalNotes = allChords.size
@@ -112,25 +112,70 @@ fun GamePlayScreen(
         // 현재 코드 몇 번째인지
         val currentChordIndex = remember { mutableStateOf(0) }
 
+        // 노래 재생하도록 하기
+        LaunchedEffect(gameData?.songUri) {
+            if (gameData?.songUri != null) {
+                try {
+                    if (!mediaPlayer.isPlaying) {
+                        mediaPlayer.reset() // ⭐ reset으로 초기화 먼저!
+                        mediaPlayer.setDataSource(context, Uri.parse(gameData.songUri))
+                        mediaPlayer.prepare()
+                        mediaPlayer.start()
+                        Log.d("GamePlay", "🎵 자동 재생 시작됨")
+                    }
+                } catch (e: Exception) {
+                    Log.e("GamePlay", "❌ 자동 재생 실패: ${e.message}")
+                }
+            }
+        }
+
+        // 만약 일시정시 버튼을 눌렀다면
+        LaunchedEffect(isPaused.value) {
+            if (isPaused.value) {
+                pauseStartTime = System.currentTimeMillis()
+                if (mediaPlayer.isPlaying) {
+                    mediaPlayer.pause()
+                    Log.d("GamePlay", "⏸ 일시정지됨")
+                }
+            } else {
+
+                pauseStartTime?.let {
+                    // 멈춰 있던 시간 누적
+                    pauseOffset += System.currentTimeMillis() - it
+                }
+                pauseStartTime = null
+
+                try {
+                    mediaPlayer.start()
+                    Log.d("GamePlay", "▶️ 이어재생됨")
+                } catch (e: Exception) {
+                    Log.e("GamePlay", "❌ 이어재생 실패: ${e.message}")
+                }
+            }
+        }
+
         // 시간 계산해서 현재 코드 몇 번쨰인지 업데이트 및 경과 시간 추적
         LaunchedEffect(allChords, gameData?.durationSec) {
             val startTime = System.currentTimeMillis()
             val totalChords = allChords.size
 
             while (currentChordIndex.value <= allChords.size -1) {
-                val current = (System.currentTimeMillis() - startTime) / 1000f
-                elapsedTime = current
-                val newIndex = (current / durationPerNoteSec).toInt()
-//                if (newIndex != currentChordIndex.value && newIndex < allChords.size) {
-//                    currentChordIndex.value = newIndex
-//                }
-                if (newIndex < totalChords) {
-                    if (newIndex != currentChordIndex.value) {
-                        currentChordIndex.value = newIndex
-//                        Log.d("GamePlayScreen", "📍 현재 인덱스 = $newIndex / 전체 = $totalChords")
+
+                // 만약 일시정지 버튼을 누르지 않은 상태라면 진행시킨다.
+                if (!isPaused.value) {
+//                    val current = (System.currentTimeMillis() - startTime) / 1000f
+                    val now = System.currentTimeMillis()
+                    val current = (now - startTime - pauseOffset) / 1000f // pause 시간 빼기!!
+                    elapsedTime = current
+                    val newIndex = (current / durationPerNoteSec).toInt()
+
+                    if (newIndex < totalChords) {
+                        if (newIndex != currentChordIndex.value) {
+                            currentChordIndex.value = newIndex
+                        }
+                    } else {
+                        break
                     }
-                } else {
-                    break
                 }
                 kotlinx.coroutines.delay(16) // 약 60fps
             }
@@ -139,7 +184,7 @@ fun GamePlayScreen(
             if (!hasSentResult  && totalChords > 0 ) {
                 hasSentResult = true
 
-                score = 3
+                score = 2
                 Log.d("GamePlayScreen", "🎯 게임 끝났습니다. 점수 = $score")
                 viewModel.sendGameResult(songId, score) {
                     showScoreDialog = true
@@ -157,7 +202,10 @@ fun GamePlayScreen(
             }
         ) {
             TopBar(
-                onPauseClick = { setShowPauseDialog(true)},
+                onPauseClick = {
+                    setShowPauseDialog(true)
+                    isPaused.value = true
+                },
                 screenWidth = screenWidth,
                 modifier = Modifier
                     .zIndex(3f)
@@ -218,7 +266,11 @@ fun GamePlayScreen(
             if (showPauseDialog) {
                 PauseDialogCustom(
                     screenWidth = screenWidth,
-                    onDismiss = { setShowPauseDialog(false) },
+                    // 이어하기
+                    onDismiss = {
+                        setShowPauseDialog(false)
+                        isPaused.value = false },
+                    // 종료하기
                     onExit = {
                         setShowPauseDialog(false)
                         navController.popBackStack()
