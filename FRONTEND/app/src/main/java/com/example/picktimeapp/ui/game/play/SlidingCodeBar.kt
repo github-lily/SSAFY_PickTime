@@ -2,10 +2,12 @@ package com.example.picktimeapp.ui.game.play
 //시도 4: 하는 중 가능성 있다.
 // 일단 5개만 보여주고 한 음의 시간을 계산하여 해당 시간이 지날 때마다 그 다음 음을 보여주는 슬라이드
 
+import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -19,6 +21,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
@@ -28,6 +31,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.example.picktimeapp.data.model.ChordMeasure
+import com.example.picktimeapp.ui.theme.Brown40
+import com.example.picktimeapp.ui.theme.Brown80
+import kotlinx.coroutines.launch
 
 @Composable
 fun SlidingCodeBar(
@@ -69,6 +75,10 @@ fun SlidingCodeBar(
                     Animatable(if (index === 5) 0f else 1f)
                 }
 
+                // 처음 할 때 효과 주기
+                val scale = remember {Animatable(1f)}
+                val backgroundColor = remember { Animatable(Color(0xFFE3CBA5)) }
+
                 LaunchedEffect(currentIndex, index) {
                     if (index == 5) {
                         alpha.animateTo(
@@ -79,14 +89,39 @@ fun SlidingCodeBar(
                             )
                         )
                     }
+
+                    if (index == 0) {
+                        scale.snapTo(1.3f)
+                        backgroundColor.snapTo(Color.White)
+
+                        // 동시에 실행
+                        launch {
+                            scale.animateTo(
+                                targetValue = 1f,
+                                animationSpec = tween(durationMillis = 300)
+                            )
+                        }
+                        launch {
+                            backgroundColor.animateTo(
+                                targetValue = Color(0xFFFFF4DE),
+                                animationSpec = tween(durationMillis = 300)
+                            )
+                        }
+                    }
                 }
+
+
 
                 Box(
                     modifier = Modifier
                         .size(blockWidth, blockHeight)
-                        .graphicsLayer { this.alpha = alpha.value }
+                        .graphicsLayer {
+                            this.alpha = alpha.value
+                            this.scaleX = scale.value
+                            this.scaleY = scale.value
+                        }
                         .background(
-                            if (chord == "X") Color.Transparent else Color(0xFFE3CBA5),
+                            if (chord == "X") Color.Transparent else backgroundColor.value,
                             shape = MaterialTheme.shapes.medium
                         ),
                     contentAlignment = Alignment.Center
