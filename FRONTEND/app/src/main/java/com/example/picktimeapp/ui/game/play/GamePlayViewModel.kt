@@ -1,17 +1,14 @@
 package com.example.picktimeapp.ui.game.play
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.picktimeapp.auth.TokenManager
 import com.example.picktimeapp.data.model.GamePlayResponse
 import com.example.picktimeapp.data.model.GameScoreRequest
 import com.example.picktimeapp.network.GameListsApi
-import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
