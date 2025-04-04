@@ -33,9 +33,9 @@ class CameraFrameAnalyzer(
             // 이미지 변환 시도
             val bitmap = imageProxyToBitmap(image)
             if (bitmap != null) {
-                // 추론용 정사각형 이미지로 변환
-                val squareBitmap = cropCenterSquare(bitmap)
-                onResult(squareBitmap)
+
+                onResult(bitmap)
+
                 lastInferenceTime = currentTime
                 bitmap.recycle() // 원본 비트맵 메모리 해제
             } else {
@@ -126,16 +126,4 @@ class CameraFrameAnalyzer(
         return bitmap
     }
 
-    private fun cropCenterSquare(bitmap: Bitmap): Bitmap {
-        val size = minOf(bitmap.width, bitmap.height)
-        val x = (bitmap.width - size) / 2
-        val y = (bitmap.height - size) / 2
-
-        return try {
-            Bitmap.createBitmap(bitmap, x, y, size, size)
-        } catch (e: Exception) {
-            Log.e(TAG, "이미지 크롭 실패: ${e.message}")
-            bitmap // 크롭 실패 시 원본 반환
-        }
-    }
 }
