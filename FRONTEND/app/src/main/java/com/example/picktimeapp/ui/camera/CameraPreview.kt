@@ -1,63 +1,131 @@
 package com.example.picktimeapp.ui.camera
 
 import android.content.Context
+import android.util.Log
+import android.util.Size
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.LifecycleOwner
 import androidx.core.content.ContextCompat
+import com.example.picktimeapp.data.model.YoloResult
+import com.example.picktimeapp.util.CameraFrameAnalyzer
+import com.example.picktimeapp.util.YoloSegmentationHelper
+import java.util.concurrent.Executors
 
 @Composable
 fun CameraPreview(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDetectionResult: (YoloResult) -> Unit = {}
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val TAG = "CameraPreview"
 
-    AndroidView(
-        factory = { ctx ->
+    // 카메라 및 ML 모델 관련 리소스
+    val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
+    val yoloHelper = remember { YoloSegmentationHelper(context) }
+
+    // Composable이 제거될 때 리소스 해제
+    DisposableEffect(key1 = true) {
+        onDispose {
+            Log.d(TAG, "카메라 리소스 해제")
+            cameraExecutor.shutdown()
+            yoloHelper.close()
+        }
+    }
+
+    // 미리보기 화면을 띄우는 부분
+    androidx.compose.ui.viewinterop.AndroidView(
+        modifier = modifier,
+        factory = { ctx: Context ->
             val previewView = PreviewView(ctx).apply {
-                scaleType = PreviewView.ScaleType.FILL_CENTER
+                implementationMode = PreviewView.ImplementationMode.COMPATIBLE
             }
-            startCamera(ctx, lifecycleOwner, previewView)
+
+            startCamera(
+                context = ctx,
+                previewView = previewView,
+                lifecycleOwner = lifecycleOwner,
+                cameraExecutor = cameraExecutor,
+                yoloHelper = yoloHelper,
+                onDetectionResult = onDetectionResult
+            )
+
             previewView
-        },
-        modifier = modifier
+        }
     )
 }
 
 private fun startCamera(
     context: Context,
-    lifecycleOwner: LifecycleOwner,
-    previewView: PreviewView
+    previewView: PreviewView,
+    lifecycleOwner: androidx.lifecycle.LifecycleOwner,
+    cameraExecutor: java.util.concurrent.ExecutorService,
+    yoloHelper: YoloSegmentationHelper,
+    onDetectionResult: (YoloResult) -> Unit
 ) {
-    val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+    val TAG = "CameraPreview"
 
-    cameraProviderFuture.addListener({
-        val cameraProvider = cameraProviderFuture.get()
+    try {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
 
-        val preview = Preview.Builder().build().also {
-            it.setSurfaceProvider(previewView.surfaceProvider)
-        }
+        cameraProviderFuture.addListener({
+            try {
+                // 카메라 연결 도우미 객체 불러오기
+                val cameraProvider = cameraProviderFuture.get()
 
-        val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+                // 카메라 영상을 화면에 표시해주는 preview 객체 생성
+                val preview = Preview.Builder()
+                    .build()
+                    .also {
+                        it.setSurfaceProvider(previewView.surfaceProvider)
+                    }
 
-        try {
-            cameraProvider.unbindAll()
-            cameraProvider.bindToLifecycle(
-                lifecycleOwner,
-                cameraSelector,
-                preview
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+                // 실시간 프레임 분석 설정
+                val imageAnalysis = ImageAnalysis.Builder()
+                    .setTargetResolution(Size(640, 640)) // YOLO 입력 해상도에 맞춤
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST) // 최신 프레임만 분석
+                    .build()
+                    .also {
+                        it.setAnalyzer(
+                            cameraExecutor,
+                            CameraFrameAnalyzer { bitmap ->
+                                try {
+                                    val result = yoloHelper.runInference(bitmap)
+                                    onDetectionResult(result) // 결과 전달
+                                } catch (e: Exception) {
+                                    Log.e(TAG, "추론 중 오류: ${e.message}")
+                                }
+                            }
+                        )
+                    }
 
-    }, ContextCompat.getMainExecutor(context))
+                // 후면 카메라 선택
+                val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+
+                // 기존 바인딩 해제 후 새로 바인딩
+                cameraProvider.unbindAll()
+                cameraProvider.bindToLifecycle(
+                    lifecycleOwner,
+                    cameraSelector,
+                    preview,
+                    imageAnalysis
+                )
+
+                Log.d(TAG, "카메라 초기화 성공")
+            } catch (e: Exception) {
+                Log.e(TAG, "카메라 바인딩 실패: ${e.message}")
+            }
+        }, ContextCompat.getMainExecutor(context))
+    } catch (e: Exception) {
+        Log.e(TAG, "카메라 초기화 실패: ${e.message}")
+    }
 }

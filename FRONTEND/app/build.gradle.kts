@@ -127,8 +127,13 @@ dependencies {
 
 
     // 이미지 url을 받을 때 사용
-    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation(libs.coil.compose)
 
     // 주파수 분석 관련
     implementation("com.github.wendykierp:JTransforms:3.1")
+
+    // ai
+    implementation(libs.tensorflow.lite)
+    implementation(libs.tensorflow.lite.gpu)
+    implementation(libs.tensorflow.lite.support)
 }
