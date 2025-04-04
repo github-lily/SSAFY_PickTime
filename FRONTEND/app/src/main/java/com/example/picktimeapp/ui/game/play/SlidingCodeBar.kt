@@ -1,5 +1,5 @@
 package com.example.picktimeapp.ui.game.play
-//시도 4: 하는 중
+//시도 4: 하는 중 가능성 있다.
 // 일단 5개만 보여주고 한 음의 시간을 계산하여 해당 시간이 지날 때마다 그 다음 음을 보여주는 슬라이드
 
 import androidx.compose.animation.core.Animatable
@@ -32,8 +32,10 @@ import com.example.picktimeapp.data.model.ChordMeasure
 @Composable
 fun SlidingCodeBar(
     screenWidth: Dp,
-    durationSec: Int,
-    chordProgression: List<ChordMeasure>,
+    currentIndex: Int,  // 현재 인덱스 (코드 표시용)
+    elapsedTime: Float, // 경과 시간, 음악이 재생된 시간 (애니메이션용)
+    totalDuration: Float, // 전체 음악 길이
+    chordProgression: List<ChordMeasure>, // 코드 정보 모음
     modifier: Modifier = Modifier
 ) {
     val blockWidth = screenWidth * 0.13f
@@ -43,41 +45,24 @@ fun SlidingCodeBar(
 
     val allNotes = remember(chordProgression) {
         chordProgression.flatMap { it.chordBlocks }
-    }
+    } //모든 코드들 펼치기
 
-    val durationPerNoteSec = remember(chordProgression, durationSec) {
-        val totalNotes = allNotes.size
-        durationSec.toFloat() / totalNotes
-    }
+    val durationPerNoteSec = remember(allNotes, totalDuration) {
+        totalDuration / allNotes.size
+    } // 전체 시간을 코드 갯수만큼 나눠서 각 코드에게 시간 할당하기
 
-    var currentIndex by remember { mutableStateOf(0) }
-    val offsetX = remember { Animatable(0f) }
-
-    // 음마다 offset → animateTo로 왼쪽 이동 → 인덱스 증가 후 snapTo(0)
-    LaunchedEffect(allNotes) {
-        while (currentIndex < allNotes.size - 1) {
-            offsetX.animateTo(
-                targetValue = -blockWidthPx,
-                animationSpec = tween(
-                    durationMillis = (durationPerNoteSec * 1000).toInt(),
-                    easing = LinearEasing
-                )
-            )
-
-            currentIndex++
-            offsetX.snapTo(0f)// 다음 움직임을 위한 준비
-        }
-    }
+    // 시간 기반으로 오프셋 계산, 현재 코드가 얼마나 진행됐는지
+    val progressInCurrentBlock = (elapsedTime % durationPerNoteSec) / durationPerNoteSec
+    val offsetX = -progressInCurrentBlock * blockWidthPx // 왼쪽으로 이동하는 것처럼 하기
 
     val visibleNotes = allNotes.drop(currentIndex).take(6)
 
     Box(modifier = modifier.height(blockHeight).clipToBounds()) {
         Row(
             modifier = Modifier
-                .offset { IntOffset(offsetX.value.toInt(), 0) } // 현재 5개를 왼쪽으로 움직임
+                .offset { IntOffset(offsetX.toInt(), 0) }
                 .padding(start = screenWidth * 0.12f),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-
+            horizontalArrangement = Arrangement.spacedBy(1.dp)
         ) {
             visibleNotes.forEachIndexed() { index, chord ->
                 val alpha = remember(currentIndex) {
