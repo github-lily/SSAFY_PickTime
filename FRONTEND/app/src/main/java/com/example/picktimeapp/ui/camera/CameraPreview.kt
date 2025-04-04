@@ -3,6 +3,7 @@ package com.example.picktimeapp.ui.camera
 import android.content.Context
 import android.util.Log
 import android.util.Size
+import androidx.camera.core.AspectRatio
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
@@ -82,6 +83,8 @@ private fun startCamera(
                 // 카메라 연결 도우미 객체 불러오기
                 val cameraProvider = cameraProviderFuture.get()
 
+                val aspectRatio = AspectRatio.RATIO_16_9
+
                 // 카메라 영상을 화면에 표시해주는 preview 객체 생성
                 val preview = Preview.Builder()
                     .build()
@@ -91,7 +94,8 @@ private fun startCamera(
 
                 // 실시간 프레임 분석 설정
                 val imageAnalysis = ImageAnalysis.Builder()
-                    .setTargetResolution(Size(640, 640)) // YOLO 입력 해상도에 맞춤
+                    .setTargetAspectRatio(aspectRatio)
+//                    .setTargetResolution(Size(640, 360)) // YOLO 입력 해상도에 맞춤
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST) // 최신 프레임만 분석
                     .build()
                     .also {
