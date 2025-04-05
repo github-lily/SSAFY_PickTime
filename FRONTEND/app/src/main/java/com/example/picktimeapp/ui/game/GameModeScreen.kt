@@ -117,7 +117,7 @@ fun GameModeScreen(navController: NavController, viewModel: GameListsViewModel =
                                     star = song.star
                                 ),
                                 onPlayClick = {
-                                    navController.navigate("game/${song.songId}")
+                                    navController.navigate("gameguitartunning/${song.songId}")
                                 },
                                 onSoundClick = {
                                     PreviewSoundPlayer.toggleSound(context, song.songUri)
