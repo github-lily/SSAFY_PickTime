@@ -15,6 +15,7 @@ import com.example.picktimeapp.ui.welcome.WelcomeScreen
 import com.example.picktimeapp.ui.guitarposition.GuitarPositionScreen
 import com.example.picktimeapp.ui.game.GameModeScreen
 import com.example.picktimeapp.ui.game.play.GamePlayScreen
+import com.example.picktimeapp.ui.guitarposition.GameGuitarPositionScreen
 import com.example.picktimeapp.ui.mypage.MyPageScreen
 import com.example.picktimeapp.ui.mypage.MyPageViewModel
 import com.example.picktimeapp.ui.mypage.EditNicknameScreen
@@ -40,6 +41,7 @@ object Routes {
     const val GAME = "game"
     const val GAME_PLAY = "gameplay"
     const val GUITAR_TUNNING = "guitartunning"
+    const val GAME_GUITAR_TUNNING = "gameguitartunning"
 
     // 연습모드
     const val PRACTICE_LIST = "practicelist"
@@ -132,11 +134,6 @@ fun AppNavGraph() {
             EditNicknameScreen(navController)
         }
 
-        // Password Edit Screen
-//        composable(Routes.EDIT_PASSWORD) {
-//            EditPasswordScreen(navController)
-//        }
-
         // Password Check Screen
         composable(Routes.PASSWORD_CHECK) {
             PasswordCheckScreen(navController)
@@ -148,6 +145,15 @@ fun AppNavGraph() {
         ) { backStackEntry ->
             val originalPassword = backStackEntry.arguments?.getString("originalPassword") ?: ""
             EditPasswordScreen(navController = navController, originalPassword = originalPassword)
+        }
+
+        // 🔥 Game Mode Position🔥
+        composable(
+            route = "${Routes.GAME_GUITAR_TUNNING}/{songId}",
+            arguments = listOf(navArgument("songId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val songId = backStackEntry.arguments?.getInt("songId") ?: -1
+            GameGuitarPositionScreen(navController = navController, gameId = songId)
         }
 
 
