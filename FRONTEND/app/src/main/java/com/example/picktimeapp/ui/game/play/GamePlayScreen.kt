@@ -80,6 +80,9 @@ fun GamePlayScreen(
         val gameData = viewModel.gameData.collectAsState().value
         // 모든 코드 가지고오기
         val chordProgression = gameData?.chordProgression ?: emptyList()
+        // 위에 제목 띄우기
+        val title = gameData?.title
+        val bpm = gameData?.bpm
 
         DisposableEffect(Unit) {
             onDispose {
@@ -92,15 +95,14 @@ fun GamePlayScreen(
         }
 
         // 코드들 일단 싹 다 불러오기
-        val allChords = remember(chordProgression) {
-            chordProgression.flatMap { it.chordBlocks }
-        }
+        val allChords = remember(chordProgression) { chordProgression.flatMap { it.chordBlocks }}
 
         // 경과 시간 상태 추가
         var elapsedTime by remember { mutableStateOf(0f) }
 
         // 일시정지한 시간 상태 감지용
         var pauseOffset by remember { mutableStateOf(0L) }
+
         // 마지막 일시정지 시작 시간 감지용
         var pauseStartTime by remember { mutableStateOf<Long?>(null) }
 
@@ -208,6 +210,8 @@ fun GamePlayScreen(
                     isPaused.value = true
                 },
                 screenWidth = screenWidth,
+                screenHeight = screenHeight,
+                title = title,
                 modifier = Modifier
                     .zIndex(3f)
             )
@@ -276,7 +280,7 @@ fun GamePlayScreen(
                     // 종료하기
                     onExit = {
                         setShowPauseDialog(false)
-                        navController.popBackStack()
+                        navController.navigate("game")
                     }
                 )
             }
@@ -317,23 +321,71 @@ fun GamePlayScreen(
 fun TopBar(
     onPauseClick: () -> Unit,
     screenWidth: Dp,
+    screenHeight: Dp,
+    title: String? = null,
     modifier: Modifier = Modifier
 ) {
-    Row(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = screenWidth * 0.02f),
-        horizontalArrangement = Arrangement.Absolute.Right,
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = screenWidth * 0.02f)
     ) {
-        // 멈춤 버튼
-        Image(
-            painter = painterResource(id = R.drawable.pause_btn),
-            contentDescription = "Pause",
+        if (!title.isNullOrBlank()) {
+            Row(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = screenHeight * 0.005f)
+                    .zIndex(1f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                // 왼쪽 아이콘
+                Image(
+                    painter = painterResource(id = R.drawable.ic_music), // 너가 사용할 아이콘 리소스 ID
+                    contentDescription = "Music Icon Left",
+                    modifier = Modifier.size(screenWidth * 0.02f)
+                )
+
+                Spacer(modifier = Modifier.width(20.dp))
+
+                // 타이틀
+                Text(
+                    text = title,
+                    fontSize = (screenWidth * 0.02f).value.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+
+                Spacer(modifier = Modifier.width(20.dp))
+
+                // 오른쪽 아이콘
+                Image(
+                    painter = painterResource(id = R.drawable.ic_music), // 같은 아이콘 사용
+                    contentDescription = "Music Icon Right",
+                    modifier = Modifier.size(screenWidth * 0.02f)
+                )
+            }
+        }
+
+        Row(
             modifier = Modifier
-                .size(screenWidth * 0.03f)
-                .clickable { onPauseClick() }
-        )
+                .fillMaxWidth()
+                .padding(horizontal = screenWidth * 0.02f)
+                .align(Alignment.CenterEnd), // 정렬 기준
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
+        ) {
+            // 멈춤 버튼
+            Image(
+                painter = painterResource(id = R.drawable.pause_btn),
+                contentDescription = "Pause",
+                modifier = Modifier
+                    .size(screenWidth * 0.03f)
+                    .clickable { onPauseClick() }
+            )
+        }
+
+
     }
 }
 
