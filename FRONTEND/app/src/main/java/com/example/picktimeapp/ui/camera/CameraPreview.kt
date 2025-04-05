@@ -38,6 +38,14 @@ fun CameraPreview(
     DisposableEffect(key1 = true) {
         onDispose {
             Log.d(TAG, "카메라 리소스 해제")
+
+            // ✅ 추론 중지 먼저 요청
+            yoloHelper.stop()
+
+            // ✅ 약간의 딜레이 (아직 남은 프레임 처리 대기)
+            Thread.sleep(100)
+
+            // ✅ 카메라 쓰레드 종료 및 모델 해제
             cameraExecutor.shutdown()
             yoloHelper.close()
         }
@@ -101,16 +109,19 @@ private fun startCamera(
                     .also {
                         it.setAnalyzer(
                             cameraExecutor,
-                            CameraFrameAnalyzer { bitmap ->
-                                try {
-                                    val result = yoloHelper.runInference(bitmap)
-                                    onDetectionResult(result) // 결과 전달
-                                } catch (e: Exception) {
-                                    Log.e(TAG, "추론 중 오류: ${e.message}")
-                                }
-                            }
+                            CameraFrameAnalyzer(
+                                onResult = { bitmap ->
+                                    try {
+                                        val result = yoloHelper.runInference(bitmap)
+                                        onDetectionResult(result)
+                                    } catch (e: Exception) {
+                                        Log.e(TAG, "추론 중 오류: ${e.message}")
+                                    }
+                                },
+                                shouldRun = { yoloHelper.isRunningAllowed() }
+                            )
                         )
-                    }
+                        }
 
                 // 후면 카메라 선택
                 val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA

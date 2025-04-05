@@ -122,19 +122,15 @@ fun GuitarPositionScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             CameraPreview(modifier = Modifier .matchParentSize())
-
-                            Image(
-                                painter = painterResource(id = R.drawable.guitar_overlay),
-                                contentDescription = "기타 위치 안내 이미지",
-                                contentScale = ContentScale.FillBounds, // 카메라에 맞게 사진 강제로 채우기
-                                modifier = Modifier
-                                    .matchParentSize()
-                                    .align(Alignment.Center)
-                            )
-
-
-
-
+//
+//                            Image(
+//                                painter = painterResource(id = R.drawable.guitar_overlay),
+//                                contentDescription = "기타 위치 안내 이미지",
+//                                contentScale = ContentScale.FillBounds, // 카메라에 맞게 사진 강제로 채우기
+//                                modifier = Modifier
+//                                    .matchParentSize()
+//                                    .align(Alignment.Center)
+//                            )
                         }
                     }
                 }

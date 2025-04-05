@@ -13,7 +13,8 @@ import androidx.camera.core.ImageProxy
 import java.io.ByteArrayOutputStream
 
 class CameraFrameAnalyzer(
-    private val onResult: (Bitmap) -> Unit
+    private val onResult: (Bitmap) -> Unit,
+    private val shouldRun: () -> Boolean
 ) : ImageAnalysis.Analyzer {
 
     private var lastInferenceTime = 0L
@@ -22,6 +23,12 @@ class CameraFrameAnalyzer(
 
     override fun analyze(image: ImageProxy) {
         val currentTime = System.currentTimeMillis()
+
+        // ✅ 추론 중지 요청되면 건너뜀
+        if (!shouldRun()) {
+            image.close()
+            return
+        }
 
         // 추론 간격 제한
         if (currentTime - lastInferenceTime < inferenceInterval) {
@@ -33,9 +40,7 @@ class CameraFrameAnalyzer(
             // 이미지 변환 시도
             val bitmap = imageProxyToBitmap(image)
             if (bitmap != null) {
-
                 onResult(bitmap)
-
                 lastInferenceTime = currentTime
                 bitmap.recycle() // 원본 비트맵 메모리 해제
             } else {
