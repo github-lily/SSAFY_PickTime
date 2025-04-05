@@ -35,6 +35,7 @@ import com.example.picktimeapp.ui.theme.Brown40
 import com.example.picktimeapp.ui.theme.Brown80
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import com.example.picktimeapp.ui.camera.CameraPreview
 import com.example.picktimeapp.ui.components.ScoreDialogCustom
 import com.example.picktimeapp.ui.nav.Routes
 
@@ -246,7 +247,7 @@ fun GamePlayScreen(
                 }
             }
 
-            // 코드 & 영상 나오는 쪽
+            // 코드 나오는 쪽
             Box(modifier = Modifier
                 .fillMaxSize()
                 .weight(1f)
@@ -260,8 +261,10 @@ fun GamePlayScreen(
                     imageSize = screenWidth * 0.25f,
                     screenWidth = screenWidth
                 )
-            }
 
+
+            }
+            // 카메라 나오는 곳
             // 팝업창 띄우기
             if (showPauseDialog) {
                 PauseDialogCustom(
@@ -297,6 +300,15 @@ fun GamePlayScreen(
             }
 
         }
+
+        // 카메라 나오는 쪽
+        CameraPreview(
+            modifier = Modifier
+                .size(screenWidth * 0.15f)
+                .align(Alignment.BottomEnd)
+                .padding(bottom = screenWidth * 0.08f, end = screenWidth * 0.05f)
+                .zIndex(999f)
+        )
     }
 }
 
@@ -348,33 +360,40 @@ fun ChordSection(
     nextChord: String?,
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = screenWidth * 0.05f), // 좌우 여백
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        if(!currentChord.isNullOrBlank() && currentChord != "X") {
-            // 왼쪽 코드
-            ChordBlock(
-                title = currentChord,
-                imageRes = getChordImageRes(currentChord),
-                imageSize = imageSize,
-                titleColor = Brown80,
-                isHighlighted = true,
-                screenWidth = screenWidth
-            )
+        Box {
+            if(!currentChord.isNullOrBlank() && currentChord != "X") {
+                // 왼쪽 코드
+                ChordBlock(
+                    title = currentChord,
+                    imageRes = getChordImageRes(currentChord),
+                    imageSize = imageSize,
+                    titleColor = Brown80,
+                    isHighlighted = true,
+                    screenWidth = screenWidth
+                )
+            }
         }
 
         Spacer(modifier = Modifier.width(screenWidth * 0.05f))
 
-        if(!nextChord.isNullOrBlank() && nextChord != "X") {
-            ChordBlock(
-                title = nextChord,
-                imageRes = getChordImageRes(nextChord),
-                imageSize = imageSize,
-                titleColor = Brown40,
-                screenWidth = screenWidth,
-                modifier = Modifier.alpha(0.5f)
-            )
+        Box {
+            if(!nextChord.isNullOrBlank() && nextChord != "X") {
+                ChordBlock(
+                    title = nextChord,
+                    imageRes = getChordImageRes(nextChord),
+                    imageSize = imageSize,
+                    titleColor = Brown40,
+                    screenWidth = screenWidth,
+                    modifier = Modifier.alpha(0.5f)
+                )
+            }
         }
-        // 여기에다가 사용자 영상 띄우기!!
     }
 }
 
