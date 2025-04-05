@@ -26,7 +26,7 @@ class AudioCapture(
     private val minBufferSize = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioFormat)
 
     // 실제로는 이 정도까지 늘려서 read해도 됨 (4096)
-    private val bufferSize = maxOf(minBufferSize, 4096)
+    private val bufferSize = maxOf(minBufferSize, 8192)
 
     private var audioRecord: AudioRecord? = null
     private var isRecording = false
