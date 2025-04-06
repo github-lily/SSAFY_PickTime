@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +37,9 @@ import com.example.picktimeapp.ui.theme.Brown80
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
 import com.example.picktimeapp.ui.camera.CameraPreview
 import com.example.picktimeapp.ui.components.ScoreDialogCustom
 import com.example.picktimeapp.ui.nav.Routes
@@ -76,6 +80,7 @@ fun GamePlayScreen(
     ){
         val screenWidth = maxWidth
         val screenHeight = maxHeight
+        val density = LocalDensity.current
 
         // 게임 데이터 불러오기
         val gameData = viewModel.gameData.collectAsState().value
@@ -261,24 +266,53 @@ fun GamePlayScreen(
                 }
             }
 
-            // 코드 나오는 쪽
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .weight(1f)
+            // 하단 쪽
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(horizontal = screenWidth * 0.03f, vertical = screenHeight * 0.03f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                ChordSection(
-                    currentChord = current,
-                    nextChord = next,
+                // 코드 나오는 쪽
+                Box(
                     modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(end = screenWidth * 0.3f),
-                    imageSize = screenWidth * 0.25f,
-                    screenWidth = screenWidth
-                )
+                        .weight(1f)
+                ) {
+                    ChordSection(
+                        currentChord = current,
+                        nextChord = next,
+                        modifier = Modifier,
+//                            .padding(start = screenWidth * 0.05f),
+                        imageSize = screenWidth * 0.25f,
+                        screenWidth = screenWidth
+                    )
+                }
 
-
+                // 카메라 나오는 쪽
+                Box(
+                    modifier = Modifier
+                        .padding(start = screenWidth * 0.02f, bottom = screenWidth * 0.015f, end = screenWidth * 0.02f)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxHeight(),
+                        verticalArrangement = Arrangement.Bottom
+                    ) {
+                        CameraPreview(
+                            modifier = Modifier
+                                .size(
+                                    width = screenWidth * 0.20f,
+                                    height = screenHeight * 0.20f
+                                )
+                                .clip(RoundedCornerShape(12.dp))
+                                .zIndex(999f)
+                        )
+                    }
+                }
             }
-            // 카메라 나오는 곳
+
+
             // 팝업창 띄우기
             if (showPauseDialog) {
                 PauseDialogCustom(
@@ -312,17 +346,7 @@ fun GamePlayScreen(
                     }
                 )
             }
-
         }
-
-        // 카메라 나오는 쪽
-        CameraPreview(
-            modifier = Modifier
-                .size(screenWidth * 0.15f)
-                .align(Alignment.BottomEnd)
-                .padding(bottom = screenWidth * 0.08f, end = screenWidth * 0.05f)
-                .zIndex(999f)
-        )
     }
 }
 
@@ -425,7 +449,7 @@ fun ChordSection(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = screenWidth * 0.05f), // 좌우 여백
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box {
@@ -442,7 +466,7 @@ fun ChordSection(
             }
         }
 
-        Spacer(modifier = Modifier.width(screenWidth * 0.05f))
+        Spacer(modifier = Modifier.width(screenWidth * 0.04f))
 
         Box {
             if(!nextChord.isNullOrBlank() && nextChord != "X") {

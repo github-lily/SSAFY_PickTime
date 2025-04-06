@@ -126,7 +126,7 @@ fun PickDaysGrid(
         val selectedPickDay = pickDays.find { it.completedDate == selectedTooltipKey }
         if (selectedPickDay != null) {
             Popup(
-                offset = IntOffset(x = 1700, y = -100),
+                offset = IntOffset(x = 250, y = -85),
                 properties = PopupProperties(focusable = false)
             ) {
                 TooltipBalloon(
@@ -170,7 +170,7 @@ fun TooltipBalloon(
             .padding(horizontal = 8.dp, vertical = 6.dp)
     ) {
         Text(
-            text = "${pickDay.pickCount}회 pick ${pickDay.completedDate}",
+            text = " ${pickDay.completedDate}   ${pickDay.pickCount}회",
             color = Color.White,
             fontSize = fontSize,
             lineHeight = fontSize * 1.3
