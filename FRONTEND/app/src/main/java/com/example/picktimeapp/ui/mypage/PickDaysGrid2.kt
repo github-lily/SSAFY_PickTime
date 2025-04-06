@@ -1,5 +1,5 @@
 //package com.example.picktimeapp.ui.mypage
-//
+// 피크데이 상세가 나오지 않는 코드
 //import androidx.compose.foundation.background
 //import androidx.compose.foundation.horizontalScroll
 //import androidx.compose.foundation.layout.Arrangement
