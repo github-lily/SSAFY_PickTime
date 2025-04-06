@@ -62,19 +62,31 @@ class MyPageViewModel @Inject constructor(
     }
 
     //잔디 105개로 만들기
+
     fun getFullPickDayList(): List<PickDay> {
         val realData = pickDayData.value?.pickDays ?: emptyList()
+        if (realData.isEmpty()) return emptyList()
 
+        val formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val dateMap = realData.associateBy { it.completedDate }
+
+        // 오늘 날짜 기준으로 315일 전(= 약 45주 전)
         val today = LocalDate.now()
-        val startDate = today.minusDays(314)
+        val startDate = today.minusDays(314) // 315일이면 총 45 * 7 = 315칸
 
-        return (0..315).map { i ->
-            val date = startDate.plusDays(i.toLong())
-            val dataForDate = realData.find { it.completedDate == date.toString() }
+        // 시작일을 무조건 그 주의 일요일로 맞춤 (잔디 왼쪽 정렬)
+        val adjustedStart = startDate.with(java.time.DayOfWeek.SUNDAY)
 
+        val fullDates = generateSequence(adjustedStart) { it.plusDays(1) }
+            .takeWhile { !it.isAfter(today) }
+            .toList()
+
+        return fullDates.map { date ->
+            val key = date.format(formatter)
+            val original = dateMap[key]
             PickDay(
-                completedDate = date.toString(),
-                pickCount = dataForDate?.pickCount ?: 0
+                completedDate = key,
+                pickCount = original?.pickCount ?: 0
             )
         }
     }
