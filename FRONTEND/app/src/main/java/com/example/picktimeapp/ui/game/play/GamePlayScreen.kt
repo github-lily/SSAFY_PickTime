@@ -34,6 +34,7 @@ import com.example.picktimeapp.ui.components.PauseDialogCustom
 import com.example.picktimeapp.ui.theme.Brown40
 import com.example.picktimeapp.ui.theme.Brown80
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
 import com.example.picktimeapp.ui.camera.CameraPreview
 import com.example.picktimeapp.ui.components.ScoreDialogCustom
@@ -82,7 +83,6 @@ fun GamePlayScreen(
         val chordProgression = gameData?.chordProgression ?: emptyList()
         // 위에 제목 띄우기
         val title = gameData?.title
-        val bpm = gameData?.bpm
 
         DisposableEffect(Unit) {
             onDispose {
@@ -114,6 +114,9 @@ fun GamePlayScreen(
 
         // 현재 코드 몇 번째인지
         val currentChordIndex = remember { mutableStateOf(0) }
+
+        //비교 결과를 저장할 구조
+        val correctnessList = remember { mutableStateListOf<Boolean>() }
 
         // 노래 재생하도록 하기
         LaunchedEffect(gameData?.songUri) {
@@ -166,7 +169,6 @@ fun GamePlayScreen(
 
                 // 만약 일시정지 버튼을 누르지 않은 상태라면 진행시킨다.
                 if (!isPaused.value) {
-//                    val current = (System.currentTimeMillis() - startTime) / 1000f
                     val now = System.currentTimeMillis()
                     val current = (now - startTime - pauseOffset) / 1000f // pause 시간 빼기!!
                     elapsedTime = current
@@ -175,11 +177,19 @@ fun GamePlayScreen(
                     if (newIndex < totalChords) {
                         if (newIndex != currentChordIndex.value) {
                             currentChordIndex.value = newIndex
+                            // ✅ 일단 기본으로 false 추가해보기
+                            val currentChord = allChords[newIndex]
+                            if (currentChord != "X") {
+                                correctnessList.add(false)
+                                Log.d("GamePlayScreen", "🎯 코드 바뀜! index=$newIndex, 코드=$currentChord → false 추가됨")
+                                Log.d("GamePlayScreen", "🧠 AI에게 요청할 코드: $currentChord")
+                            }
                         }
                     } else {
                         break
                     }
                 }
+
                 kotlinx.coroutines.delay(16) // 약 60fps
             }
 
