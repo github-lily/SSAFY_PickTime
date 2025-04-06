@@ -6,6 +6,7 @@ import com.b101.pickTime.api.user.response.UserInfoDto;
 import com.b101.pickTime.api.user.request.*;
 import com.b101.pickTime.api.user.service.UserService;
 import com.b101.pickTime.common.auth.CustomUserDetails;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,11 +18,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/user")
 public class UserController {
     private final UserService userService;
-
     // 회원가입
     @PostMapping
 //    public ApiResponseDto<?> singUp(@RequestBody UserRegisterReq userRegisterReq) {
-    public ResponseEntity<String> singUp(@RequestBody UserRegisterReq userRegisterReq) {
+    public ResponseEntity<String> singUp(@RequestBody @Valid UserRegisterReq userRegisterReq) {
         userService.createUser(userRegisterReq);
 
         return ResponseEntity.ok("User created success");

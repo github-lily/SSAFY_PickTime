@@ -59,7 +59,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String refresh = jwtUtil.createJwt("refresh", userId, username, role, JWTUtil.REFRESH_TOKEN_VALIDITY_TIME);
 
         // 응답 설정
-        response.setHeader("Authorization", jwtUtil.BEARER_PREFIX+access);
+        response.setHeader("Authorization", JWTUtil.BEARER_PREFIX +access);
         response.addCookie(createCookie("refresh", refresh));
         responseWrite("login success", HttpStatus.OK, response);
     }
