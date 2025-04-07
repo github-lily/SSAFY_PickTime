@@ -10,6 +10,9 @@ import android.graphics.YuvImage
 import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 
 class CameraFrameAnalyzer(
@@ -46,7 +49,7 @@ class CameraFrameAnalyzer(
             if (bitmap != null) {
 
                 onResult(bitmap, currentTime)
-
+                
                 // 🎯 Mediapipe 추론도 함께 실행
                 try {
                     handLandmarkerHelper.detectLiveStream(bitmap, isFrontCamera = isFrontCamera)
@@ -54,6 +57,7 @@ class CameraFrameAnalyzer(
                     Log.e(TAG, "HandLandmarker 추론 중 오류: ${e.message}")
                 }
 
+                
                 lastInferenceTime = currentTime
                 bitmap.recycle() // 원본 비트맵 메모리 해제
             } else {
@@ -143,5 +147,15 @@ class CameraFrameAnalyzer(
 
         return bitmap
     }
+
+    fun bitmapToMultipart(bitmap: Bitmap, name: String = "frame.jpg"): MultipartBody.Part {
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+        val requestBody = stream.toByteArray()
+            .toRequestBody("image/jpeg".toMediaTypeOrNull())
+
+        return MultipartBody.Part.createFormData("image", name, requestBody)
+    }
+
 
 }
