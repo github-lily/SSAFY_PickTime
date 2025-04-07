@@ -47,7 +47,7 @@ fun AudioVisualizerBar(
         .coerceIn(0f, 1f)
     val animatedFraction by animateFloatAsState(
         targetValue = fraction,
-        animationSpec = tween(durationMillis = 300)
+        animationSpec = tween(durationMillis = 500)
     )
 
     // hit area: ±1Hz 고정 (각 스트링에서 동일한 비율로 표시됨)
@@ -87,7 +87,7 @@ fun AudioVisualizerBar(
                 val barTopPx = canvasHeightPx - barHeightPx
 
                 Canvas(modifier = Modifier.matchParentSize()) {
-                    // 기존 hit area 계산
+                    // hit area 그리기: 전체 표시 범위 대비 hit area의 위치 및 크기 계산
                     if (hitMaxFreq > hitMinFreq) {
                         val fractionLow = ((hitMinFreq - minFreq) / (maxFreq - minFreq))
                             .toFloat().coerceIn(0f, 1f)
@@ -95,16 +95,11 @@ fun AudioVisualizerBar(
                             .toFloat().coerceIn(0f, 1f)
                         val yLowPx = canvasHeightPx * (1f - fractionLow)
                         val yHighPx = canvasHeightPx * (1f - fractionHigh)
-
-                        // 오프셋: 튜닝 바 높이의 1/4 만큼 위로 이동
-                        val offsetPx = canvasHeightPx / 4f
-                        val newYLowPx = (yLowPx - offsetPx).coerceAtLeast(0f)
-                        val newYHighPx = (yHighPx - offsetPx).coerceAtLeast(0f)
-                        val topY = newYHighPx.coerceAtMost(newYLowPx)
-                        val rectHeight = newYLowPx - topY
+                        val topY = yHighPx.coerceAtMost(yLowPx)
+                        val rectHeight = yLowPx - topY
 
                         drawRect(
-                            color = Color(0xFFF9D952).copy(alpha = 0.3f),
+                            color = Color(0xFFF9D952).copy(alpha = 0.2f),
                             topLeft = Offset(x = 0f, y = topY),
                             size = Size(width = canvasWidthPx, height = rectHeight)
                         )

@@ -121,4 +121,9 @@ object AudioAnalyzerYIN {
         val noteName = noteNames[noteIndex]
         return "$noteName$octave"
     }
+
+    fun checkNote(freq: Double, targetNote: String) : Boolean{
+        return (frequencyToNoteName(freq).equals(targetNote))
+    }
+
 }
