@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "PickTimeApp"
 include(":app")
- 
+include(":opencv")

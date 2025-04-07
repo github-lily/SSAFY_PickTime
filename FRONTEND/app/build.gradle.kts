@@ -74,6 +74,8 @@ dependencies {
 
     // Hilt
     implementation(libs.hilt.android)
+    implementation(libs.androidx.foundation.android)
+    implementation(project(":opencv"))
 
 //    implementation(libs.androidx.navigation.runtime.android)
     kapt(libs.hilt.compiler)
@@ -127,8 +129,19 @@ dependencies {
 
 
     // 이미지 url을 받을 때 사용
-    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation(libs.coil.compose)
 
     // 주파수 분석 관련
     implementation("com.github.wendykierp:JTransforms:3.1")
+
+    // ai
+    implementation(libs.tensorflow.lite)
+    implementation(libs.tensorflow.lite.gpu)
+    implementation(libs.tensorflow.lite.support)
+
+    //chord JSON을 파싱할 때 사용 , Gson 직접 사용을 위한 의존성
+    implementation("com.google.code.gson:gson:2.10.1")
+
+    //MediaPipe 의존성 추가하기
+    implementation("com.google.mediapipe:tasks-vision:0.10.2") // 최신 버전
 }

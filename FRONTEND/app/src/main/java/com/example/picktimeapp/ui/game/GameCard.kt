@@ -27,6 +27,7 @@ import com.example.picktimeapp.ui.theme.Brown20
 import com.example.picktimeapp.ui.theme.Gray70
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.style.TextOverflow
 import com.example.picktimeapp.ui.theme.Brown40
 
 data class SongData(
@@ -156,7 +157,11 @@ fun GameCard(
                     Text(
                         text = song.songChords.joinToString(" "),
                         fontSize =  chordFont.sp,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
                     )
 
                     Spacer(modifier = Modifier.height(spacingSmall))

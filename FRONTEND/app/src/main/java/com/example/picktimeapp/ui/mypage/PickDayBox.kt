@@ -20,6 +20,26 @@ import com.example.picktimeapp.ui.theme.Yellow100
 import com.example.picktimeapp.ui.theme.Yellow50
 
 @Composable
+//fun PickDayBox(
+//    pickDay: PickDay,
+//) {
+//    val color = when(pickDay.pickCount) {
+//        0 -> Gray10
+//        1 -> Yellow0
+//        2 -> Yellow50
+//        else -> Yellow100
+//    }
+//    BoxWithConstraints {
+//        val boxSize = maxWidth * 1.0f
+//        Box(
+//            modifier = Modifier
+//                .size(boxSize)
+//                .background(color = color)
+//        )
+//    }
+//}
+
+
 fun PickDayBox(
     pickDay: PickDay,
 ) {
@@ -29,13 +49,10 @@ fun PickDayBox(
         2 -> Yellow50
         else -> Yellow100
     }
-    BoxWithConstraints {
-        val boxSize = maxWidth * 1.0f
-        Box(
-            modifier = Modifier
-                .size(boxSize)
-                .background(color = color)
-        )
-    }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = color)
+    )
 }
 

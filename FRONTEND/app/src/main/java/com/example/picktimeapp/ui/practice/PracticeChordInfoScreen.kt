@@ -15,16 +15,35 @@ import com.example.picktimeapp.R
 import com.example.picktimeapp.ui.theme.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavController
 import com.example.picktimeapp.ui.components.PauseDialogCustom
 import com.example.picktimeapp.ui.components.PracticeTopBar
 import com.example.picktimeapp.ui.nav.Routes
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
+import androidx.hilt.navigation.compose.hiltViewModel
 
 
 @Composable
-fun PracticeChordInfoScreen(navController: NavController) {
+fun PracticeChordInfoScreen(
+    navController: NavController,
+    stepId: Int,
+    viewModel: PracticeStepViewModel = hiltViewModel()
+) {
+
+    val stepData = viewModel.stepData.value
+    val chords = stepData?.chords.orEmpty()
+
+
+    // ✅ API 최초 호출
+    LaunchedEffect(stepId) {
+        viewModel.fetchPracticeStep(stepId)
+    }
+
+    val chordName = if (chords.isNotEmpty()) chords.first().chordName else "로딩 중..."
+
+
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val screenWidth = maxWidth
         val screenHeight = maxHeight
@@ -84,9 +103,9 @@ fun PracticeChordInfoScreen(navController: NavController) {
                                     text = buildAnnotatedString {
                                         append("이번 시간에는\n")
                                         withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                                            append("G코드")
+                                            append(chordName)
                                         }
-                                        append("를 배워볼게요")
+                                        append("코드를 배워볼게요")
                                     },
                                     fontFamily = TitleFont,
                                     fontSize = 40.sp * scale,      // ✅ 화면 크기 반응형
@@ -126,7 +145,7 @@ fun PracticeChordInfoScreen(navController: NavController) {
                             .padding(end = screenWidth * 0.03f, bottom = screenHeight * 0.03f)
                     ) {
                         IconButton(
-                            onClick = { navController.navigate(Routes.PRACTICE_CHORDPRESS) },
+                            onClick = { navController.navigate("practicechordpress/$stepId") },
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
                                 .offset(y = (-screenHeight * 0.01f))

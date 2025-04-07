@@ -3,11 +3,12 @@ package com.example.picktimeapp.di
 import com.example.picktimeapp.auth.TokenManager
 import com.example.picktimeapp.network.GameListsApi
 import com.example.picktimeapp.network.LoginApi
-import com.example.picktimeapp.network.PracticeApi
 import com.example.picktimeapp.network.LogoutApi
 import com.example.picktimeapp.network.PasswordConfirmApi
 import com.example.picktimeapp.network.PasswordUpdateApi
 import com.example.picktimeapp.network.PickTimeApi
+import com.example.picktimeapp.network.PracticeListApi
+import com.example.picktimeapp.network.PracticeStepApi
 import com.example.picktimeapp.network.SignUpApi
 import com.example.picktimeapp.network.UserApi
 import com.google.gson.Gson
@@ -87,11 +88,21 @@ object NetworkModule {
         retrofit.create(UserApi::class.java)
 
 
+    // 🔥 커리큘럼 리스트 🔥
+    @Provides
+    @Singleton
+    fun providePracticeListApi(retrofit: Retrofit): PracticeListApi =
+        retrofit.create(PracticeListApi::class.java)
+
+
+
+
+    // 🔥 연습 모드 🔥
     // Practice Step4
     @Provides
     @Singleton
-    fun providePracticeApi(retrofit: Retrofit): PracticeApi =
-        retrofit.create(PracticeApi::class.java)
+    fun providePracticeStepApi(retrofit: Retrofit): PracticeStepApi =
+        retrofit.create(PracticeStepApi::class.java)
 
 
 
