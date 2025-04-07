@@ -1,5 +1,5 @@
 package com.example.picktimeapp.ui.practice
-// 스텝 3
+// 스텝 4(노래 나오는 부분)
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

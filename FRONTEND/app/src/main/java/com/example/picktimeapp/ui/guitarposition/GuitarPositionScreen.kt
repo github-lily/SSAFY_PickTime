@@ -1,5 +1,6 @@
 package com.example.picktimeapp.ui.guitarposition
 
+import android.util.Log
 import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,22 +31,35 @@ import androidx.navigation.NavController
 
 
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.picktimeapp.ui.components.PauseDialogCustom
 import com.example.picktimeapp.ui.nav.Routes
+import com.example.picktimeapp.ui.practice.PracticeStepViewModel
 
 @Composable
 fun GuitarPositionScreen(
     navController: NavController,
     stepId : Int
 ) {
+
+    val viewModel: PracticeStepViewModel = hiltViewModel()
+    val stepData = viewModel.stepData.value
+    val stepType = stepData?.stepType
+
+    val showPauseDialog = remember { mutableStateOf(false) }
+
+    LaunchedEffect(stepId) {
+        viewModel.fetchPracticeStep(stepId)
+    }
+
+
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val screenWidth = maxWidth
         val screenHeight = maxHeight
-
-        val showPauseDialog = remember { mutableStateOf(false) }
 
         Scaffold(
             topBar = {
@@ -145,7 +159,13 @@ fun GuitarPositionScreen(
                 ) {
                     IconButton(
 
-                        onClick = { navController.navigate("practicechordinfo/$stepId") },
+                        onClick = {
+                            when (stepType) {
+                                1 -> navController.navigate("practicechordinfo/$stepId")
+                                2 -> navController.navigate("practicechordchange/$stepId")
+                                3 -> navController.navigate("practice/$stepId")
+                                else -> Log.e("GuitarPositionScreen", "알 수 없는 stepType: $stepType")
+                            }},
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .offset(y = (-screenHeight * 0.01f))
