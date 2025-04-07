@@ -36,6 +36,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.picktimeapp.ui.camera.YoloViewModel
 import com.example.picktimeapp.ui.components.PauseDialogCustom
 import com.example.picktimeapp.ui.nav.Routes
 import com.example.picktimeapp.ui.practice.PracticeStepViewModel
@@ -45,6 +46,8 @@ fun GuitarPositionScreen(
     navController: NavController,
     stepId : Int
 ) {
+    // 서버 통신용 인스턴스
+    val yoloViewModel: YoloViewModel = hiltViewModel()
 
     val viewModel: PracticeStepViewModel = hiltViewModel()
     val stepData = viewModel.stepData.value
@@ -136,7 +139,13 @@ fun GuitarPositionScreen(
                                 .clip(RoundedCornerShape(12.dp)),
                             contentAlignment = Alignment.Center
                         ) {
-                            CameraPreview(modifier = Modifier .matchParentSize())
+                            CameraPreview(
+                                modifier = Modifier
+                                    .matchParentSize(),
+                                onFrameCaptured = { bitmap ->
+                                    yoloViewModel.sendFrameToServer(bitmap)
+//                                viewModel.sendFrameToServer(bitmap)
+                            })
 
                             Image(
                                 painter = painterResource(id = R.drawable.guitar_overlay),

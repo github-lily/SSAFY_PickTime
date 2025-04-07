@@ -1,6 +1,7 @@
 package com.example.picktimeapp.ui.camera
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.util.Log
 import android.util.Size
 import androidx.camera.core.AspectRatio
@@ -28,7 +29,8 @@ import java.util.concurrent.Executors
 @Composable
 fun CameraPreview(
     modifier: Modifier = Modifier,
-    onDetectionResult: (YoloResult) -> Unit = {}
+    onFrameCaptured: (Bitmap) -> Unit = {}
+//    onDetectionResult: (YoloResult) -> Unit = {}
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -98,8 +100,9 @@ fun CameraPreview(
                 handLandmarkerHelper = handLandmarkerHelper, // 👈 추가!
                 lifecycleOwner = lifecycleOwner,
                 cameraExecutor = cameraExecutor,
+                onFrameCaptured = onFrameCaptured,
                 yoloHelper = yoloHelper,
-                onDetectionResult = onDetectionResult
+//                onDetectionResult = onDetectionResult
             )
 
             container
@@ -140,8 +143,9 @@ private fun startCamera(
     handLandmarkerHelper: HandLandmarkerHelper,
     lifecycleOwner: androidx.lifecycle.LifecycleOwner,
     cameraExecutor: java.util.concurrent.ExecutorService,
+    onFrameCaptured: (Bitmap) -> Unit,
     yoloHelper: YoloSegmentationHelper,
-    onDetectionResult: (YoloResult) -> Unit
+//    onDetectionResult: (YoloResult) -> Unit
 ) {
     val TAG = "CameraPreview"
 
@@ -172,14 +176,16 @@ private fun startCamera(
                             cameraExecutor,
                             CameraFrameAnalyzer(
                                 onResult = { bitmap, timestamp  ->
-                                    try {
-                                        val result = yoloHelper.runInference(bitmap)
-                                        onDetectionResult(result)
+                                    onFrameCaptured(bitmap.copy(bitmap.config, true)) // bitmap 복사본 넘기기
 
-
-                                    } catch (e: Exception) {
-                                        Log.e(TAG, "추론 중 오류: ${e.message}")
-                                    }
+//                                    try {
+//                                        val result = yoloHelper.runInference(bitmap)
+//                                        onDetectionResult(result)
+//
+//
+//                                    } catch (e: Exception) {
+//                                        Log.e(TAG, "추론 중 오류: ${e.message}")
+//                                    }
                                 },
                                 shouldRun = { yoloHelper.isRunningAllowed() },
                                 handLandmarkerHelper = handLandmarkerHelper,
