@@ -79,6 +79,7 @@ fun GuitarPositionScreen(
                         fontSize = (screenWidth * 0.020f).value.sp
                     )
                 }
+
                 Spacer(modifier = Modifier.height(screenHeight * 0.05f))
 
 
@@ -158,20 +159,26 @@ fun GuitarPositionScreen(
                     }
                 }
 
-                if (showPauseDialog.value) {
-                    PauseDialogCustom(
-                        screenWidth = screenWidth,
-                        onDismiss = { showPauseDialog.value = false },
-                        onExit = {
-                            showPauseDialog.value = false
-                            navController.navigate(Routes.WELCOME) {
-                                popUpTo(Routes.WELCOME) { inclusive = true }
-                            }
+
+
+
+                }
+
+                        if (showPauseDialog.value) {
+                            PauseDialogCustom(
+                                screenWidth = screenWidth,
+                                onDismiss = { showPauseDialog.value = false },
+                                onExit = {
+                                    showPauseDialog.value = false
+                                    navController.navigate(Routes.PRACTICE_LIST) {
+                                        popUpTo(Routes.PRACTICE_LIST) { inclusive = true }
+                                    }
+                                }
+                            )
                         }
-                    )
+                    }
                 }
             }
-        }
-    }
 
-}
+
+

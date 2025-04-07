@@ -1,4 +1,5 @@
 package com.example.picktimeapp.ui.practice
+// 커리컬륨 전체조회
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

@@ -1,5 +1,5 @@
 package com.example.picktimeapp.ui.practice
-
+// 코드 운지 확인 페이지 스텝 1
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -231,8 +231,8 @@ fun PracticeChordPressScreen(
                         onDismiss = { showPauseDialog.value = false },
                         onExit = {
                             showPauseDialog.value = false
-                            navController.navigate(Routes.WELCOME) {
-                                popUpTo(Routes.WELCOME) { inclusive = true }
+                            navController.navigate(Routes.PRACTICE_LIST) {
+                                popUpTo(Routes.PRACTICE_LIST) { inclusive = true }
 
                             }
                         }

@@ -1,5 +1,5 @@
 package com.example.picktimeapp.ui.practice
-
+// 소리 내볼까요 패이지 음성인식 스텝2
 
 import android.media.MediaPlayer
 import android.net.Uri
@@ -227,8 +227,8 @@ fun PracticeChordListenScreen(
                         onDismiss = { showPauseDialog.value = false },
                         onExit = {
                             showPauseDialog.value = false
-                            navController.navigate(Routes.WELCOME) {
-                                popUpTo(Routes.WELCOME) { inclusive = true }
+                            navController.navigate(Routes.PRACTICE_LIST) {
+                                popUpTo(Routes.PRACTICE_LIST) { inclusive = true }
 
                             }
                         }
