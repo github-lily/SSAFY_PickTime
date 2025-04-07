@@ -1,4 +1,5 @@
 package com.example.picktimeapp.ui.practice
+// 스텝 3
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -207,8 +208,8 @@ fun PracticeMusicScreen(
                         onDismiss = { showPauseDialog.value = false },
                         onExit = {
                             showPauseDialog.value = false
-                            navController.navigate(Routes.WELCOME) {
-                                popUpTo(Routes.WELCOME) { inclusive = true }
+                            navController.navigate(Routes.PRACTICE_LIST) {
+                                popUpTo(Routes.PRACTICE_LIST) { inclusive = true }
                             }
                         }
                     )

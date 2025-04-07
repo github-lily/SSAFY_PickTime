@@ -88,6 +88,7 @@ fun GuitarPositionScreen(
                         fontSize = (screenWidth * 0.020f).value.sp
                     )
                 }
+
                 Spacer(modifier = Modifier.height(screenHeight * 0.05f))
 
 
@@ -204,28 +205,33 @@ fun GuitarPositionScreen(
 //                            )
                         }
                     }
+
+
+                // 다음 버튼
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = screenWidth * 0.03f, bottom = screenHeight * 0.03f)
+                ) {
+                    IconButton(
+                        onClick = { navController.navigate("practicechordinfo/$stepId") },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .offset(y = (-screenHeight * 0.01f))
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = "다음으로",
+                            modifier = Modifier.size(screenWidth * 0.2f),
+                            tint = Gray90
+                        )
+                    }
                 }
 
-                        // 다음 버튼
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(end = screenWidth * 0.03f, bottom = screenHeight * 0.03f)
-                        ) {
-                            IconButton(
-                                onClick = { navController.navigate("practicechordinfo/$stepId") },
-                                modifier = Modifier
-                                    .align(Alignment.BottomEnd)
-                                    .offset(y = (-screenHeight * 0.01f))
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.ArrowForward,
-                                    contentDescription = "다음으로",
-                                    modifier = Modifier.size(screenWidth * 0.2f),
-                                    tint = Gray90
-                                )
-                            }
-                        }
+
+
+
+                }
 
                         if (showPauseDialog.value) {
                             PauseDialogCustom(
@@ -233,8 +239,8 @@ fun GuitarPositionScreen(
                                 onDismiss = { showPauseDialog.value = false },
                                 onExit = {
                                     showPauseDialog.value = false
-                                    navController.navigate(Routes.WELCOME) {
-                                        popUpTo(Routes.WELCOME) { inclusive = true }
+                                    navController.navigate(Routes.PRACTICE_LIST) {
+                                        popUpTo(Routes.PRACTICE_LIST) { inclusive = true }
                                     }
                                 }
                             )
