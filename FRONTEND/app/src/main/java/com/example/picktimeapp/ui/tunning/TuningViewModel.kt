@@ -74,7 +74,7 @@ class TuningViewModel @Inject constructor() : ViewModel() {
 //        }
 //    }
 
-    private val audioCapture = AudioCapture { audioData ->
+    private val audioCapture = AudioCapture(4096) { audioData ->
 
         val rms = calculateRMS(audioData)
         if (rms < amplitudeThreshold) {
