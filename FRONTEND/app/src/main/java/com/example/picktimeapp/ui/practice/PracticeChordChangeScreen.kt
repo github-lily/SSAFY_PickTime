@@ -1,5 +1,5 @@
 package com.example.picktimeapp.ui.practice
-// 스텝 4(노래 나오는 부분)
+// step3 코드 전환 연습
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -34,7 +34,7 @@ import com.example.picktimeapp.ui.theme.TitleFont
 import kotlinx.coroutines.delay
 
 @Composable
-fun PracticeMusicScreen(
+fun PracticeChordChangeScreen(
     stepId: Int,
     navController: NavController,
     viewModel: PracticeStepViewModel = hiltViewModel()

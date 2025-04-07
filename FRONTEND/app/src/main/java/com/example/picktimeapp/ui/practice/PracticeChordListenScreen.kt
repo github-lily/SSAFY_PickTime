@@ -206,7 +206,7 @@ fun PracticeChordListenScreen(
                     )
 
                     IconButton(
-                        onClick = { navController.navigate(Routes.PRACTICE_MUSIC) },
+                        onClick = { navController.navigate("${Routes.PRACTICE_CHORDCHANGE}/$stepId") },
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                             .padding(bottom = 8.dp)
