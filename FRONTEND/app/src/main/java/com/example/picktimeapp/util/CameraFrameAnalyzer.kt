@@ -13,7 +13,7 @@ import androidx.camera.core.ImageProxy
 import java.io.ByteArrayOutputStream
 
 class CameraFrameAnalyzer(
-    private val onResult: (Bitmap) -> Unit,
+    private val onResult: (Bitmap,Long) -> Unit,
     private val shouldRun: () -> Boolean
 ) : ImageAnalysis.Analyzer {
 
@@ -41,7 +41,7 @@ class CameraFrameAnalyzer(
             val bitmap = imageProxyToBitmap(image)
             if (bitmap != null) {
 
-                onResult(bitmap)
+                onResult(bitmap, currentTime)
 
                 lastInferenceTime = currentTime
                 bitmap.recycle() // 원본 비트맵 메모리 해제
