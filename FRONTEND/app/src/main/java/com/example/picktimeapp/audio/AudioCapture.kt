@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
  * onAudioDataCaptured 콜백을 통해 캡쳐된 오디오 데이터를 ViewModel 등으로 전달할 수 있습니다.
  */
 class AudioCapture(
-    private val BUFFER_SIZE,
+    private val BUFFER_SIZE : Int,
     // 캡쳐된 오디오 데이터(ShortArray)를 전달하는 콜백.
     private val onAudioDataCaptured: (ShortArray) -> Unit
 ) {
