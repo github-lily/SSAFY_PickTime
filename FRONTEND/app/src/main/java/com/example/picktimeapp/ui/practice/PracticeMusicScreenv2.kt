@@ -1,0 +1,330 @@
+package com.example.picktimeapp.ui.practice
+
+
+import android.media.MediaPlayer
+import android.net.Uri
+import android.util.Log
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.picktimeapp.R
+import com.example.picktimeapp.ui.components.PauseDialogCustom
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
+import com.example.picktimeapp.ui.camera.CameraPreview
+import com.example.picktimeapp.ui.components.ScoreDialogCustom
+import com.example.picktimeapp.ui.game.play.GuitarImage
+import com.example.picktimeapp.ui.game.play.TopBar
+import com.example.picktimeapp.ui.nav.Routes
+
+
+@Composable
+fun PracticeMusicScreen(
+    stepId: Int,
+    navController: NavController,
+    viewModel: PracticeStepViewModel = hiltViewModel()
+) {
+
+    // 노래 불러오기 위해
+    val context = LocalContext.current
+    val mediaPlayer = remember { MediaPlayer() }
+
+    // 일시정시 버튼을 눌렀을 때
+    val isPaused = remember { mutableStateOf(false) }
+
+    // 현재 멈춤을 눌렀는지 안눌렀는지 확인할 변수
+    val (showPauseDialog, setShowPauseDialog) = remember { mutableStateOf(false) }
+
+    // 게임 끝났을 때
+    var hasSentResult by remember { mutableStateOf(false) }
+    var showScoreDialog by remember { mutableStateOf(false) }
+    var score by remember { mutableStateOf(0) }
+
+    LaunchedEffect(stepId) {
+        viewModel.fetchPracticeStep(stepId)
+    }
+
+    BoxWithConstraints (
+        modifier = Modifier
+            .fillMaxWidth()
+            .graphicsLayer {
+                clip = false
+            }
+            .padding(top = 20.dp, bottom = 20.dp)
+    ){
+        val screenWidth = maxWidth
+        val screenHeight = maxHeight
+        val density = LocalDensity.current
+
+        // 데이터 불러오기
+        val stepData = viewModel.stepData.value
+        val song = stepData?.song
+
+        // 악보코드들 일단 싹 다 불러오기
+        val allChords = remember(song) {
+            song?.chordProgression?.flatMap { it.chordBlocks } ?: emptyList()
+        }
+        
+
+        DisposableEffect(Unit) {
+            onDispose {
+                Log.d("GamePlay", "🧹 mediaPlayer 정리")
+                if (mediaPlayer.isPlaying) {
+                    mediaPlayer.stop()
+                }
+                mediaPlayer.release()
+            }
+        }
+
+        // 경과 시간 상태 추가
+        var elapsedTime by remember { mutableStateOf(0f) }
+
+        // 일시정지한 시간 상태 감지용
+        var pauseOffset by remember { mutableStateOf(0L) }
+
+        // 마지막 일시정지 시작 시간 감지용
+        var pauseStartTime by remember { mutableStateOf<Long?>(null) }
+
+        // 코드 몇 초동안 보여야하는지 계산하기
+        val durationPerNoteSec = remember(song?.durationSec) {
+            val totalNotes = allChords.size
+            (song?.durationSec?.toFloat() ?: 1f) / totalNotes
+        }
+
+        // 현재 코드 몇 번째인지
+        val currentChordIndex = remember { mutableStateOf(0) }
+
+        //비교 결과를 저장할 구조
+        val correctnessList = remember { mutableStateListOf<Boolean>() }
+
+        // 노래 재생하도록 하기
+        LaunchedEffect(song?.songUri) {
+            if (song?.songUri != null) {
+                try {
+                    if (!mediaPlayer.isPlaying) {
+                        mediaPlayer.reset() // ⭐ reset으로 초기화 먼저!
+                        mediaPlayer.setDataSource(context, Uri.parse(song.songUri))
+                        mediaPlayer.prepare()
+                        mediaPlayer.start()
+                        Log.d("GamePlay", "🎵 자동 재생 시작됨")
+
+                        mediaPlayer.setOnCompletionListener {
+                            Log.d("GamePlay", "🎵 노래 끝남! → 점수 팝업 띄우기")
+                            showScoreDialog = true
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e("GamePlay", "❌ 자동 재생 실패: ${e.message}")
+                }
+            }
+        }
+
+        var showScoreDialog by remember { mutableStateOf(false) }
+
+        // 만약 일시정시 버튼을 눌렀다면
+        LaunchedEffect(isPaused.value) {
+            if (isPaused.value) {
+                pauseStartTime = System.currentTimeMillis()
+                if (mediaPlayer.isPlaying) {
+                    mediaPlayer.pause()
+                    Log.d("연습모드", "⏸ 일시정지됨")
+                }
+            } else {
+
+                pauseStartTime?.let {
+                    // 멈춰 있던 시간 누적
+                    pauseOffset += System.currentTimeMillis() - it
+                }
+                pauseStartTime = null
+
+                try {
+                    mediaPlayer.start()
+                    Log.d("연습모드", "▶️ 이어재생됨")
+                } catch (e: Exception) {
+                    Log.e("연습모드", "❌ 이어재생 실패: ${e.message}")
+                }
+            }
+        }
+
+        // 시간 계산해서 현재 코드 몇 번쨰인지 업데이트 및 경과 시간 추적
+        LaunchedEffect(allChords, song?.durationSec) {
+            val startTime = System.currentTimeMillis()
+            val totalChords = allChords.size
+
+            while (currentChordIndex.value <= allChords.size -1) {
+
+                // 만약 일시정지 버튼을 누르지 않은 상태라면 진행시킨다.
+                if (!isPaused.value) {
+                    val now = System.currentTimeMillis()
+                    val current = (now - startTime - pauseOffset) / 1000f // pause 시간 빼기!!
+                    elapsedTime = current
+                    val newIndex = (current / durationPerNoteSec).toInt()
+
+                    if (newIndex < totalChords) {
+                        if (newIndex != currentChordIndex.value) {
+                            currentChordIndex.value = newIndex
+                            // ✅ 일단 기본으로 false 추가해보기
+                            val currentChord = allChords[newIndex]
+                            if (currentChord != "X") {
+                                correctnessList.add(false)
+                                Log.d("PracticeMusicScreen", "🎯 코드 바뀜! index=$newIndex, 코드=$currentChord → false 추가됨")
+                                Log.d("PracticeMusicScreen", "🧠 AI에게 요청할 코드: $currentChord")
+                            }
+                        }
+                    } else {
+                        break
+                    }
+                }
+
+                kotlinx.coroutines.delay(16) // 약 60fps
+            }
+            // 마지막 코드까지 도달했을 때 종료
+            if (!hasSentResult  && totalChords > 0 ) {
+                hasSentResult = true
+
+                score = 2
+                Log.d("GamePlayScreen", "🎯 연습모드 끝났습니다. 점수 = $score")
+//                viewModel.sendGameResult(songId, score) {
+//                    showScoreDialog = true
+//                }
+            }
+        }
+
+
+        Column (modifier = Modifier
+            .fillMaxSize()
+            .graphicsLayer {
+                clip = false
+            }
+        ) {
+            TopBar(
+                onPauseClick = {
+                    setShowPauseDialog(true)
+                    isPaused.value = true
+                },
+                screenWidth = screenWidth,
+                screenHeight = screenHeight,
+                title = song?.title,
+                modifier = Modifier
+                    .zIndex(3f)
+            )
+
+            // 코드 애니메이션 쪽
+            Box (modifier = Modifier
+                .fillMaxSize()
+                .weight(1f)
+                .graphicsLayer {
+                    clip = false  // overflow 허용!
+                }
+            ){
+                Spacer(Modifier.height(screenHeight * 0.05f))
+
+                GuitarImage(
+                    imageRes = R.drawable.guitar_neck,
+                    screenWidth = screenWidth,
+                    screenHeight = screenHeight,
+                    modifier = Modifier.zIndex(1f)
+                )
+
+                if (song != null) {
+                    SlidingCodeBar2(
+                        screenWidth = screenWidth,
+                        currentIndex = currentChordIndex.value,
+                        elapsedTime = elapsedTime,
+                        totalDuration = song.durationSec.toFloat(),
+                        chordProgression = song.chordProgression,
+                        organizedChords = song.organizedChords ?: emptyList(),
+                        modifier = Modifier
+                            .wrapContentWidth()
+                            .padding(top = screenHeight * 0.14f)
+                            .zIndex(2f)
+                            .graphicsLayer {
+                                clip = false
+                            }
+                    )
+                }
+            }
+
+            // 하단 쪽
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(horizontal = screenWidth * 0.03f, vertical = screenHeight * 0.03f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // 카메라 나오는 쪽
+                Box(
+                    modifier = Modifier
+                        .padding(start = screenWidth * 0.02f, bottom = screenWidth * 0.015f, end = screenWidth * 0.02f)
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxHeight(),
+                        verticalArrangement = Arrangement.Bottom
+                    ) {
+                        CameraPreview(
+                            modifier = Modifier
+                                .size(
+                                    width = screenWidth * 0.20f,
+                                    height = screenHeight * 0.20f
+                                )
+                                .clip(RoundedCornerShape(12.dp))
+                                .zIndex(999f)
+                        )
+                    }
+                }
+            }
+
+
+            // 팝업창 띄우기
+            if (showPauseDialog) {
+                PauseDialogCustom(
+                    screenWidth = screenWidth,
+                    // 이어하기
+                    onDismiss = {
+                        setShowPauseDialog(false)
+                        isPaused.value = false },
+                    // 종료하기
+                    onExit = {
+                        setShowPauseDialog(false)
+                        navController.navigate("practicelist")
+                    }
+                )
+            }
+            if (showScoreDialog) {
+                ScoreDialogCustom(
+                    score = score,
+                    screenWidth = screenWidth,
+                    onDismiss = {
+                        showScoreDialog = false
+                        navController.navigate("practice/$stepId") {
+                            popUpTo("practice/$stepId") { inclusive = true } // 현재 화면 제거 후 재시작하겠다.
+                        }
+                    },
+                    onExit = {
+                        showScoreDialog = false
+                        navController.navigate(Routes.PRACTICE_LIST) {
+                            popUpTo(Routes.PRACTICE_LIST) { inclusive = true } // 현재 화면 제거
+                        }
+                    }
+                )
+            }
+        }
+    }
+}

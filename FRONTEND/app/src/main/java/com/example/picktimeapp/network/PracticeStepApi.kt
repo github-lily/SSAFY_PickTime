@@ -40,7 +40,8 @@ data class SongResponse(
     val durationSec: Int,
     val timeSignature: String,
     val chordProgression: List<ChordMeasure>,
-    val songUri: String
+    val songUri: String,
+    val organizedChords: List<String>? = null
 )
 
 data class ChordMeasure(
