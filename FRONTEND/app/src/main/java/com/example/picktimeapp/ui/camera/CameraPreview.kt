@@ -71,6 +71,7 @@ fun CameraPreview(
             previewView
         }
     )
+
 }
 
 private fun startCamera(
@@ -91,10 +92,9 @@ private fun startCamera(
                 // 카메라 연결 도우미 객체 불러오기
                 val cameraProvider = cameraProviderFuture.get()
 
-                val aspectRatio = AspectRatio.RATIO_16_9
-
                 // 카메라 영상을 화면에 표시해주는 preview 객체 생성
                 val preview = Preview.Builder()
+                    .setTargetAspectRatio(AspectRatio.RATIO_16_9)
                     .build()
                     .also {
                         it.setSurfaceProvider(previewView.surfaceProvider)
@@ -102,8 +102,8 @@ private fun startCamera(
 
                 // 실시간 프레임 분석 설정
                 val imageAnalysis = ImageAnalysis.Builder()
-                    .setTargetAspectRatio(aspectRatio)
-//                    .setTargetResolution(Size(640, 360)) // YOLO 입력 해상도에 맞춤
+                    // 원본 해상도로 분석 - 기기에 따라 부하가 클 수 있음
+                    .setTargetResolution(Size(1280, 736)) // 또는 디바이스 화면 해상도에 맞게 조정
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST) // 최신 프레임만 분석
                     .build()
                     .also {
@@ -112,6 +112,7 @@ private fun startCamera(
                             CameraFrameAnalyzer(
                                 onResult = { bitmap ->
                                     try {
+                                        // YoloResult 객체를 직접 반환하도록 수정
                                         val result = yoloHelper.runInference(bitmap)
                                         onDetectionResult(result)
                                     } catch (e: Exception) {
@@ -121,10 +122,10 @@ private fun startCamera(
                                 shouldRun = { yoloHelper.isRunningAllowed() }
                             )
                         )
-                        }
+                    }
 
-                // 후면 카메라 선택
-                val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
+                // 전면 또는 후면 카메라 선택
+                val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA // 필요에 따라 변경
 
                 // 기존 바인딩 해제 후 새로 바인딩
                 cameraProvider.unbindAll()
