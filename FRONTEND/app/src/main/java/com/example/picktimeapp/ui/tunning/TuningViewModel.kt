@@ -1,12 +1,15 @@
 package com.example.picktimeapp.ui.tunning
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.example.picktimeapp.audio.AudioAnalyzerFFT
 import dagger.hilt.android.lifecycle.HiltViewModel
 import com.example.picktimeapp.audio.AudioAnalyzerYIN
 import com.example.picktimeapp.audio.AudioCapture
 import com.example.picktimeapp.audio.AudioPlayer
+import kotlinx.coroutines.Job
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,22 +48,58 @@ class TuningViewModel @Inject constructor() : ViewModel() {
     private val _tuningFeedback = mutableStateOf("")
     val tuningFeedback: State<String> = _tuningFeedback
 
-    // Audio Capture & Player
+    private var chordDetectedForThisStroke = false
+    private val resetDelayMs = 500L
+    private var resetJob: Job? = null
+
+//    private val audioCapture = AudioCapture { audioData ->
+//        val rms = calculateRMS(audioData)
+//        if (rms < amplitudeThreshold) {
+//            // RMS 낮아지면 리셋 타이머 시작
+//            resetJob?.cancel()
+//            resetJob = CoroutineScope(Dispatchers.Default).launch {
+//                delay(resetDelayMs)
+//                chordDetectedForThisStroke = false
+//            }
+//            return@AudioCapture
+//        }
+//
+//        // 스트로크 중(높은 RMS)이고 아직 분석 안 했으면
+//        if (!chordDetectedForThisStroke) {
+//            chordDetectedForThisStroke = true
+//            resetJob?.cancel()
+//
+//            val frames = AudioAnalyzerFFTv4.processMultipleFramesAfterAttack(audioData)
+//            val detectedChord = AudioAnalyzerFFTv4.aggregateChordResults(frames)
+//            showChord(detectedChord ?: "No chord detected.")
+//        }
+//    }
+
     private val audioCapture = AudioCapture { audioData ->
+
         val rms = calculateRMS(audioData)
         if (rms < amplitudeThreshold) {
-            //Log.d("TuningViewModel", "신호 세기 낮음 (RMS: $rms) -> 건너뛰기")
             return@AudioCapture
         }
-        //Log.d("TuningViewModel", "targetFrequency=$targetFrequency, targetNoteName=$targetNoteName")
+        // 튜닝 처리
         val newFreq = AudioAnalyzerYIN.analyzeFrequency(audioData)
         processFrequency(newFreq)
-    }
+
+        // 코드 처리
+//        val frames = AudioAnalyzerFFTv3.processMultipleFramesAfterAttack(audioData)
+//        val detectedChord = AudioAnalyzerFFTv3.aggregateChordResults(frames)
+//        var result = "No chord detected."
+//        if (detectedChord != null) {
+//            result = detectedChord
+//        }
+//        showChord(result)
+
+   }
 
     private val audioPlayer = AudioPlayer()
 
     // 임계값/디바운싱 등은 그대로 두거나, 수정 가능
-    private val amplitudeThreshold = 300.0
+    private val amplitudeThreshold = 700.0
     private var lastUpdateTime = 0L
     private val updateIntervalMillis = 300L // 예: 300ms 단위로 업데이트
     private val frequencyUpdateThreshold = 2.0 // 예: 2Hz 이내면 무시
@@ -106,6 +145,10 @@ class TuningViewModel @Inject constructor() : ViewModel() {
         // 만약 newFreq가 0.0 이하이면 기존 noteName 값을 유지 (업데이트하지 않음)
     }
 
+    private fun showChord(chord: String) {
+        _noteName.value = chord;
+    }
+
     /**
      * 특정 줄(0~5)에 해당하는 튜닝을 시작
      */
@@ -117,9 +160,7 @@ class TuningViewModel @Inject constructor() : ViewModel() {
         targetFrequency = standardFrequencies[stringIndex]
         targetNoteName = standardNoteNames[stringIndex]
 
-
         audioCapture.startRecording()
-        //audioPlayer.start()
 
         // 초기 피드백
         _tuningFeedback.value = "$targetNoteName - 튜닝을 시작합니다."
@@ -131,7 +172,7 @@ class TuningViewModel @Inject constructor() : ViewModel() {
      */
     fun stopAudioProcessing() {
         audioCapture.stopRecording()
-        //audioPlayer.stop()
+        //audioCapture.stopRecording()
         _tuningFeedback.value = "" // or "튜닝 중지됨"
         selectedStringIndex = -1
         targetFrequency = 0.0
