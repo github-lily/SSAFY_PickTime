@@ -40,7 +40,9 @@ class CameraFrameAnalyzer(
             // 이미지 변환 시도
             val bitmap = imageProxyToBitmap(image)
             if (bitmap != null) {
+
                 onResult(bitmap)
+
                 lastInferenceTime = currentTime
                 bitmap.recycle() // 원본 비트맵 메모리 해제
             } else {

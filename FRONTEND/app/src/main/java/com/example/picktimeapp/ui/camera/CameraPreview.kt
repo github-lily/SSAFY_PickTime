@@ -94,7 +94,7 @@ private fun startCamera(
 
                 // 카메라 영상을 화면에 표시해주는 preview 객체 생성
                 val preview = Preview.Builder()
-                    .setTargetAspectRatio(AspectRatio.RATIO_16_9)
+//                    .setTargetAspectRatio(AspectRatio.RATIO_16_9)
                     .build()
                     .also {
                         it.setSurfaceProvider(previewView.surfaceProvider)
