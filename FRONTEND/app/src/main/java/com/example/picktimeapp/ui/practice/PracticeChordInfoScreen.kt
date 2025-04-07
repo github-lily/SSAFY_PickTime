@@ -1,4 +1,5 @@
 package com.example.picktimeapp.ui.practice
+// 기린이 나와서 코드 뭐할건지 알려주는 페이지
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -166,8 +167,8 @@ fun PracticeChordInfoScreen(
                             onDismiss = { showPauseDialog.value = false },
                             onExit = {
                                 showPauseDialog.value = false
-                                navController.navigate(Routes.WELCOME) {
-                                    popUpTo(Routes.WELCOME) { inclusive = true }
+                                navController.navigate(Routes.PRACTICE_LIST) {
+                                    popUpTo(Routes.PRACTICE_LIST) { inclusive = true }
                                 }
                             }
                         )
