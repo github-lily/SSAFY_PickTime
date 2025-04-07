@@ -236,7 +236,29 @@ class HandLandmarkerHelper(
         fun onError(error: String, errorCode: Int = OTHER_ERROR)
         fun onResults(resultBundle: ResultBundle)
     }
+
+    fun detectLiveStream(bitmap: Bitmap, isFrontCamera: Boolean) {
+        if (runningMode != RunningMode.LIVE_STREAM) {
+            throw IllegalArgumentException("detectLiveStream() requires LIVE_STREAM mode")
+        }
+
+        val frameTime = SystemClock.uptimeMillis()
+
+        val matrix = Matrix().apply {
+            if (isFrontCamera) {
+                postScale(-1f, 1f, bitmap.width / 2f, bitmap.height / 2f)
+            }
+        }
+        val rotatedBitmap = Bitmap.createBitmap(
+            bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true
+        )
+
+        val mpImage = BitmapImageBuilder(rotatedBitmap).build()
+        detectAsync(mpImage, frameTime)
+    }
+
 }
+
 
 
 
