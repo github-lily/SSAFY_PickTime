@@ -20,7 +20,7 @@ public interface StepRepository extends JpaRepository<Step, Integer> {
             "FROM Step s " +
             "LEFT JOIN CompletedStep c ON s.stepId = c.step.stepId AND c.user.userId = :userId " +
             "WHERE s.stage.stageId = :stageId " +
-            "GROUP BY s.stepId, s.description, s.stepNumber " +  // Step별로 묶기
+            "GROUP BY s.stepId,  s.stepNumber " +  // Step별로 묶기
             "ORDER BY s.stepNumber ASC")
     List<StepResDto> findStepsWithClearStatus(@Param("stageId") Integer stageId,
                                               @Param("userId") Integer userId);
