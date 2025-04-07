@@ -18,8 +18,8 @@ public class JWTUtil {
     public JWTUtil(@Value("${jwt.auth-key}")String secret) {
         secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
     }
-    public static final long ACCESS_TOKEN_VALIDITY_TIME = 1000 * 60 * 60 * 2L;
-    public static final long REFRESH_TOKEN_VALIDITY_TIME = 1000 * 60 * 60 * 3L;
+    public static final long ACCESS_TOKEN_VALIDITY_TIME = 1000 * 60 * 60 *2L;
+    public static final long REFRESH_TOKEN_VALIDITY_TIME = 1000 * 60 * 60 * 24 * 30L;
     public static final String BEARER_PREFIX = "Bearer ";
 
     /**

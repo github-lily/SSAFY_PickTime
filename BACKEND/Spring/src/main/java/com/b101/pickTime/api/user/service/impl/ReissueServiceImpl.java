@@ -51,6 +51,6 @@ public class ReissueServiceImpl implements ReissueService {
         String role = jwtUtil.getRole(refresh);
 
         // 토큰 생성하여 반환
-        return jwtUtil.createJwt("access", userId, username, role, JWTUtil.ACCESS_TOKEN_VALIDITY_TIME);
+        return JWTUtil.BEARER_PREFIX +jwtUtil.createJwt("access", userId, username, role, JWTUtil.ACCESS_TOKEN_VALIDITY_TIME);
     }
 }
