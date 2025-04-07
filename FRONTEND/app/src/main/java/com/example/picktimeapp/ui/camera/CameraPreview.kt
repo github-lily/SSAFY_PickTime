@@ -110,7 +110,7 @@ private fun startCamera(
                         it.setAnalyzer(
                             cameraExecutor,
                             CameraFrameAnalyzer(
-                                onResult = { bitmap ->
+                                onResult = { bitmap, timestamp  ->
                                     try {
                                         // YoloResult 객체를 직접 반환하도록 수정
                                         val result = yoloHelper.runInference(bitmap)
