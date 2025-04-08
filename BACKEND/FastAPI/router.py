@@ -1,5 +1,5 @@
 # router.py
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, UploadFile, File, Path, HTTPException
 from session_manager import create_session, get_session, remove_session
 import numpy as np
 import cv2
@@ -22,9 +22,9 @@ def init_session():
         logger.exception("세션 생성 오류")
         raise HTTPException(status_code=500, detail="세션 생성에 실패했습니다.")
 
-@api_router.post("/detect")
+@api_router.post("/detect/{session_id}")
 def detect(
-    session_id: str = Form(...),
+    session_id: str = Path(...),
     file: UploadFile = File(...)
 ):
     tracker = get_session(session_id)
