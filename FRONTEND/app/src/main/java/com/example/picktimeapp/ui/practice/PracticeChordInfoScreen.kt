@@ -1,5 +1,6 @@
 package com.example.picktimeapp.ui.practice
 // 기린이 나와서 코드 뭐할건지 알려주는 페이지
+// step 1,2 에서만 나옴
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -146,7 +147,7 @@ fun PracticeChordInfoScreen(
                             .padding(end = screenWidth * 0.03f, bottom = screenHeight * 0.03f)
                     ) {
                         IconButton(
-                            onClick = { navController.navigate("practicechordpress/$stepId") },
+                            onClick = { navController.navigate("practicechordcheck/$stepId") },
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
                                 .offset(y = (-screenHeight * 0.01f))
