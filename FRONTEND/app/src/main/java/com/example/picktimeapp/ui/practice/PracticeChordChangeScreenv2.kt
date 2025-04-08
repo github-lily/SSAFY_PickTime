@@ -59,7 +59,7 @@ fun PracticeChordChangeScreen(
     // 게임 끝났을 때
     var hasSentResult by remember { mutableStateOf(false) }
     var showScoreDialog by remember { mutableStateOf(false) }
-    var stepFourScore by remember { mutableStateOf(0) }
+    var stepThreeScore by remember { mutableStateOf(0) }
 
     LaunchedEffect(stepId) {
         viewModel.fetchPracticeStep(stepId)
@@ -152,6 +152,7 @@ fun PracticeChordChangeScreen(
                     val now = System.currentTimeMillis()
                     val current = (now - startTime - pauseOffset) / 1000f // pause 시간 빼기!!
                     elapsedTime = current
+
                     val newIndex = (current / durationPerNoteSec).toInt()
 
                     if (newIndex < repeatedChords.size && newIndex != currentChordIndex.value) {
@@ -164,28 +165,28 @@ fun PracticeChordChangeScreen(
                                 Log.d("PracticeMusicScreen", "🧠 AI에게 요청할 코드: $currentChord")
                             }
                         }
+                    // 마지막 코드까지 도달했을 때 종료
+                    if (!hasSentResult  && elapsedTime >= totalDuration) {
+                        hasSentResult = true
+
+                        stepThreeScore = 3
+
+                        showScoreDialog = true
+                        Log.d("PracticePlayScreen", "🎯 연습모드3 끝났습니다. 점수 = $stepThreeScore")
+
+                        viewModel.sendPracticeFourResult(stepId, stepThreeScore,
+                            onSuccess = {
+                                Log.d("PracticeStep3", "✅ 결과 전송 완료 - $stepThreeScore")
+                                showScoreDialog = true
+                            },
+                            onError = { errorMsg ->
+                                Log.e("PracticeStep3", "❌ 결과 전송 중 오류 발생: $errorMsg")
+                            }
+                        )
+                        break
+                    }
                 }
                 delay(16)
-            }
-
-
-            // 마지막 코드까지 도달했을 때 종료
-            if (!hasSentResult  && repeatedChords.isNotEmpty()) {
-                hasSentResult = true
-
-                stepFourScore = 3
-
-                showScoreDialog = true
-                Log.d("PracticePlayScreen", "🎯 연습모드3 끝났습니다. 점수 = $stepFourScore")
-                viewModel.sendPracticeFourResult(stepId, stepFourScore,
-                    onSuccess = {
-                        Log.d("PracticeStep3", "✅ 결과 전송 완료 - $stepFourScore")
-                        showScoreDialog = true
-                    },
-                    onError = { errorMsg ->
-                        Log.e("PracticeStep3", "❌ 결과 전송 중 오류 발생: $errorMsg")
-                    }
-                )
             }
         }
 
@@ -315,7 +316,7 @@ fun PracticeChordChangeScreen(
                         onDismiss = {
                             showPauseDialog.value = false
                             isPaused.value = false },
-                        // 종료하기
+                        // 종료하기 -> 스텝 다음으로 넘어가야함
                         onExit = {
                             showPauseDialog.value = false
                             navController.navigate(Routes.PRACTICE_LIST) {
@@ -326,7 +327,7 @@ fun PracticeChordChangeScreen(
                 }
                 if (showScoreDialog) {
                     ScoreDialogCustom(
-                        score = stepFourScore,
+                        score = stepThreeScore,
                         screenWidth = screenWidth,
                         onDismiss = {
                             showScoreDialog = false
