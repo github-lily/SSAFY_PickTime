@@ -39,6 +39,7 @@ import com.example.picktimeapp.ui.nav.Routes
 import com.example.picktimeapp.ui.theme.Brown20
 import com.example.picktimeapp.ui.theme.Gray90
 import com.example.picktimeapp.ui.theme.TitleFont
+import com.example.picktimeapp.util.ChordCheckViewModel
 import kotlinx.coroutines.delay
 
 
@@ -46,8 +47,10 @@ import kotlinx.coroutines.delay
 fun PracticeChordChangeScreen(
     stepId: Int,
     navController: NavController,
-    viewModel: PracticeStepViewModel = hiltViewModel()
+    viewModel: PracticeStepViewModel = hiltViewModel(),
+    chordCheckViewModel: ChordCheckViewModel = hiltViewModel()
 ) {
+
 
 
     // 일시정시 버튼을 눌렀을 때
@@ -59,7 +62,7 @@ fun PracticeChordChangeScreen(
     // 게임 끝났을 때
     var hasSentResult by remember { mutableStateOf(false) }
     var showScoreDialog by remember { mutableStateOf(false) }
-    var stepFourScore by remember { mutableStateOf(0) }
+    var stepThreeScore by remember { mutableStateOf(0) }
 
     LaunchedEffect(stepId) {
         viewModel.fetchPracticeStep(stepId)
@@ -103,7 +106,7 @@ fun PracticeChordChangeScreen(
         //비교 결과를 저장할 구조
         val correctnessList = remember { mutableStateListOf<Boolean>() }
 
-        val repeatCount = 5
+        val repeatCount = 3
         val repeatedChords = remember(allChords) {
             List(repeatCount) { allChords }.flatten()
         }
@@ -152,7 +155,8 @@ fun PracticeChordChangeScreen(
                     val now = System.currentTimeMillis()
                     val current = (now - startTime - pauseOffset) / 1000f // pause 시간 빼기!!
                     elapsedTime = current
-                    val newIndex = (current / 2f).toInt() // 2초마다 코드 하나씩
+
+                    val newIndex = (current / durationPerNoteSec).toInt()
 
                     if (newIndex < repeatedChords.size && newIndex != currentChordIndex.value) {
                             currentChordIndex.value = newIndex
@@ -164,28 +168,28 @@ fun PracticeChordChangeScreen(
                                 Log.d("PracticeMusicScreen", "🧠 AI에게 요청할 코드: $currentChord")
                             }
                         }
-                    delay(16)
-                }
-            }
+                    // 마지막 코드까지 도달했을 때 종료
+                    if (!hasSentResult  && elapsedTime >= totalDuration) {
+                        hasSentResult = true
 
+                        stepThreeScore = 3
 
-            // 마지막 코드까지 도달했을 때 종료
-            if (!hasSentResult  && repeatedChords.isNotEmpty()) {
-                hasSentResult = true
-
-                stepFourScore = 3
-
-                showScoreDialog = true
-                Log.d("PracticePlayScreen", "🎯 연습모드3 끝났습니다. 점수 = $stepFourScore")
-                viewModel.sendPracticeFourResult(stepId, stepFourScore,
-                    onSuccess = {
-                        Log.d("PracticeStep3", "✅ 결과 전송 완료 - $stepFourScore")
                         showScoreDialog = true
-                    },
-                    onError = { errorMsg ->
-                        Log.e("PracticeStep3", "❌ 결과 전송 중 오류 발생: $errorMsg")
+                        Log.d("PracticePlayScreen", "🎯 연습모드3 끝났습니다. 점수 = $stepThreeScore")
+
+                        viewModel.sendPracticeFourResult(stepId, stepThreeScore,
+                            onSuccess = {
+                                Log.d("PracticeStep3", "✅ 결과 전송 완료 - $stepThreeScore")
+                                showScoreDialog = true
+                            },
+                            onError = { errorMsg ->
+                                Log.e("PracticeStep3", "❌ 결과 전송 중 오류 발생: $errorMsg")
+                            }
+                        )
+                        break
                     }
-                )
+                }
+                delay(16)
             }
         }
 
@@ -197,7 +201,7 @@ fun PracticeChordChangeScreen(
                     titleText = "Step 3",
                     onPauseClick = {
                         showPauseDialog.value = true
-//                        isPaused.value = true
+                        isPaused.value = true
                     }
                 )
             }
@@ -276,6 +280,7 @@ fun PracticeChordChangeScreen(
                         .fillMaxWidth()
                 ) {
                     CameraPreview(
+                        viewModel = chordCheckViewModel,
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .offset {
@@ -315,7 +320,7 @@ fun PracticeChordChangeScreen(
                         onDismiss = {
                             showPauseDialog.value = false
                             isPaused.value = false },
-                        // 종료하기
+                        // 종료하기 -> 스텝 다음으로 넘어가야함
                         onExit = {
                             showPauseDialog.value = false
                             navController.navigate(Routes.PRACTICE_LIST) {
@@ -326,7 +331,7 @@ fun PracticeChordChangeScreen(
                 }
                 if (showScoreDialog) {
                     ScoreDialogCustom(
-                        score = stepFourScore,
+                        score = stepThreeScore,
                         screenWidth = screenWidth,
                         onDismiss = {
                             showScoreDialog = false

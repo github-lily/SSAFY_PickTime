@@ -17,3 +17,13 @@ data class ChordPosition(
     val fret: Int,
     val strings: List<Int>
 )
+
+data class DetectionResponse(
+    val detection_done: Boolean,
+    val finger_positions: Map<String, FingerPosition>? = null
+)
+
+data class FingerPosition(
+    val fretboard: Int,
+    val string: Int
+)

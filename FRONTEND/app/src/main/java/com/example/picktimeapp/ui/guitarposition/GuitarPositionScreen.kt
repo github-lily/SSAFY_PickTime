@@ -40,25 +40,39 @@ import com.example.picktimeapp.ui.camera.YoloViewModel
 import com.example.picktimeapp.ui.components.PauseDialogCustom
 import com.example.picktimeapp.ui.nav.Routes
 import com.example.picktimeapp.ui.practice.PracticeStepViewModel
+import com.example.picktimeapp.util.ChordCheckViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun GuitarPositionScreen(
     navController: NavController,
-    stepId : Int
+    stepId : Int,
+    chordCheckViewModel: ChordCheckViewModel = hiltViewModel()
 ) {
-    // 서버 통신용 인스턴스
-    val yoloViewModel: YoloViewModel = hiltViewModel()
 
-    val viewModel: PracticeStepViewModel = hiltViewModel()
+    val yoloViewModel: YoloViewModel = hiltViewModel()          // AI 서버 통신용 인스턴스
+    val viewModel: PracticeStepViewModel = hiltViewModel()      // AI 서버 통신용 인스턴스
     val stepData = viewModel.stepData.value
     val stepType = stepData?.stepType
 
     val showPauseDialog = remember { mutableStateOf(false) }
+    val detectionDone = remember { mutableStateOf(false) }
 
+
+    // ✅ BE API 호출
     LaunchedEffect(stepId) {
         viewModel.fetchPracticeStep(stepId)
     }
 
+    // ✅ detectionDone == true면 화면 이동
+    LaunchedEffect(detectionDone.value) {
+        if (detectionDone.value) {
+            delay(500) // 이동 전 약간의 여유
+            navController.navigate("practicechordinfo/$stepId") {
+                popUpTo("guitarposition/$stepId") { inclusive = true }
+            }
+        }
+    }
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val screenWidth = maxWidth
@@ -140,8 +154,19 @@ fun GuitarPositionScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             CameraPreview(
+                                viewModel = chordCheckViewModel,
                                 modifier = Modifier
                                     .matchParentSize(),
+                                onFrameCaptured = { bitmap ->
+                                    yoloViewModel.sendFrameToServer(
+                                        bitmap = bitmap,
+                                        onResult = { result ->
+                                            if (result.detection_done) {
+                                                detectionDone.value = true
+                                            }
+                                        }
+                                    )
+                                }
 //                                onFrameCaptured = { bitmap ->
 //                                    yoloViewModel.sendFrameToServer(bitmap)
 //                                viewModel.sendFrameToServer(bitmap)
