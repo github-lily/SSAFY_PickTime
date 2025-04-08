@@ -2,10 +2,18 @@ package com.example.picktimeapp.audio
 
 import android.util.Log
 
+// AudioEventListener 인터페이스 정의
+interface AudioEventListener {
+    fun onThresholdExceeded(audioData: ShortArray)
+}
+
 object AudioComm {
 
     const val amplitudeThreshold = 700.0
     private var targetChord = ""
+
+    // 이벤트 리스너를 위한 변수
+    var eventListener: AudioEventListener? = null
 
     private val audioCapture = AudioCapture(4096) { audioData ->
 
@@ -18,9 +26,12 @@ object AudioComm {
         val newFreq = AudioAnalyzerYIN.analyzeFrequency(audioData)
         val rootNote = AudioAnalyzerYIN.frequencyToNoteName(newFreq)
 
-        if(targetChord.equals(rootNote)){
+        if(targetChord == rootNote){
 
         }
+
+        // 임계치 이상일 경우 이벤트 호출하여 카메라 캡처 시작 요청 전달
+        eventListener?.onThresholdExceeded(audioData)
 
     }
 
