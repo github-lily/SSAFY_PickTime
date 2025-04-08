@@ -41,7 +41,7 @@ class CameraFrameAnalyzerTest(
                 imageProxy.close()
                 return
             }
-            saveBitmapToFile(bitmap, "REcapture_frame_${frameCount}.jpg", context)
+            //saveBitmapToFile(bitmap, "REcapture_frame_${frameCount}.jpg", context)
             capturedBitmaps.add(bitmap)
             frameCount++
 
@@ -49,6 +49,7 @@ class CameraFrameAnalyzerTest(
                 isCapturing = false
 
                 // 👉 여기서 ViewModel로 분석 요청
+                // 한 번에 묶어서 요청
                 capturedBitmaps.forEach {
                     viewModel.analyzeFrame(it)
                 }
