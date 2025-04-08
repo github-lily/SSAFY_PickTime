@@ -10,8 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.State
 import android.util.Log
 import com.example.picktimeapp.network.PracticeStepResponse
-
-
+import com.example.picktimeapp.network.StepCompleteRequest
 
 
 @HiltViewModel
@@ -40,6 +39,33 @@ class PracticeStepViewModel @Inject constructor(
             } catch (e: Exception) {
                 _errorMessage.value = "네트워크 오류: ${e.message}"
                 Log.e("PracticeStepViewModel", "API 호출 실패", e)
+            }
+        }
+    }
+
+    // 스텝 4 결과 전송하는 곳
+    fun sendPracticeFourResult(
+        stepId: Int,
+        score: Int,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit = {}
+    ) {
+        viewModelScope.launch {
+            try {
+                val response = practiceStepApi.postCompletedStep(
+                    stepId = stepId,
+                    body = StepCompleteRequest(stepId, score)
+                )
+                if (response.isSuccessful) {
+                    Log.d("PracticeStep", "✅ 결과 전송 성공")
+                    onSuccess()
+                } else {
+                    Log.e("PracticeStep", "❌ 결과 전송 실패: ${response.code()}")
+                    onError("에러 코드: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("PracticeStep", "❌ 네트워크 오류: ${e.message}")
+                onError("네트워크 오류: ${e.message}")
             }
         }
     }
