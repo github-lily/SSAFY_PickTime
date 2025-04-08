@@ -22,6 +22,7 @@ import com.example.picktimeapp.ui.mypage.EditNicknameScreen
 import com.example.picktimeapp.ui.mypage.EditPasswordScreen
 import com.example.picktimeapp.ui.mypage.PasswordCheckScreen
 import com.example.picktimeapp.ui.practice.PracticeChordChangeScreen
+import com.example.picktimeapp.ui.practice.PracticeChordCheckScreen
 import com.example.picktimeapp.ui.practice.PracticeChordInfoScreen
 import com.example.picktimeapp.ui.practice.PracticeChordListenScreen
 import com.example.picktimeapp.ui.practice.PracticeChordPressScreen
@@ -48,9 +49,10 @@ object Routes {
     const val PRACTICE_LIST = "practicelist"
     const val GUITAR_POSITION = "guitarposition/{stepId}"
     const val PRACTICE_CHORDINFO = "practicechordinfo"
+    const val PRACTICE_CHORDCHECK = "practicechordcheck/{stepId}"
     const val PRACTICE_CHORDPRESS = "practicechordpress"
     const val PRACTICE_CHORDLISTEN = "practicechordlisten"
-    const val PRACTICE_CHORDCHANGE = "practicechordchange"
+    const val PRACTICE_CHORDCHANGE = "practicechordchange/{stepId}"
     const val PRACTICE_MUSIC = "practice/{stepId}"
     const val GAME_PLAY_WITH_ID = "game/{songId}"
 
@@ -204,6 +206,17 @@ fun AppNavGraph() {
             PracticeChordInfoScreen(navController = navController, stepId = stepId)
         }
 
+        // 🔥 Practice Chord Check🔥
+        composable(
+            route = "${Routes.PRACTICE_CHORDCHECK}",
+            arguments = listOf(navArgument("stepId") {
+                type = NavType.IntType
+            })
+        ) { backStackEntry ->
+            val stepId = backStackEntry.arguments?.getInt("stepId") ?: -1
+            PracticeChordCheckScreen(navController = navController, stepId = stepId)
+        }
+
         // 🔥 Practice Chord Press🔥
         composable(
             route = "${Routes.PRACTICE_CHORDPRESS}/{stepId}",
@@ -217,7 +230,7 @@ fun AppNavGraph() {
 
         // 🔥 Practice Chord Change 🔥
         composable(
-            route = "${Routes.PRACTICE_CHORDCHANGE}/{stepId}",
+            route = "${Routes.PRACTICE_CHORDCHANGE}",
             arguments = listOf(navArgument("stepId") {
                 type = NavType.IntType
             })
