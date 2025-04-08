@@ -31,7 +31,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -39,8 +38,6 @@ import androidx.compose.ui.unit.sp
 import com.example.picktimeapp.ui.camera.CameraPreview
 import com.example.picktimeapp.ui.components.PracticeTopBar
 import com.example.picktimeapp.ui.components.ScoreDialogCustom
-import com.example.picktimeapp.ui.game.play.GuitarImage
-import com.example.picktimeapp.ui.game.play.TopBar
 import com.example.picktimeapp.ui.nav.Routes
 import com.example.picktimeapp.ui.theme.Brown20
 import com.example.picktimeapp.ui.theme.Gray90
@@ -57,6 +54,8 @@ fun PracticeMusicScreen(
     // 노래 불러오기 위해
     val context = LocalContext.current
     val mediaPlayer = remember { MediaPlayer() }
+
+
 
     // 일시정시 버튼을 눌렀을 때
     val isPaused = remember { mutableStateOf(false) }
@@ -83,7 +82,6 @@ fun PracticeMusicScreen(
     ){
         val screenWidth = maxWidth
         val screenHeight = maxHeight
-        val density = LocalDensity.current
 
         // 데이터 불러오기
         val stepData = viewModel.stepData.value
@@ -143,7 +141,6 @@ fun PracticeMusicScreen(
             }
         }
 
-        var showScoreDialog by remember { mutableStateOf(false) }
 
         // 만약 일시정시 버튼을 눌렀다면
         LaunchedEffect(isPaused.value) {
@@ -207,6 +204,7 @@ fun PracticeMusicScreen(
                 hasSentResult = true
 
                 score = 2
+                showScoreDialog = true
                 Log.d("GamePlayScreen", "🎯 연습모드 끝났습니다. 점수 = $score")
 //                viewModel.sendGameResult(songId, score) {
 //                    showScoreDialog = true
@@ -218,7 +216,10 @@ fun PracticeMusicScreen(
             topBar = {
                 PracticeTopBar(
                     titleText = "Step 4",
-                    onPauseClick = {showPauseDialog.value = true}
+                    onPauseClick = {
+                        showPauseDialog.value = true
+                        isPaused.value = true
+                    }
                 )
             }
         ) { innerPadding ->
