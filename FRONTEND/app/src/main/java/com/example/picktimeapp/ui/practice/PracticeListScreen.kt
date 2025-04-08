@@ -22,8 +22,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -88,7 +90,8 @@ fun PracticeListScreen(navController: NavController, viewModel: PracticeListView
         else -> R.drawable.profile_level_1
     }
 
-
+    // ✅ 스크롤
+    val stageScrollState = rememberScrollState()
 
     Row(modifier = Modifier.fillMaxSize()) {
         SideNavigation(navController = navController)
@@ -186,7 +189,8 @@ fun PracticeListScreen(navController: NavController, viewModel: PracticeListView
                             // 왼쪽 : Stage 전체 목록
                             Column (
                                 modifier = Modifier
-                                    .weight(0.5f),
+                                    .weight(0.5f)
+                                    .verticalScroll(stageScrollState),
                                 horizontalAlignment =  Alignment.Start
                             ) {
                                 stageList.forEach { stage ->
