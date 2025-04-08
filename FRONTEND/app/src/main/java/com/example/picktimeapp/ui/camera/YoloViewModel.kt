@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.picktimeapp.data.model.DetectionResponse
 import com.example.picktimeapp.network.YoloServerApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -22,7 +23,10 @@ class YoloViewModel @Inject constructor(
 
     val positionDetected = mutableStateOf(false)
 
-    fun sendFrameToServer(bitmap: Bitmap) {
+    fun sendFrameToServer(
+        bitmap: Bitmap,
+        onResult: (DetectionResponse) -> Unit
+    ) {
         viewModelScope.launch {
             try {
                 val imagePart = bitmapToMultipart(bitmap)
