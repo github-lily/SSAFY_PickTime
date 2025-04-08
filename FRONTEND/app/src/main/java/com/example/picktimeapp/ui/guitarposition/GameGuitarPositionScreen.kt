@@ -1,6 +1,5 @@
 package com.example.picktimeapp.ui.guitarposition
 
-import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.sp
 import com.example.picktimeapp.R
@@ -32,14 +30,18 @@ import androidx.navigation.NavController
 import androidx.compose.material3.Text
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.picktimeapp.ui.components.PauseDialogCustom
 import com.example.picktimeapp.ui.nav.Routes
+import com.example.picktimeapp.util.ChordCheckViewModel
 
 @Composable
 fun GameGuitarPositionScreen(
     navController: NavController,
-    gameId : Int
+    gameId : Int,
+    chordCheckViewModel: ChordCheckViewModel = hiltViewModel()
 ) {
+
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val screenWidth = maxWidth
         val screenHeight = maxHeight
@@ -120,7 +122,10 @@ fun GameGuitarPositionScreen(
                                 .clip(RoundedCornerShape(12.dp)),
                             contentAlignment = Alignment.Center
                         ) {
-                            CameraPreview(modifier = Modifier .matchParentSize())
+                            CameraPreview(
+                                modifier = Modifier .matchParentSize(),
+                                viewModel = chordCheckViewModel
+                            )
 
                             Image(
                                 painter = painterResource(id = R.drawable.guitar_overlay),

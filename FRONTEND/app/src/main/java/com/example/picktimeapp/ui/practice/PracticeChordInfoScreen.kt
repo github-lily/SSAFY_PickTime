@@ -25,6 +25,7 @@ import com.example.picktimeapp.ui.nav.Routes
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -41,6 +42,14 @@ fun PracticeChordInfoScreen(
     // ✅ API 최초 호출
     LaunchedEffect(stepId) {
         viewModel.fetchPracticeStep(stepId)
+    }
+
+    // ✅ 3초 후 ChordCheckScreen으로 이동
+    LaunchedEffect(Unit) {
+        delay(3000)
+        navController.navigate("practicechordcheck/$stepId") {
+            popUpTo("practicechordinfo/$stepId") { inclusive = true }
+        }
     }
 
     val chordName = if (chords.isNotEmpty()) chords.first().chordName else "로딩 중..."

@@ -42,13 +42,15 @@ import com.example.picktimeapp.ui.nav.Routes
 import com.example.picktimeapp.ui.theme.Brown20
 import com.example.picktimeapp.ui.theme.Gray90
 import com.example.picktimeapp.ui.theme.TitleFont
+import com.example.picktimeapp.util.ChordCheckViewModel
 
 
 @Composable
 fun PracticeMusicScreen(
     stepId: Int,
     navController: NavController,
-    viewModel: PracticeStepViewModel = hiltViewModel()
+    viewModel: PracticeStepViewModel = hiltViewModel(),
+    chordCheckViewModel: ChordCheckViewModel = hiltViewModel()
 ) {
 
     // 노래 불러오기 위해
@@ -313,6 +315,7 @@ fun PracticeMusicScreen(
                             verticalArrangement = Arrangement.Bottom
                         ) {
                             CameraPreview(
+                                viewModel = chordCheckViewModel,
                                 modifier = Modifier
                                     .size(
                                         width = screenWidth * 0.20f,
