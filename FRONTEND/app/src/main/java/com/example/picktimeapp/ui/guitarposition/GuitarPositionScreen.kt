@@ -142,10 +142,11 @@ fun GuitarPositionScreen(
                             CameraPreview(
                                 modifier = Modifier
                                     .matchParentSize(),
-                                onFrameCaptured = { bitmap ->
-                                    yoloViewModel.sendFrameToServer(bitmap)
+//                                onFrameCaptured = { bitmap ->
+//                                    yoloViewModel.sendFrameToServer(bitmap)
 //                                viewModel.sendFrameToServer(bitmap)
-                            })
+//                            }
+                            )
 
                             Image(
                                 painter = painterResource(id = R.drawable.guitar_overlay),

@@ -19,10 +19,10 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.content.ContextCompat
 import com.example.picktimeapp.data.model.YoloResult
 import com.example.picktimeapp.util.CameraFrameAnalyzer
-import com.example.picktimeapp.util.HandLandmarkerHelper
-import com.example.picktimeapp.util.MediapipeOverlayView
-import com.example.picktimeapp.util.YoloSegmentationHelper
-import com.google.mediapipe.tasks.vision.core.RunningMode
+//import com.example.picktimeapp.util.HandLandmarkerHelper
+//import com.example.picktimeapp.util.MediapipeOverlayView
+//import com.example.picktimeapp.util.YoloSegmentationHelper
+//import com.google.mediapipe.tasks.vision.core.RunningMode
 import java.util.concurrent.Executors
 
 
@@ -38,22 +38,22 @@ fun CameraPreview(
 
     // 카메라 및 ML 모델 관련 리소스
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
-    val yoloHelper = remember { YoloSegmentationHelper(context) }
+//    val yoloHelper = remember { YoloSegmentationHelper(context) }
 
     // Composable이 제거될 때 리소스 해제
     DisposableEffect(key1 = true) {
         onDispose {
             Log.d(TAG, "카메라 리소스 해제")
 
-            // ✅ 추론 중지 먼저 요청
-            yoloHelper.stop()
-
-            // ✅ 약간의 딜레이 (아직 남은 프레임 처리 대기)
-            Thread.sleep(100)
-
-            // ✅ 카메라 쓰레드 종료 및 모델 해제
+//            // ✅ 추론 중지 먼저 요청
+//            yoloHelper.stop()
+//
+//            // ✅ 약간의 딜레이 (아직 남은 프레임 처리 대기)
+//            Thread.sleep(100)
+//
+//            // ✅ 카메라 쓰레드 종료 및 모델 해제
             cameraExecutor.shutdown()
-            yoloHelper.close()
+//            yoloHelper.close()
         }
     }
 
@@ -65,44 +65,44 @@ fun CameraPreview(
                 implementationMode = PreviewView.ImplementationMode.COMPATIBLE
             }
 
-            val overlayView = MediapipeOverlayView(ctx, null)
-
-            val handLandmarkerHelper = HandLandmarkerHelper(
-                context = ctx,
-                runningMode = RunningMode.LIVE_STREAM,
-                handLandmarkerHelperListener = object : HandLandmarkerHelper.LandmarkerListener {
-                    override fun onError(error: String, errorCode: Int) {
-                        Log.e("HandLandmarkerHelper", "에러: $error")
-                    }
-
-                    override fun onResults(resultBundle: HandLandmarkerHelper.ResultBundle) {
-                        if (resultBundle.results.isNotEmpty()) {
-                            overlayView.setResults(
-                                handLandmarkerResults = resultBundle.results[0],
-                                imageHeight = resultBundle.inputImageHeight,
-                                imageWidth = resultBundle.inputImageWidth,
-                                runningMode = RunningMode.LIVE_STREAM
-                            )
-                        }
-                    }
-                }
-            )
+//            val overlayView = MediapipeOverlayView(ctx, null)
+//
+//            val handLandmarkerHelper = HandLandmarkerHelper(
+//                context = ctx,
+//                runningMode = RunningMode.LIVE_STREAM,
+//                handLandmarkerHelperListener = object : HandLandmarkerHelper.LandmarkerListener {
+//                    override fun onError(error: String, errorCode: Int) {
+//                        Log.e("HandLandmarkerHelper", "에러: $error")
+//                    }
+//
+//                    override fun onResults(resultBundle: HandLandmarkerHelper.ResultBundle) {
+//                        if (resultBundle.results.isNotEmpty()) {
+//                            overlayView.setResults(
+//                                handLandmarkerResults = resultBundle.results[0],
+//                                imageHeight = resultBundle.inputImageHeight,
+//                                imageWidth = resultBundle.inputImageWidth,
+//                                runningMode = RunningMode.LIVE_STREAM
+//                            )
+//                        }
+//                    }
+//                }
+//            )
 
             val container = android.widget.FrameLayout(ctx).apply {
                 addView(previewView)
-                addView(overlayView)
+//                addView(overlayView)
             }
 
             startCamera(
                 context = ctx,
                 previewView = previewView,
-                overlayView = overlayView,
-                handLandmarkerHelper = handLandmarkerHelper, // 👈 추가!
+//                overlayView = overlayView,
+//                handLandmarkerHelper = handLandmarkerHelper, // 👈 추가!
                 lifecycleOwner = lifecycleOwner,
                 cameraExecutor = cameraExecutor,
                 onFrameCaptured = onFrameCaptured,
-                yoloHelper = yoloHelper,
-//                onDetectionResult = onDetectionResult
+//                yoloHelper = yoloHelper,
+//                onDetectionResult = onDetectionResult,
             )
 
             container
@@ -139,12 +139,12 @@ fun CameraPreview(
 private fun startCamera(
     context: Context,
     previewView: PreviewView,
-    overlayView: MediapipeOverlayView,
-    handLandmarkerHelper: HandLandmarkerHelper,
+//    overlayView: MediapipeOverlayView,
+//    handLandmarkerHelper: HandLandmarkerHelper,
     lifecycleOwner: androidx.lifecycle.LifecycleOwner,
     cameraExecutor: java.util.concurrent.ExecutorService,
     onFrameCaptured: (Bitmap) -> Unit,
-    yoloHelper: YoloSegmentationHelper,
+//    yoloHelper: YoloSegmentationHelper,
 //    onDetectionResult: (YoloResult) -> Unit
 ) {
     val TAG = "CameraPreview"
@@ -175,23 +175,27 @@ private fun startCamera(
                         it.setAnalyzer(
                             cameraExecutor,
                             CameraFrameAnalyzer(
-                                onResult = { bitmap, timestamp  ->
-                                    onFrameCaptured(bitmap.copy(bitmap.config, true)) // bitmap 복사본 넘기기
+                                onResult = { bitmap, timestamp ->
+                                    onFrameCaptured(bitmap.copy(bitmap.config, true))
+                                }
+                            )
+                        )
+                    }
 
+//                                onResult = { bitmap, timestamp  ->
+//                                    onFrameCaptured(bitmap.copy(bitmap.config, true)) // bitmap 복사본 넘기기
 //                                    try {
 //                                        val result = yoloHelper.runInference(bitmap)
 //                                        onDetectionResult(result)
-//
-//
 //                                    } catch (e: Exception) {
 //                                        Log.e(TAG, "추론 중 오류: ${e.message}")
 //                                    }
-                                },
-                                shouldRun = { yoloHelper.isRunningAllowed() },
-                                handLandmarkerHelper = handLandmarkerHelper,
-                                overlayView = overlayView,
-                                isFrontCamera = false
-                            )
+//                                },
+//                                shouldRun = { yoloHelper.isRunningAllowed() },
+//                                handLandmarkerHelper = handLandmarkerHelper,
+//                                overlayView = overlayView,
+//                                isFrontCamera = false
+//                            )
 //                            CameraFrameAnalyzer(
 //                                onResult = { bitmap, timestamp  ->
 //                                    try {
@@ -204,8 +208,7 @@ private fun startCamera(
 //                                },
 //                                shouldRun = { yoloHelper.isRunningAllowed() }
 //                            )
-                        )
-                    }
+
 
                 // 전면 또는 후면 카메라 선택
                 val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA // 필요에 따라 변경
