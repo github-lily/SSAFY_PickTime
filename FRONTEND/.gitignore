@@ -33,7 +33,6 @@ local.properties
 *.log
 *.tmp
 *.bin
-*.json
 
 # === Kotlin/Compose ===
 .kotlinc/
