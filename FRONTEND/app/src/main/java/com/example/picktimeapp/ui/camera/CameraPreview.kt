@@ -17,8 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.picktimeapp.audio.AudioComm
 import com.example.picktimeapp.controller.FeedbackController
+import com.example.picktimeapp.util.CameraAnalyzerViewModel
 import com.example.picktimeapp.util.CameraFrameAnalyzer
 import com.example.picktimeapp.util.ChordCheckViewModel
 import java.util.concurrent.Executors
@@ -38,6 +40,7 @@ fun CameraPreview(
     // 현재 Context와 LifecycleOwner를 가져옵니다.
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
+    val cameraViewModel: CameraAnalyzerViewModel = hiltViewModel()
     val TAG = "CameraPreview"
 
     // 카메라 백그라운드 처리를 위한 Executor 생성
@@ -54,7 +57,7 @@ fun CameraPreview(
             onResult = { bitmap ->
                 viewModel.sendSingleFrame(bitmap)
             },
-
+            viewModel = cameraViewModel,
             // 📌 1장 전송 여부 판단 조건 (detectionDone == true면, shouldRun == false가 되어 실시간 전송 중단)
             shouldRun = { viewModel.detectionDone.value == false }
         ).apply {
