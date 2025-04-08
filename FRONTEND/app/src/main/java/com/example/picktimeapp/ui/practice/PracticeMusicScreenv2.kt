@@ -4,8 +4,13 @@ package com.example.picktimeapp.ui.practice
 import android.media.MediaPlayer
 import android.net.Uri
 import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -25,12 +30,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.sp
 import com.example.picktimeapp.ui.camera.CameraPreview
+import com.example.picktimeapp.ui.components.PracticeTopBar
 import com.example.picktimeapp.ui.components.ScoreDialogCustom
 import com.example.picktimeapp.ui.game.play.GuitarImage
 import com.example.picktimeapp.ui.game.play.TopBar
 import com.example.picktimeapp.ui.nav.Routes
+import com.example.picktimeapp.ui.theme.Brown20
+import com.example.picktimeapp.ui.theme.Gray90
+import com.example.picktimeapp.ui.theme.TitleFont
 
 
 @Composable
@@ -48,7 +62,7 @@ fun PracticeMusicScreen(
     val isPaused = remember { mutableStateOf(false) }
 
     // 현재 멈춤을 눌렀는지 안눌렀는지 확인할 변수
-    val (showPauseDialog, setShowPauseDialog) = remember { mutableStateOf(false) }
+    val showPauseDialog = remember { mutableStateOf(false) }
 
     // 게임 끝났을 때
     var hasSentResult by remember { mutableStateOf(false) }
@@ -65,7 +79,7 @@ fun PracticeMusicScreen(
             .graphicsLayer {
                 clip = false
             }
-            .padding(top = 20.dp, bottom = 20.dp)
+            .padding(bottom = 20.dp)
     ){
         val screenWidth = maxWidth
         val screenHeight = maxHeight
@@ -122,11 +136,6 @@ fun PracticeMusicScreen(
                         mediaPlayer.prepare()
                         mediaPlayer.start()
                         Log.d("GamePlay", "🎵 자동 재생 시작됨")
-
-                        mediaPlayer.setOnCompletionListener {
-                            Log.d("GamePlay", "🎵 노래 끝남! → 점수 팝업 띄우기")
-                            showScoreDialog = true
-                        }
                     }
                 } catch (e: Exception) {
                     Log.e("GamePlay", "❌ 자동 재생 실패: ${e.message}")
@@ -205,126 +214,156 @@ fun PracticeMusicScreen(
             }
         }
 
-
-        Column (modifier = Modifier
-            .fillMaxSize()
-            .graphicsLayer {
-                clip = false
-            }
-        ) {
-            TopBar(
-                onPauseClick = {
-                    setShowPauseDialog(true)
-                    isPaused.value = true
-                },
-                screenWidth = screenWidth,
-                screenHeight = screenHeight,
-                title = song?.title,
-                modifier = Modifier
-                    .zIndex(3f)
-            )
-
-            // 코드 애니메이션 쪽
-            Box (modifier = Modifier
-                .fillMaxSize()
-                .weight(1f)
-                .graphicsLayer {
-                    clip = false  // overflow 허용!
-                }
-            ){
-                Spacer(Modifier.height(screenHeight * 0.05f))
-
-                GuitarImage(
-                    imageRes = R.drawable.guitar_neck,
-                    screenWidth = screenWidth,
-                    screenHeight = screenHeight,
-                    modifier = Modifier.zIndex(1f)
+        Scaffold (
+            topBar = {
+                PracticeTopBar(
+                    titleText = "Step 4",
+                    onPauseClick = {showPauseDialog.value = true}
                 )
-
-                if (song != null) {
-                    SlidingCodeBar2(
-                        screenWidth = screenWidth,
-                        currentIndex = currentChordIndex.value,
-                        elapsedTime = elapsedTime,
-                        totalDuration = song.durationSec.toFloat(),
-                        chordProgression = song.chordProgression,
-                        organizedChords = song.organizedChords ?: emptyList(),
-                        modifier = Modifier
-                            .wrapContentWidth()
-                            .padding(top = screenHeight * 0.14f)
-                            .zIndex(2f)
-                            .graphicsLayer {
-                                clip = false
-                            }
-                    )
-                }
             }
-
-            // 하단 쪽
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(horizontal = screenWidth * 0.03f, vertical = screenHeight * 0.03f),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+        ) { innerPadding ->
+            Column (modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .graphicsLayer {
+                    clip = false
+                }
             ) {
-                // 카메라 나오는 쪽
                 Box(
                     modifier = Modifier
-                        .padding(start = screenWidth * 0.02f, bottom = screenWidth * 0.015f, end = screenWidth * 0.02f)
+                        .align(Alignment.CenterHorizontally)
+                        .fillMaxWidth(0.85f)
+                        .height(screenHeight * 0.1f)
+                        .padding(top = screenHeight * 0.01f)
+                        .background(Brown20, shape = RoundedCornerShape(screenHeight * 0.035f)),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxHeight(),
-                        verticalArrangement = Arrangement.Bottom
-                    ) {
-                        CameraPreview(
+                    Text(
+                        text = "잘했어요! 이번엔 노래에 맞게 연주해볼까요?",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Gray90,
+                        fontWeight = FontWeight.Normal,
+                        fontFamily = TitleFont,
+                        fontSize = (screenWidth * 0.020f).value.sp
+                    )
+                }
+
+                // 코드 애니메이션 쪽
+                Box (modifier = Modifier
+                    .fillMaxSize()
+                    .weight(1f)
+                    .graphicsLayer {
+                        clip = false  // overflow 허용!
+                    }
+                ){
+                    Spacer(Modifier.height(screenHeight * 0.05f))
+
+                    GuitarImage2(
+                        imageRes = R.drawable.guitar_neck,
+                        screenWidth = screenWidth,
+                        screenHeight = screenHeight,
+                        modifier = Modifier.zIndex(1f)
+                    )
+
+                    if (song != null) {
+                        SlidingCodeBar2(
+                            screenWidth = screenWidth,
+                            currentIndex = currentChordIndex.value,
+                            elapsedTime = elapsedTime,
+                            totalDuration = song.durationSec.toFloat(),
+                            chordProgression = song.chordProgression,
+                            organizedChords = song.organizedChords ?: emptyList(),
                             modifier = Modifier
-                                .size(
-                                    width = screenWidth * 0.20f,
-                                    height = screenHeight * 0.20f
-                                )
-                                .clip(RoundedCornerShape(12.dp))
-                                .zIndex(999f)
+                                .wrapContentWidth()
+                                .padding(top = screenHeight * 0.14f)
+                                .zIndex(2f)
+                                .graphicsLayer {
+                                    clip = false
+                                }
                         )
                     }
                 }
-            }
 
-
-            // 팝업창 띄우기
-            if (showPauseDialog) {
-                PauseDialogCustom(
-                    screenWidth = screenWidth,
-                    // 이어하기
-                    onDismiss = {
-                        setShowPauseDialog(false)
-                        isPaused.value = false },
-                    // 종료하기
-                    onExit = {
-                        setShowPauseDialog(false)
-                        navController.navigate("practicelist")
-                    }
-                )
-            }
-            if (showScoreDialog) {
-                ScoreDialogCustom(
-                    score = score,
-                    screenWidth = screenWidth,
-                    onDismiss = {
-                        showScoreDialog = false
-                        navController.navigate("practice/$stepId") {
-                            popUpTo("practice/$stepId") { inclusive = true } // 현재 화면 제거 후 재시작하겠다.
-                        }
-                    },
-                    onExit = {
-                        showScoreDialog = false
-                        navController.navigate(Routes.PRACTICE_LIST) {
-                            popUpTo(Routes.PRACTICE_LIST) { inclusive = true } // 현재 화면 제거
+                // 하단 쪽
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                        .padding(horizontal = screenWidth * 0.03f, vertical = screenHeight * 0.03f),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    // 카메라 나오는 쪽
+                    Box(
+                        modifier = Modifier
+                            .padding(start = screenWidth * 0.02f, bottom = screenWidth * 0.015f, end = screenWidth * 0.02f)
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxHeight(),
+                            verticalArrangement = Arrangement.Bottom
+                        ) {
+                            CameraPreview(
+                                modifier = Modifier
+                                    .size(
+                                        width = screenWidth * 0.20f,
+                                        height = screenHeight * 0.20f
+                                    )
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .zIndex(999f)
+                            )
                         }
                     }
-                )
+                }
+
+
+                // 팝업창 띄우기
+                if (showPauseDialog.value) {
+                    PauseDialogCustom(
+                        screenWidth = screenWidth,
+                        // 이어하기
+                        onDismiss = {
+                            showPauseDialog.value = false
+                            isPaused.value = false },
+                        // 종료하기
+                        onExit = {
+                            showPauseDialog.value = false
+                            navController.navigate("practicelist")
+                        }
+                    )
+                }
+                if (showScoreDialog) {
+                    ScoreDialogCustom(
+                        score = score,
+                        screenWidth = screenWidth,
+                        onDismiss = {
+                            showScoreDialog = false
+                            navController.navigate("practice/$stepId") {
+                                popUpTo("practice/$stepId") { inclusive = true } // 현재 화면 제거 후 재시작하겠다.
+                            }
+                        },
+                        onExit = {
+                            showScoreDialog = false
+                            navController.navigate(Routes.PRACTICE_LIST) {
+                                popUpTo(Routes.PRACTICE_LIST) { inclusive = true } // 현재 화면 제거
+                            }
+                        }
+                    )
+                }
             }
         }
+
     }
+}
+
+@Composable
+fun GuitarImage2(imageRes: Int, screenWidth: Dp, screenHeight: Dp, modifier: Modifier = Modifier) {
+    Image(
+        painter = painterResource(id = imageRes),
+        contentDescription = "Guitar Neck",
+        modifier = Modifier
+            .padding(top = screenHeight * 0.07f)
+            .offset(x = -screenWidth * 0.1f)   // 왼쪽으로 조금 이동
+            .height(screenHeight * 0.55f)
+            .scale(1.8f)
+    )
 }
