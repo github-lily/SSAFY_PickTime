@@ -3,12 +3,16 @@ package com.example.picktimeapp.util
 
 
 import android.content.Context
+import android.graphics.Bitmap
 import com.example.picktimeapp.data.model.ChordFingeringData
-import com.example.picktimeapp.data.model.ChordPosition
+import com.example.picktimeapp.data.model.FingerPosition
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.ByteArrayOutputStream
 
-data class FingerPosition(val fretboard: Int, val string: Int)
 
 object Utils {
     fun loadStandardChordMap(context: Context): Map<String, Map<String, FingerPosition>> {
@@ -38,4 +42,15 @@ object Utils {
 
         return chordMap
     }
+
+    // Bitmap → Multipart 변환 확장 함수
+    fun bitmapToMultipart(bitmap: Bitmap, name: String = "frame.jpg"): MultipartBody.Part {
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+        val requestBody = stream.toByteArray()
+            .toRequestBody("image/jpeg".toMediaTypeOrNull())
+
+        return MultipartBody.Part.createFormData("image", name, requestBody)
+    }
+
 }

@@ -17,203 +17,143 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.content.ContextCompat
-import com.example.picktimeapp.data.model.YoloResult
+import com.example.picktimeapp.audio.AudioComm
+import com.example.picktimeapp.controller.FeedbackController
 import com.example.picktimeapp.util.CameraFrameAnalyzer
-//import com.example.picktimeapp.util.HandLandmarkerHelper
-//import com.example.picktimeapp.util.MediapipeOverlayView
-//import com.example.picktimeapp.util.YoloSegmentationHelper
-//import com.google.mediapipe.tasks.vision.core.RunningMode
+import com.example.picktimeapp.util.ChordCheckViewModel
 import java.util.concurrent.Executors
+import java.util.concurrent.ExecutorService
 
-
+/**
+ * Composable 함수로 카메라 미리보기와
+ *
+ * @param modifier UI 수정에 사용되는 Modifier
+ */
 @Composable
 fun CameraPreview(
     modifier: Modifier = Modifier,
+    viewModel: ChordCheckViewModel,
     onFrameCaptured: (Bitmap) -> Unit = {}
-//    onDetectionResult: (YoloResult) -> Unit = {}
 ) {
+    // 현재 Context와 LifecycleOwner를 가져옵니다.
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val TAG = "CameraPreview"
 
-    // 카메라 및 ML 모델 관련 리소스
+    // 카메라 백그라운드 처리를 위한 Executor 생성
+    // 카메라 작업을 위한 별도의 단일 스레드 Executor 생성
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
-//    val yoloHelper = remember { YoloSegmentationHelper(context) }
 
-    // Composable이 제거될 때 리소스 해제
-    DisposableEffect(key1 = true) {
-        onDispose {
-            Log.d(TAG, "카메라 리소스 해제")
 
-//            // ✅ 추론 중지 먼저 요청
-//            yoloHelper.stop()
-//
-//            // ✅ 약간의 딜레이 (아직 남은 프레임 처리 대기)
-//            Thread.sleep(100)
-//
-//            // ✅ 카메라 쓰레드 종료 및 모델 해제
-            cameraExecutor.shutdown()
-//            yoloHelper.close()
+    // 단일 Analyzer(분석기) 인스턴스 생성 및 상태 유지(FeedbackController와 함께 공유)
+    val cameraAnalyzer = remember {
+        CameraFrameAnalyzer(
+            context = context,
+
+            // 📌 실시간 1장 전송용 콜백 (detection_done == false 일 때만 호출됨)
+            onResult = { bitmap ->
+                viewModel.sendSingleFrame(bitmap)
+            },
+
+            // 📌 1장 전송 여부 판단 조건 (detectionDone == true면, shouldRun == false가 되어 실시간 전송 중단)
+            shouldRun = { viewModel.detectionDone.value == false }
+        ).apply {
+            // ✅ 10장 수집 완료 시 호출될 콜백 (연주 감지 후)
+            onCaptureComplete = { frames ->
+                viewModel.sendFrameList(frames)
+            }
         }
     }
 
-    // 미리보기 화면을 띄우는 부분
+    // FeedbackController 생성: AudioComm 이벤트가 발생하면 cameraFrameAnalyzer.startCapture() 호출
+    remember {
+        FeedbackController(cameraAnalyzer)
+    }
+
+    // Composable이 제거될 때 리소스 정리 (카메라, 오디오 처리 등)
+    DisposableEffect(key1 = true) {
+        onDispose {
+            Log.d(TAG, "카메라 리소스 해제")
+            Thread.sleep(100)
+            cameraExecutor.shutdown()
+            AudioComm.stopAudioProcessing()
+        }
+    }
+
+    // ✅ 실제 Android 카메라 뷰 구성
+    // AndroidView를 통해 PreviewView를 Compose UI에 통합
     androidx.compose.ui.viewinterop.AndroidView(
         modifier = modifier,
         factory = { ctx: Context ->
+            // PreviewView 생성 및 설정 (호환성 모드 사용)
             val previewView = PreviewView(ctx).apply {
                 implementationMode = PreviewView.ImplementationMode.COMPATIBLE
             }
-
-//            val overlayView = MediapipeOverlayView(ctx, null)
-//
-//            val handLandmarkerHelper = HandLandmarkerHelper(
-//                context = ctx,
-//                runningMode = RunningMode.LIVE_STREAM,
-//                handLandmarkerHelperListener = object : HandLandmarkerHelper.LandmarkerListener {
-//                    override fun onError(error: String, errorCode: Int) {
-//                        Log.e("HandLandmarkerHelper", "에러: $error")
-//                    }
-//
-//                    override fun onResults(resultBundle: HandLandmarkerHelper.ResultBundle) {
-//                        if (resultBundle.results.isNotEmpty()) {
-//                            overlayView.setResults(
-//                                handLandmarkerResults = resultBundle.results[0],
-//                                imageHeight = resultBundle.inputImageHeight,
-//                                imageWidth = resultBundle.inputImageWidth,
-//                                runningMode = RunningMode.LIVE_STREAM
-//                            )
-//                        }
-//                    }
-//                }
-//            )
-
-            val container = android.widget.FrameLayout(ctx).apply {
-                addView(previewView)
-//                addView(overlayView)
-            }
-
+            // 카메라 초기화 시 Analyzer 인스턴스로 cameraFrameAnalyzerTest를 전달
             startCamera(
                 context = ctx,
                 previewView = previewView,
-//                overlayView = overlayView,
-//                handLandmarkerHelper = handLandmarkerHelper, // 👈 추가!
                 lifecycleOwner = lifecycleOwner,
                 cameraExecutor = cameraExecutor,
-                onFrameCaptured = onFrameCaptured,
-//                yoloHelper = yoloHelper,
-//                onDetectionResult = onDetectionResult,
+                analyzer = cameraAnalyzer
             )
+            // 오디오 분석 시작
+            AudioComm.startAudioProcessing()
 
-            container
+            // 구성된 PreviewView를 반환하여 화면에 표시
+            previewView
         }
-
-//        factory = { ctx: Context ->
-//            val previewView = PreviewView(ctx).apply {
-//                implementationMode = PreviewView.ImplementationMode.COMPATIBLE
-//            }
-//
-//            val overlayView = MediapipeOverlayView(ctx, null)
-//
-//            val container = android.widget.FrameLayout(ctx).apply {
-//                addView(previewView)
-//                addView(overlayView)
-//            }
-//
-//            startCamera(
-//                context = ctx,
-//                previewView = previewView,
-//                overlayView = overlayView, // mediapipe
-//                lifecycleOwner = lifecycleOwner,
-//                cameraExecutor = cameraExecutor,
-//                yoloHelper = yoloHelper,
-//                onDetectionResult = onDetectionResult
-//            )
-//
-//            container // AndroidView가 렌더링할 뷰로 return
-//        }
     )
-
 }
 
+/**
+ * 실제 카메라 초기화 및 이미지 분석을 수행하는 함수
+ *
+ * @param context         안드로이드 Context
+ * @param previewView     카메라 미리보기를 위한 PreviewView
+ * @param lifecycleOwner  카메라 생명주기를 관리하는 LifecycleOwner
+ * @param cameraExecutor  백그라운드에서 카메라 분석을 수행할 ExecutorService
+ * @param analyzer        사용할 ImageAnalysis.Analyzer 인스턴스
+ */
 private fun startCamera(
     context: Context,
     previewView: PreviewView,
-//    overlayView: MediapipeOverlayView,
-//    handLandmarkerHelper: HandLandmarkerHelper,
     lifecycleOwner: androidx.lifecycle.LifecycleOwner,
-    cameraExecutor: java.util.concurrent.ExecutorService,
-    onFrameCaptured: (Bitmap) -> Unit,
-//    yoloHelper: YoloSegmentationHelper,
-//    onDetectionResult: (YoloResult) -> Unit
+    cameraExecutor: ExecutorService,
+    analyzer: ImageAnalysis.Analyzer
 ) {
-    val TAG = "CameraPreview"
+    val TAG = "CameraPreviewTest"
 
     try {
+        // CameraProvider 획득 요청
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
 
         cameraProviderFuture.addListener({
             try {
-                // 카메라 연결 도우미 객체 불러오기
                 val cameraProvider = cameraProviderFuture.get()
 
-                // 카메라 영상을 화면에 표시해주는 preview 객체 생성
+                // Preview 생성 및 설정
                 val preview = Preview.Builder()
-//                    .setTargetAspectRatio(AspectRatio.RATIO_16_9)
+                    .setTargetAspectRatio(AspectRatio.RATIO_16_9)
                     .build()
                     .also {
                         it.setSurfaceProvider(previewView.surfaceProvider)
                     }
 
-                // 실시간 프레임 분석 설정
+                // ImageAnalysis 생성, analyzer는 외부에서 전달한 인스턴스를 사용
                 val imageAnalysis = ImageAnalysis.Builder()
-                    // 원본 해상도로 분석 - 기기에 따라 부하가 클 수 있음
-                    .setTargetResolution(Size(1280, 736)) // 또는 디바이스 화면 해상도에 맞게 조정
-                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST) // 최신 프레임만 분석
+                    .setTargetResolution(Size(1280, 736))
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                     .build()
                     .also {
-                        it.setAnalyzer(
-                            cameraExecutor,
-                            CameraFrameAnalyzer(
-                                onResult = { bitmap, timestamp ->
-                                    onFrameCaptured(bitmap.copy(bitmap.config, true))
-                                }
-                            )
-                        )
+                        // 외부에서 받은 analyzer를 카메라에 연결
+                        it.setAnalyzer(cameraExecutor, analyzer)
                     }
 
-//                                onResult = { bitmap, timestamp  ->
-//                                    onFrameCaptured(bitmap.copy(bitmap.config, true)) // bitmap 복사본 넘기기
-//                                    try {
-//                                        val result = yoloHelper.runInference(bitmap)
-//                                        onDetectionResult(result)
-//                                    } catch (e: Exception) {
-//                                        Log.e(TAG, "추론 중 오류: ${e.message}")
-//                                    }
-//                                },
-//                                shouldRun = { yoloHelper.isRunningAllowed() },
-//                                handLandmarkerHelper = handLandmarkerHelper,
-//                                overlayView = overlayView,
-//                                isFrontCamera = false
-//                            )
-//                            CameraFrameAnalyzer(
-//                                onResult = { bitmap, timestamp  ->
-//                                    try {
-//                                        // YoloResult 객체를 직접 반환하도록 수정
-//                                        val result = yoloHelper.runInference(bitmap)
-//                                        onDetectionResult(result)
-//                                    } catch (e: Exception) {
-//                                        Log.e(TAG, "추론 중 오류: ${e.message}")
-//                                    }
-//                                },
-//                                shouldRun = { yoloHelper.isRunningAllowed() }
-//                            )
+                // 전면 카메라 선택
+                val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
 
-
-                // 전면 또는 후면 카메라 선택
-                val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA // 필요에 따라 변경
-
-                // 기존 바인딩 해제 후 새로 바인딩
+                // 기존 바인딩 해제 후 새로운 바인딩 설정
                 cameraProvider.unbindAll()
                 cameraProvider.bindToLifecycle(
                     lifecycleOwner,
@@ -231,5 +171,3 @@ private fun startCamera(
         Log.e(TAG, "카메라 초기화 실패: ${e.message}")
     }
 }
-
-

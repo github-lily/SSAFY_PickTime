@@ -4,20 +4,28 @@ package com.example.picktimeapp.util
 // 앱 시작 후 최초 한 번 guitar_chord_fingerings_standard.json을 읽어와서 메모리에 저장
 // 이후 finger_positions와 비교할 때 참조용으로 사용
 
+import com.example.picktimeapp.data.model.FingerPosition
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import android.app.Application
+import android.graphics.Bitmap
+import android.util.Log
+import androidx.compose.runtime.State
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.picktimeapp.network.YoloServerApi
+import com.example.picktimeapp.util.Utils.bitmapToMultipart
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+
 @HiltViewModel
 class ChordCheckViewModel @Inject constructor(
-    application: Application
+    application: Application,
+    private val yoloServerApi: YoloServerApi
 ) : AndroidViewModel(application) {
 
     // 기준 코드 정보
@@ -35,12 +43,19 @@ class ChordCheckViewModel @Inject constructor(
     var feedbackMessage by mutableStateOf("")
         private set
 
-    // detection 상태 관리
-    var detectionDone by mutableStateOf(true)
-        private set
-
     // 음성 결과 저장
     var audioResult: Boolean? = null
+
+
+    // detection 상태 관리
+    private val _detectionDone = mutableStateOf(false)
+    val detectionDone: State<Boolean> = _detectionDone
+
+    private val _fingerPositions = mutableStateOf<Map<String, FingerPosition>?>(null)
+    val fingerPositions: State<Map<String, FingerPosition>?> = _fingerPositions
+
+    private val _correctChord = mutableStateOf<Boolean?>(null)
+    val correctChord: State<Boolean?> = _correctChord
 
     fun setChordName(name: String) {
         currentChordName = name
@@ -53,15 +68,15 @@ class ChordCheckViewModel @Inject constructor(
         audioOk: Boolean
     ) {
         if (!detectionDoneFromServer) {
-            detectionDone = false
+            _detectionDone.value = false
             feedbackMessage = "연결이 끊겼어요. 손을 떼고 화면에 기타가 모두 보이도록 해주세요."
             isCorrect = false
             return
         }
 
         // 연결 다시 정상됨
-        if (!detectionDone && detectionDoneFromServer) {
-            detectionDone = true
+        if (!detectionDone.value && detectionDoneFromServer) {
+            _detectionDone.value = true
             feedbackMessage = "다시 연주해 보세요."
             isCorrect = false
             return
@@ -116,7 +131,10 @@ class ChordCheckViewModel @Inject constructor(
     }
 
     // 피드백 메시지를 시간차를 두고 보여주는 함수
-    fun showSequentialFeedback(expected: Map<String, FingerPosition>, actual: Map<String, FingerPosition>) {
+    fun showSequentialFeedback(
+        expected: Map<String, com.example.picktimeapp.data.model.FingerPosition>,
+        actual: Map<String, com.example.picktimeapp.data.model.FingerPosition>
+    ) {
         viewModelScope.launch {
             val messages = makeFeedbackList(expected, actual)
             isCorrect = false
@@ -127,5 +145,52 @@ class ChordCheckViewModel @Inject constructor(
         }
     }
 
+    // detection_done == false일 때, 프레임 1장을 서버에 보내 탐지 시도
+    fun sendSingleFrame(bitmap: Bitmap) {
+        viewModelScope.launch {
+            try {
+                val part = bitmapToMultipart(bitmap,"image") // 아래 확장함수 참고
+                val response = yoloServerApi.sendFrame(part)
+
+                // 탐지 여부 상태 업데이트
+                _detectionDone.value = response.detection_done
+
+                // 탐지 완료되었으면 결과 저장
+                // 응답으로 detection_done 값과 finger_positions 수신
+                if (response.detection_done && response.finger_positions != null) {
+                    _fingerPositions.value = response.finger_positions
+                }
+            } catch (e: Exception) {
+                Log.e("ViewModel", "1장 전송 오류: ${e.message}")
+            }
+        }
+    }
+
+    // 연주 시점에 10장 모아서 서버에 보내 정확한 코드 판별
+    fun sendFrameList(bitmaps: List<Bitmap>) {
+        viewModelScope.launch {
+            try {
+                val parts = bitmaps.mapIndexed { idx, bitmap ->
+                    bitmapToMultipart(bitmap, "image$idx.jpg")
+                }
+
+                val response = yoloServerApi.sendFrames(parts)
+
+                if (response.finger_positions != null) {
+                    _fingerPositions.value = response.finger_positions
+
+                    // 기준 코드 다시 불러오기
+                    val expected = standardMap[currentChordName] ?: return@launch
+
+                    // 여기서 기준 코드와 비교해서 결과 판단도 가능
+                    // 응답으로 finger_positions 받아서 기준 코드와 비교
+                    val result = checkFingerMatch(expected, fingerPositions.value ?: emptyMap())
+                    _correctChord.value = result
+                }
+            } catch (e: Exception) {
+                Log.e("ViewModel", "10장 전송 오류: ${e.message}")
+            }
+        }
+    }
 
 }

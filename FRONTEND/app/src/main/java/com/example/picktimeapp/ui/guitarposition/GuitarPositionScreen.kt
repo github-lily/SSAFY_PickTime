@@ -40,12 +40,14 @@ import com.example.picktimeapp.ui.camera.YoloViewModel
 import com.example.picktimeapp.ui.components.PauseDialogCustom
 import com.example.picktimeapp.ui.nav.Routes
 import com.example.picktimeapp.ui.practice.PracticeStepViewModel
+import com.example.picktimeapp.util.ChordCheckViewModel
 import kotlinx.coroutines.delay
 
 @Composable
 fun GuitarPositionScreen(
     navController: NavController,
-    stepId : Int
+    stepId : Int,
+    chordCheckViewModel: ChordCheckViewModel = hiltViewModel()
 ) {
 
     val yoloViewModel: YoloViewModel = hiltViewModel()          // AI 서버 통신용 인스턴스
@@ -152,6 +154,7 @@ fun GuitarPositionScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             CameraPreview(
+                                viewModel = chordCheckViewModel,
                                 modifier = Modifier
                                     .matchParentSize(),
                                 onFrameCaptured = { bitmap ->
