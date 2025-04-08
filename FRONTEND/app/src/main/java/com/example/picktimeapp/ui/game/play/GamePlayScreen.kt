@@ -41,6 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import com.example.picktimeapp.ui.camera.CameraPreview
+import com.example.picktimeapp.ui.camera.CameraPreviewTest
 import com.example.picktimeapp.ui.components.ScoreDialogCustom
 import com.example.picktimeapp.ui.nav.Routes
 
@@ -299,7 +300,7 @@ fun GamePlayScreen(
                         modifier = Modifier.fillMaxHeight(),
                         verticalArrangement = Arrangement.Bottom
                     ) {
-                        CameraPreview(
+                        CameraPreviewTest(
                             modifier = Modifier
                                 .size(
                                     width = screenWidth * 0.20f,
