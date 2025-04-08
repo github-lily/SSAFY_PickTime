@@ -66,7 +66,7 @@ fun PracticeMusicScreen(
     // 게임 끝났을 때
     var hasSentResult by remember { mutableStateOf(false) }
     var showScoreDialog by remember { mutableStateOf(false) }
-    var score by remember { mutableStateOf(0) }
+    var stepFourScore by remember { mutableStateOf(0) }
 
     LaunchedEffect(stepId) {
         viewModel.fetchPracticeStep(stepId)
@@ -203,12 +203,19 @@ fun PracticeMusicScreen(
             if (!hasSentResult  && totalChords > 0 ) {
                 hasSentResult = true
 
-                score = 2
+                stepFourScore = 1
+
                 showScoreDialog = true
-                Log.d("GamePlayScreen", "🎯 연습모드 끝났습니다. 점수 = $score")
-//                viewModel.sendGameResult(songId, score) {
-//                    showScoreDialog = true
-//                }
+                Log.d("PracticePlayScreen", "🎯 연습모드 끝났습니다. 점수 = $stepFourScore")
+                viewModel.sendPracticeFourResult(stepId, stepFourScore,
+                    onSuccess = {
+                        Log.d("PracticeStep", "✅ 결과 전송 완료 - $stepFourScore")
+                        showScoreDialog = true
+                    },
+                    onError = { errorMsg ->
+                        Log.e("PracticeStep", "❌ 결과 전송 중 오류 발생: $errorMsg")
+                    }
+                )
             }
         }
 
@@ -334,7 +341,7 @@ fun PracticeMusicScreen(
                 }
                 if (showScoreDialog) {
                     ScoreDialogCustom(
-                        score = score,
+                        score = stepFourScore,
                         screenWidth = screenWidth,
                         onDismiss = {
                             showScoreDialog = false
