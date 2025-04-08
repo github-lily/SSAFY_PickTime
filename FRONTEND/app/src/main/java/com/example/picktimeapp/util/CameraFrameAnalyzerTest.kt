@@ -12,27 +12,23 @@ import android.os.Environment
 import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import com.example.picktimeapp.network.ChordDetectApi
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 
 class CameraFrameAnalyzerTest(
-    // Context를 생성자로 전달하여 파일 저장 시 사용
     private val context: Context,
-    private val onResult: (Bitmap) -> Unit,
+    private val viewModel: CameraAnalyzerViewModel,
     private val shouldRun: () -> Boolean
 ) : ImageAnalysis.Analyzer {
 
-    // 캡처 모드용 내부 상태
     private var isCapturing = false
     private var frameCount = 0
-    private val targetFrameCount = 10  // 예: n 프레임을 10개로 설정
+    private val targetFrameCount = 10
+    private val capturedBitmaps = mutableListOf<Bitmap>()
     private val TAG = "CameraFrameAnalyzer"
 
-    // 저장한 이미지들을 임시로 보관할 리스트 (옵션)
-    private val capturedBitmaps = mutableListOf<Bitmap>()
-
-    // 외부에서 캡처 시작을 요청하는 함수
     fun startCapture() {
         isCapturing = true
         frameCount = 0
@@ -40,24 +36,22 @@ class CameraFrameAnalyzerTest(
     }
 
     override fun analyze(imageProxy: ImageProxy) {
-        // 이미지 분석 전에 필요한 전처리 실행
         if (isCapturing && frameCount < targetFrameCount) {
-            // imageProxy를 Bitmap으로 변환
             val bitmap = imageProxyToBitmap(imageProxy) ?: run {
                 imageProxy.close()
                 return
             }
-
-            // 수정된 saveBitmapToFile 함수를 사용하여 파일 저장 (Context 전달)
-            saveBitmapToFile(bitmap, "capture_frame_${frameCount}.jpg", context)
+            saveBitmapToFile(bitmap, "REcapture_frame_${frameCount}.jpg", context)
             capturedBitmaps.add(bitmap)
-            // 예: onResult(bitmap)
             frameCount++
 
             if (frameCount == targetFrameCount) {
-                // 캡처 완료 후 데이터 전송 또는 상위 관리자에 넘김
                 isCapturing = false
-                // 데이터 조합 후 전송하는 로직 호출
+
+                // 👉 여기서 ViewModel로 분석 요청
+                capturedBitmaps.forEach {
+                    viewModel.analyzeFrame(it)
+                }
             }
         }
         imageProxy.close()

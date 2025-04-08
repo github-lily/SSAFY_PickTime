@@ -15,65 +15,51 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.picktimeapp.audio.AudioComm
 import com.example.picktimeapp.controller.FeedbackController
+import com.example.picktimeapp.util.CameraAnalyzerViewModel
 import com.example.picktimeapp.util.CameraFrameAnalyzerTest
-import java.util.concurrent.Executors
 import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
-/**
- * Composable 함수로 카메라 미리보기와
- *
- * @param modifier UI 수정에 사용되는 Modifier
- */
 @Composable
 fun CameraPreviewTest(
     modifier: Modifier = Modifier
 ) {
-    // 현재 Context와 LifecycleOwner를 가져옵니다.
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val TAG = "CameraPreview"
-
-    // 카메라 작업을 위한 별도의 단일 스레드 Executor 생성
+    val viewModel: CameraAnalyzerViewModel = hiltViewModel()
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
 
-    // 단일 Analyzer 인스턴스 생성 (FeedbackController와 함께 공유)
     val cameraFrameAnalyzerTest = remember {
         CameraFrameAnalyzerTest(
             context = context,
-            onResult = { bitmap ->
-                // 캡처 완료 후 실행할 로직 (예: 서버 전송, UI 갱신 등)
-            },
-            shouldRun = { true } // 캡처 로직 실행 조건을 true로 설정
+            viewModel = viewModel,
+            shouldRun = { true }
         )
     }
 
-    // FeedbackController 생성: AudioComm 이벤트가 발생하면 cameraFrameAnalyzerTest.startCapture() 호출
     remember {
         FeedbackController(cameraFrameAnalyzerTest)
     }
 
-    // Composable이 제거될 때 리소스 정리 (카메라, 오디오 처리 등)
-    DisposableEffect(key1 = true) {
+    DisposableEffect(true) {
         onDispose {
-            Log.d(TAG, "카메라 리소스 해제")
-            Thread.sleep(100)
             cameraExecutor.shutdown()
             AudioComm.stopAudioProcessing()
         }
     }
 
-    // AndroidView를 통해 PreviewView를 Compose UI에 통합
-    androidx.compose.ui.viewinterop.AndroidView(
+    AndroidView(
         modifier = modifier,
-        factory = { ctx: Context ->
-            // PreviewView 생성 및 설정 (호환성 모드 사용)
+        factory = { ctx ->
             val previewView = PreviewView(ctx).apply {
                 implementationMode = PreviewView.ImplementationMode.COMPATIBLE
             }
-            // 카메라 초기화 시 Analyzer 인스턴스로 cameraFrameAnalyzerTest를 전달
+
             startCamera(
                 context = ctx,
                 previewView = previewView,
@@ -81,8 +67,8 @@ fun CameraPreviewTest(
                 cameraExecutor = cameraExecutor,
                 analyzer = cameraFrameAnalyzerTest
             )
+
             AudioComm.startAudioProcessing()
-            // 구성된 PreviewView를 반환하여 화면에 표시
             previewView
         }
     )
