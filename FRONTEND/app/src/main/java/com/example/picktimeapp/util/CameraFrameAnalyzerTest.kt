@@ -13,6 +13,9 @@ import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import com.example.picktimeapp.network.ChordDetectApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -28,6 +31,20 @@ class CameraFrameAnalyzerTest(
     private val targetFrameCount = 10
     private val capturedBitmaps = mutableListOf<Bitmap>()
     private val TAG = "CameraFrameAnalyzer"
+
+    init {
+        // 클래스 초기화 시 sessionId 체크 후 없으면 요청
+        CoroutineScope(Dispatchers.IO).launch {
+            val sessionId = getSessionId(context)
+            Log.d(TAG, "초기 sessionId: $sessionId")
+            if (sessionId.isNullOrBlank()) {
+                Log.d(TAG, "세션 없음 → 서버에 요청 시작")
+                viewModel.requestSessionIdAndSave(context)
+            } else {
+                Log.d(TAG, "이미 세션 있음: $sessionId")
+            }
+        }
+    }
 
     fun startCapture() {
         isCapturing = true

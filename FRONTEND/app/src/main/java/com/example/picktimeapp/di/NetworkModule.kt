@@ -143,7 +143,7 @@ object NetworkModule {
     fun provideYoloServerApi(retrofit: Retrofit): YoloServerApi =
         retrofit.create(YoloServerApi::class.java)
 
-    private const val BASE_URL_AI = "https://j12b101.p.ssafy.io/api-dev/"
+    private const val BASE_URL_AI = "https://j12b101.p.ssafy.io/ai-dev/"
 
     // Retrofit 인스턴스를 제공하는 함수
     @Provides
