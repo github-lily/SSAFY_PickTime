@@ -3,7 +3,6 @@ package com.example.picktimeapp.ui.signup
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -29,8 +28,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
-import com.example.picktimeapp.ui.signup.SignupViewModel
+
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+
 
 
 
@@ -50,6 +53,9 @@ fun SignupScreen(
 
     val signUpResult = viewModel.signUpResult.value
 
+    // 스크롤
+    val scrollState = rememberScrollState()
+
     // 회원가입 성공 시 화면 전환
     LaunchedEffect(signUpResult) {
         if (signUpResult?.isSuccessful == true) {
@@ -57,102 +63,116 @@ fun SignupScreen(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 32.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // 로고
-        Text(
-            text = "피크 타임",
-            fontFamily = com.example.picktimeapp.ui.theme.TitleFont,
-            fontWeight = FontWeight.Medium,
-            fontSize = 70.sp,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val screenWidth = maxWidth
+        val screenHeight = maxHeight
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // 👉 닉네임 입력창
-        NameInputField(
-            name = name,
-            onNameChange = { viewModel.onNameChanged(it) }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // 👉 이메일 입력창
-        EmailInputField(
-            email = email,
-            onEmailChange = { viewModel.onEmailChanged(it) }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // 👉 비밀번호 입력창
-        PasswordInputField(
-            password = password,
-            onPasswordChange = { viewModel.onPasswordChanged(it) },
-            isPasswordVisible = isPasswordVisible,
-            onVisibilityToggle = { viewModel.togglePasswordVisibility() }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // 👉 비밀번호 확인 입력창
-        PasswordCheckInputField(
-            passwordCheck = passwordCheck,
-            onPasswordCheckChange = { viewModel.onPasswordCheckChanged(it) },
-            isPasswordCheckVisible = isPasswordCheckVisible,
-            onVisibilityToggle = { viewModel.togglePasswordCheckVisibility() }
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // 👉 회원가입 버튼
-        SignUpButton(
-            onClick = {
-                viewModel.signup()
-            },
-            enabled = name.isNotBlank() && email.isNotBlank() && password.isNotBlank() && passwordCheck.isNotBlank()
-        )
-
-        // 에러메시지
-        if (viewModel.errorMessage.value != null) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(horizontal = screenWidth * 0.05f, vertical = screenHeight * 0.05f),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // 로고
             Text(
-                text = viewModel.errorMessage.value ?: "",
-                color = Color.Red,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .align(Alignment.CenterHorizontally)
+                text = "피크 타임",
+                fontFamily = com.example.picktimeapp.ui.theme.TitleFont,
+                fontWeight = FontWeight.Medium,
+                fontSize = (screenWidth * 0.09f).coerceAtMost(70.dp).value.sp,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+
+            Spacer(modifier = Modifier.height(screenHeight * 0.07f))
+
+            // 👉 닉네임 입력창
+            NameInputField(
+                name = name,
+                onNameChange = { viewModel.onNameChanged(it) },screenWidth,
+            )
+
+            Spacer(modifier = Modifier.height(screenHeight * 0.05f))
+
+            // 👉 이메일 입력창
+            EmailInputField(
+                email = email,
+                onEmailChange = { viewModel.onEmailChanged(it) },
+                screenWidth
+            )
+
+            Spacer(modifier = Modifier.height(screenHeight * 0.05f))
+
+            // 👉 비밀번호 입력창
+            PasswordInputField(
+                password = password,
+                onPasswordChange = { viewModel.onPasswordChanged(it) },
+                isPasswordVisible = isPasswordVisible,
+                onVisibilityToggle = { viewModel.togglePasswordVisibility() },
+                screenWidth
+            )
+
+            Spacer(modifier = Modifier.height(screenHeight * 0.05f))
+
+            // 👉 비밀번호 확인 입력창
+            PasswordCheckInputField(
+                passwordCheck = passwordCheck,
+                onPasswordCheckChange = { viewModel.onPasswordCheckChanged(it) },
+                isPasswordCheckVisible = isPasswordCheckVisible,
+                onVisibilityToggle = { viewModel.togglePasswordCheckVisibility() },
+                screenWidth
+            )
+
+            Spacer(modifier = Modifier.height(screenHeight * 0.1f))
+
+            // 👉 회원가입 버튼
+            SignUpButton(
+                onClick = {
+                    viewModel.signup()
+                },
+                enabled = name.isNotBlank() && email.isNotBlank() && password.isNotBlank() && passwordCheck.isNotBlank(),
+                screenWidth = screenWidth,
+                screenHeight = screenHeight
+            )
+
+            // 에러메시지
+            if (viewModel.errorMessage.value != null) {
+                Text(
+                    text = viewModel.errorMessage.value ?: "",
+                    color = Color.Red,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier
+                        .padding(horizontal = screenWidth * 0.03f)
+                        .align(Alignment.CenterHorizontally)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 👉 하단 텍스트 버튼
+            LoginFooterButtons(
+                onLoginClick = onLoginClick,
+                screenWidth
             )
         }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        // 👉 하단 텍스트 버튼
-        LoginFooterButtons(
-            onLoginClick = onLoginClick
-        )
     }
 }
 
 
 // ✅ Composable 함수
-
 @Composable
 fun NameInputField(
     name: String,
-    onNameChange: (String) -> Unit
+    onNameChange: (String) -> Unit,
+    screenWidth: Dp,
 ) {
-    Column(modifier = Modifier.fillMaxWidth(0.4f)) {
+    Column(modifier = Modifier.width(screenWidth * 0.6f)) {
         Text(
             text = "닉네임",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Gray70
+            fontWeight = FontWeight.SemiBold,
+            fontSize = (screenWidth * 0.04f).coerceAtMost(28.dp).value.sp,
+            color = Gray70,
+            modifier = Modifier.padding(start = screenWidth * 0.06f)
         )
         Spacer(modifier = Modifier.height(12.dp))
         OutlinedTextField(
@@ -160,7 +180,7 @@ fun NameInputField(
             onValueChange = onNameChange,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = screenWidth * 0.06f),
             textStyle = MaterialTheme.typography.bodySmall,
             singleLine = true,
             shape = RoundedCornerShape(12.dp),
@@ -177,7 +197,7 @@ fun NameInputField(
                 Text(
                     text = "기타둥둥기린이",
                     color = Gray50,
-                    style = MaterialTheme.typography.bodySmall
+                    fontSize = (screenWidth * 0.04f).coerceAtMost(22.dp).value.sp
                 )
             },
             trailingIcon = {
@@ -196,13 +216,16 @@ fun NameInputField(
 @Composable
 fun EmailInputField(
     email: String,
-    onEmailChange: (String) -> Unit
+    onEmailChange: (String) -> Unit,
+    screenWidth: Dp
 ) {
-    Column(modifier = Modifier.fillMaxWidth(0.4f)) {
+    Column(modifier = Modifier.width(screenWidth * 0.6f)) {
         Text(
             text = "이메일",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Gray70
+            fontWeight = FontWeight.SemiBold,
+            fontSize = (screenWidth * 0.04f).coerceAtMost(28.dp).value.sp,
+            color = Gray70,
+            modifier = Modifier.padding(start = screenWidth * 0.06f)
         )
         Spacer(modifier = Modifier.height(12.dp))
         OutlinedTextField(
@@ -210,7 +233,7 @@ fun EmailInputField(
             onValueChange = onEmailChange,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = screenWidth * 0.06f),
             textStyle = MaterialTheme.typography.bodySmall,
             singleLine = true,
             shape = RoundedCornerShape(12.dp),
@@ -227,7 +250,7 @@ fun EmailInputField(
                 Text(
                     text = "picktime@guitar.com",
                     color = Gray50,
-                    style = MaterialTheme.typography.bodySmall
+                    fontSize = (screenWidth * 0.04f).coerceAtMost(22.dp).value.sp
                 )
             },
             trailingIcon = {
@@ -249,13 +272,16 @@ fun PasswordInputField(
     password: String,
     onPasswordChange: (String) -> Unit,
     isPasswordVisible: Boolean,
-    onVisibilityToggle: () -> Unit
+    onVisibilityToggle: () -> Unit,
+    screenWidth: Dp
 ) {
-    Column(modifier = Modifier.fillMaxWidth(0.4f)) {
+    Column(modifier = Modifier.width(screenWidth * 0.6f)) {
         Text(
             text = "비밀번호",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Gray70
+            fontWeight = FontWeight.SemiBold,
+            fontSize = (screenWidth * 0.04f).coerceAtMost(28.dp).value.sp,
+            color = Gray70,
+            modifier = Modifier.padding(start = screenWidth * 0.06f)
         )
         Spacer(modifier = Modifier.height(12.dp))
         OutlinedTextField(
@@ -264,7 +290,7 @@ fun PasswordInputField(
             textStyle = MaterialTheme.typography.bodySmall,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = screenWidth * 0.06f),
             singleLine = true,
             shape = RoundedCornerShape(12.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -282,7 +308,7 @@ fun PasswordInputField(
                 Text(
                     text = "8자 이상, 숫자 + 영어 조합",
                     color = Gray50,
-                    style = MaterialTheme.typography.bodySmall
+                    fontSize = (screenWidth * 0.04f).coerceAtMost(22.dp).value.sp
                 )
             },
             trailingIcon = {
@@ -304,13 +330,16 @@ fun PasswordCheckInputField(
     passwordCheck: String,
     onPasswordCheckChange: (String) -> Unit,
     isPasswordCheckVisible: Boolean,
-    onVisibilityToggle: () -> Unit
+    onVisibilityToggle: () -> Unit,
+    screenWidth: Dp
 ) {
-    Column(modifier = Modifier.fillMaxWidth(0.4f)) {
+    Column(modifier = Modifier.width(screenWidth * 0.6f)) {
         Text(
             text = "비밀번호 확인",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Gray70
+            fontWeight = FontWeight.SemiBold,
+            fontSize = (screenWidth * 0.04f).coerceAtMost(28.dp).value.sp,
+            color = Gray70,
+            modifier = Modifier.padding(start = screenWidth * 0.06f)
         )
         Spacer(modifier = Modifier.height(12.dp))
         OutlinedTextField(
@@ -319,7 +348,7 @@ fun PasswordCheckInputField(
             textStyle = MaterialTheme.typography.bodySmall,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = screenWidth * 0.06f),
             singleLine = true,
             shape = RoundedCornerShape(12.dp),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -337,7 +366,7 @@ fun PasswordCheckInputField(
                 Text(
                     text = "비밀번호를 한번 더 입력하세요",
                     color = Gray50,
-                    style = MaterialTheme.typography.bodySmall
+                    fontSize = (screenWidth * 0.04f).coerceAtMost(22.dp).value.sp
                 )
             },
             trailingIcon = {
@@ -356,14 +385,17 @@ fun PasswordCheckInputField(
 @Composable
 fun SignUpButton(
     onClick: () -> Unit,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    screenWidth: Dp,
+    screenHeight: Dp
+
 ) {
     Button(
         onClick = onClick,
         modifier = Modifier
-            .fillMaxWidth(0.4f)
-            .padding(horizontal = 20.dp)
-            .height(80.dp),
+            .width(screenWidth * 0.6f)
+            .padding(horizontal = screenWidth * 0.06f)
+            .height(screenHeight * 0.10f),
         colors = ButtonDefaults.buttonColors(
             containerColor = Brown60,
             contentColor = DarkGreen10,
@@ -377,27 +409,29 @@ fun SignUpButton(
             text = "회원가입",
             style = MaterialTheme.typography.bodyMedium,
             color = Gray10,
-            fontWeight = FontWeight.Medium
-
+            fontWeight = FontWeight.Medium,
+            fontSize = (screenWidth * 0.04f).coerceAtMost(28.dp).value.sp
         )
     }
 }
 
 @Composable
 fun LoginFooterButtons(
-    onLoginClick: () -> Unit
+    onLoginClick: () -> Unit,
+    screenWidth : Dp
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 16.dp),
+            .padding(horizontal = screenWidth * 0.06f),
         horizontalArrangement = Arrangement.Center
     ) {
         TextButton(onClick = onLoginClick) {
             Text(
                 text = "이미 계정이 있으신가요?",
                 style = MaterialTheme.typography.bodySmall,
-                color = Gray70
+                color = Gray70,
+                fontSize = (screenWidth * 0.04f).coerceAtMost(20.dp).value.sp
             )
         }
     }

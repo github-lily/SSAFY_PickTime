@@ -1,6 +1,10 @@
 package com.example.picktimeapp.network
 
+import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
+import retrofit2.http.Path
 
 // 전체 응답
 
@@ -40,7 +44,8 @@ data class SongResponse(
     val durationSec: Int,
     val timeSignature: String,
     val chordProgression: List<ChordMeasure>,
-    val songUri: String
+    val songUri: String,
+    val organizedChords: List<String>? = null
 )
 
 data class ChordMeasure(
@@ -48,11 +53,22 @@ data class ChordMeasure(
     val chordBlocks: List<String>
 )
 
-
+data class StepCompleteRequest(
+    val stepId: Int,
+    val score: Int
+)
 
 interface PracticeStepApi {
     @GET("practice/{stepId}")
     suspend fun getPracticeStep(
         @retrofit2.http.Path("stepId") stepId: Int
     ): retrofit2.Response<PracticeStepResponse>
+
+    @POST("completed-step/{stepId}")
+    suspend fun postCompletedStep(
+        @Path("stepId") stepId: Int,
+        @Body body: StepCompleteRequest
+    ): Response<Unit>
 }
+
+

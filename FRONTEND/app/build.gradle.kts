@@ -51,9 +51,13 @@ android {
     kapt {
         correctErrorTypes = true
     }
+
+    // assets 디렉토리 추가
+    sourceSets["main"].assets.srcDirs("src/main/assets")
 }
 
 dependencies {
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -142,6 +146,6 @@ dependencies {
     //chord JSON을 파싱할 때 사용 , Gson 직접 사용을 위한 의존성
     implementation("com.google.code.gson:gson:2.10.1")
 
-    //MediaPipe 의존성 추가하기
-    implementation("com.google.mediapipe:tasks-vision:0.10.2") // 최신 버전
+//    implementation(libs.mediapipe.vision)
+
 }
