@@ -46,6 +46,16 @@ object NetworkModule {
     @Singleton
     fun provideGson(): Gson = GsonBuilder().create()
 
+    @Provides
+    @Singleton
+    @Named("Reissue")
+    fun provideReissueRetrofit(gson: Gson): Retrofit =
+        Retrofit.Builder()
+            .baseUrl("https://j12b101.p.ssafy.io/api-dev/") // 기존 BASE_URL 동일
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build() // ❗ OkHttpClient 연결 X
+
+
     // OkHttpClient 인스턴스를 제공하는 함수
     @Provides
     @Singleton
@@ -85,8 +95,9 @@ object NetworkModule {
     // 리프레시토큰
     @Provides
     @Singleton
-    fun provideReissueApi(retrofit: Retrofit): ReissueApi =
+    fun provideReissueApi(@Named("Reissue") retrofit: Retrofit): ReissueApi =
         retrofit.create(ReissueApi::class.java)
+
 
     @Provides
     @Singleton

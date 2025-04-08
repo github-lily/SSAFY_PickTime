@@ -24,10 +24,15 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.sp
 import com.example.picktimeapp.ui.login.LoginViewModel
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+
 
 
 @Composable
@@ -41,6 +46,7 @@ fun LoginScreen(
     val email = viewModel.email.value
     val password = viewModel.password.value
     val isPasswordVisible = viewModel.isPasswordVisible.value
+    var loginError by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -81,11 +87,29 @@ fun LoginScreen(
         // 👉 로그인 버튼
         LoginButton(
             onClick = {
-                viewModel.login()
-                onLoginClick() // 성공 시 다음 화면으로 전환하고 싶다면 여기에 조건 추가
+                viewModel.login(
+                    onSuccess = { onLoginClick() },
+                    onFail = {message -> loginError = message }
+                )
             },
             enabled = email.isNotBlank() && password.isNotBlank()
         )
+
+        loginError?.let { msg ->
+            Text(
+                text = msg,
+                color = Color.Red,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+//        LoginButton(
+//            onClick = {
+//                viewModel.login()
+//                onLoginClick()
+//            },
+//            enabled = email.isNotBlank() && password.isNotBlank()
+//        )
 
         Spacer(modifier = Modifier.height(30.dp))
 
