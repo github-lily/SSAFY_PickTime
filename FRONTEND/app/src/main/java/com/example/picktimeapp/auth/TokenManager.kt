@@ -22,9 +22,17 @@ class TokenManager @Inject constructor(
         context.dataStore.edit { it[ACCESS_TOKEN_KEY] = token }
     }
 
+
+    suspend fun updateAccessToken(newToken: String) {
+        context.dataStore.edit { prefs ->
+            prefs[ACCESS_TOKEN_KEY] = newToken
+        }
+    }
+
     fun getAccessToken(): Flow<String?> {
         return context.dataStore.data.map { it[ACCESS_TOKEN_KEY] }
     }
+
 
     suspend fun clearToken() {
         context.dataStore.edit { it.clear() }

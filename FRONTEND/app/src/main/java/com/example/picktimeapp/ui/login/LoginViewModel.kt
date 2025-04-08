@@ -14,9 +14,7 @@ import javax.inject.Inject
 
 import android.util.Log
 import com.example.picktimeapp.auth.TokenManager
-
-
-
+import kotlin.coroutines.cancellation.CancellationException
 
 
 @HiltViewModel
@@ -59,15 +57,9 @@ class LoginViewModel @Inject constructor(
     //    var loginResult = mutableStateOf<String?>(null)
     var errorMessage = mutableStateOf<String?>(null)
 
-    fun login() {
+    fun login(onSuccess: () -> Unit = {}, onFail: (String) -> Unit = {}) {
         viewModelScope.launch {
             try {
-                Log.d(
-                    "LoginViewModel",
-                    "📦 로그인 요청 바디: username='${email.value}', password='${password.value}'"
-                )
-
-
                 val response = loginApi.login(
                     username = email.value,
                     password = password.value
@@ -75,25 +67,66 @@ class LoginViewModel @Inject constructor(
 
                 if (response.isSuccessful) {
                     val token = response.headers()["Authorization"]
-
                     if (token != null) {
                         tokenManager.saveAccessToken(token)
-//                        loginResult.value = null  // 이후 필요 시 사용자 정보 가져오는 구조로 확장
                         Log.d("LoginViewModel", "✅ 로그인 성공 - 토큰: $token")
+                        onSuccess() // 👉 로그인 성공 후 안전하게 화면 전환
                     } else {
-                        errorMessage.value = "토큰이 없습니다."
-                        Log.e("LoginViewModel", "❌ 로그인 성공했지만 토큰 없음")
+                        val error = response.errorBody()?.string()
+                        errorMessage.value = "회원정보를 찾을 수 없습니다."
+                        Log.e("LoginViewModel", "❌ 로그인 실패 - 코드: ${response.code()}, 바디: $error")
+                        onFail("회원정보를 찾을 수 없습니다.")
                     }
                 } else {
-                    val error = response.errorBody()?.string()
-                    errorMessage.value = "로그인 실패: ${response.code()}"
-                    Log.e("LoginViewModel", "❌ 로그인 실패 - 코드: ${response.code()}, 바디: $error")
+                    errorMessage.value = "로그인 실패: 회원정보를 찾을 수 없습니다. ${response.code()}"
+                    onFail("로그인 실패: 회원정보를 찾을 수 없습니다. ${response.code()}")
                 }
 
+            } catch (e: CancellationException) {
+                Log.w("LoginViewModel", "❗ 작업이 취소됨: ${e.message}")
+                // 일부러 아무 처리 안 해도 됨 (정상적인 상황일 수도 있음)
             } catch (e: Exception) {
                 errorMessage.value = "로그인 실패: ${e.message}"
                 Log.e("LoginViewModel", "❌ 로그인 실패 - 예외 발생: ${e.message}", e)
+                onFail("로그인 실패: ${e.message}")
             }
         }
     }
+//    fun login() {
+//        viewModelScope.launch {
+//            try {
+//                Log.d(
+//                    "LoginViewModel",
+//                    "📦 로그인 요청 바디: username='${email.value}', password='${password.value}'"
+//                )
+//
+//
+//                val response = loginApi.login(
+//                    username = email.value,
+//                    password = password.value
+//                )
+//
+//                if (response.isSuccessful) {
+//                    val token = response.headers()["Authorization"]
+//
+//                    if (token != null) {
+//                        tokenManager.saveAccessToken(token)
+////                        loginResult.value = null  // 이후 필요 시 사용자 정보 가져오는 구조로 확장
+//                        Log.d("LoginViewModel", "✅ 로그인 성공 - 토큰: $token")
+//                    } else {
+//                        errorMessage.value = "토큰이 없습니다."
+//                        Log.e("LoginViewModel", "❌ 로그인 성공했지만 토큰 없음")
+//                    }
+//                } else {
+//                    val error = response.errorBody()?.string()
+//                    errorMessage.value = "로그인 실패: ${response.code()}"
+//                    Log.e("LoginViewModel", "❌ 로그인 실패 - 코드: ${response.code()}, 바디: $error")
+//                }
+//
+//            } catch (e: Exception) {
+//                errorMessage.value = "로그인 실패: ${e.message}"
+//                Log.e("LoginViewModel", "❌ 로그인 실패 - 예외 발생: ${e.message}", e)
+//            }
+//        }
+//    }
 }
