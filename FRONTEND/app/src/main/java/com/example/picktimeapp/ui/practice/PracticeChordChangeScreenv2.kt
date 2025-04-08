@@ -103,6 +103,12 @@ fun PracticeChordChangeScreen(
         //비교 결과를 저장할 구조
         val correctnessList = remember { mutableStateListOf<Boolean>() }
 
+        val repeatCount = 5
+        val repeatedChords = remember(allChords) {
+            List(repeatCount) { allChords }.flatten()
+        }
+        val totalDuration = repeatedChords.size * 2f
+
         LaunchedEffect(allChords) {
             Log.d("PracticeChordChange", "🎸 allChords = $allChords")
 
@@ -134,21 +140,19 @@ fun PracticeChordChangeScreen(
         }
 
         // 시간 계산해서 현재 코드 몇 번쨰인지 업데이트 및 경과 시간 추적
-        LaunchedEffect(allChords) {
-            if (allChords.isEmpty()) return@LaunchedEffect
+        LaunchedEffect(repeatedChords) {
+            if (repeatedChords.isEmpty()) return@LaunchedEffect
 
             val startTime = System.currentTimeMillis()
-            val repeatedChords = List(6) { index -> allChords[index % allChords.size] }
 
-
-            while (currentChordIndex.value <= repeatedChords.size) {
+            while (currentChordIndex.value <= repeatedChords.lastIndex) {
 
                 // 만약 일시정지 버튼을 누르지 않은 상태라면 진행시킨다.
                 if (!isPaused.value) {
                     val now = System.currentTimeMillis()
                     val current = (now - startTime - pauseOffset) / 1000f // pause 시간 빼기!!
                     elapsedTime = current
-                    val newIndex = (current / durationPerNoteSec).toInt()
+                    val newIndex = (current / 2f).toInt() // 2초마다 코드 하나씩
 
                     if (newIndex < repeatedChords.size && newIndex != currentChordIndex.value) {
                             currentChordIndex.value = newIndex
@@ -184,6 +188,8 @@ fun PracticeChordChangeScreen(
                 )
             }
         }
+
+
 
         Scaffold (
             topBar = {
@@ -238,14 +244,12 @@ fun PracticeChordChangeScreen(
                         screenHeight = screenHeight,
                         modifier = Modifier.zIndex(1f)
                     )
-
-
                         SlidingCodeBar3(
                             screenWidth = screenWidth,
                             currentIndex = currentChordIndex.value,
                             elapsedTime = elapsedTime,
-                            totalDuration = 4f, // 일단 4초로 정해
-                            chords = allChords, // ex: ["G", "D"]
+                            totalDuration = totalDuration, // 일단 4초로 정해
+                            chords = repeatedChords, // ex: ["G", "D"]
                             modifier = Modifier
                                 .wrapContentWidth()
                                 .padding(top = screenHeight * 0.14f)
