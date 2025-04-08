@@ -1,6 +1,7 @@
 package com.example.picktimeapp.di
 
 import com.example.picktimeapp.auth.TokenManager
+import com.example.picktimeapp.network.ChordDetectApi
 import com.example.picktimeapp.network.GameListsApi
 import com.example.picktimeapp.network.LoginApi
 import com.example.picktimeapp.network.LogoutApi
@@ -22,6 +23,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Named
 import javax.inject.Singleton
 
 
@@ -69,12 +71,12 @@ object NetworkModule {
             .client(okHttpClient)
             .build()
 
-
     // LoginApi 인터페이스의 구현체를 제공하는 함수
     @Provides
     @Singleton
     fun provideLoginApi(retrofit: Retrofit): LoginApi =
         retrofit.create(LoginApi::class.java)
+
 
     // SignUpApi
     @Provides
@@ -94,8 +96,6 @@ object NetworkModule {
     @Singleton
     fun providePracticeListApi(retrofit: Retrofit): PracticeListApi =
         retrofit.create(PracticeListApi::class.java)
-
-
 
 
     // 🔥 연습 모드 🔥
@@ -142,5 +142,25 @@ object NetworkModule {
     @Singleton
     fun provideYoloServerApi(retrofit: Retrofit): YoloServerApi =
         retrofit.create(YoloServerApi::class.java)
+
+    private const val BASE_URL_AI = "https://j12b101.p.ssafy.io/ai-dev/"
+
+    // Retrofit 인스턴스를 제공하는 함수
+    @Provides
+    @Singleton
+    @Named("AI")
+    fun provideRetrofitAi(okHttpClient: OkHttpClient, gson: Gson): Retrofit =
+        Retrofit.Builder()
+            .baseUrl(BASE_URL_AI)
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .client(okHttpClient)
+            .build()
+
+    // AI 서버 통신
+    @Provides
+    @Singleton
+    fun provideChordDetectApi(@Named("AI") retrofit: Retrofit): ChordDetectApi =
+        retrofit.create(ChordDetectApi::class.java)
+
 }
 

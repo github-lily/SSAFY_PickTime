@@ -12,6 +12,9 @@ import android.os.Environment
 import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -19,6 +22,7 @@ import java.io.FileOutputStream
 class CameraFrameAnalyzer(
     // Context를 생성자로 전달하여 파일 저장 시 사용
     private val context: Context,
+    private val viewModel: CameraAnalyzerViewModel,
     private val onResult: (Bitmap) -> Unit,     // 1장 실시간 전송용
     private val shouldRun: () -> Boolean        // detection_done 상태 판단
 ) : ImageAnalysis.Analyzer {
@@ -34,6 +38,20 @@ class CameraFrameAnalyzer(
 
     // 10장 수집 완료 후 호출될 콜백
     var onCaptureComplete: ((List<Bitmap>) -> Unit)? = null
+
+    init {
+        // 클래스 초기화 시 sessionId 체크 후 없으면 요청
+        CoroutineScope(Dispatchers.IO).launch {
+            val sessionId = getSessionId(context)
+            Log.d(TAG, "초기 sessionId: $sessionId")
+            if (sessionId.isNullOrBlank()) {
+                Log.d(TAG, "세션 없음 → 서버에 요청 시작")
+                viewModel.requestSessionIdAndSave(context)
+            } else {
+                Log.d(TAG, "이미 세션 있음: $sessionId")
+            }
+        }
+    }
 
     // 외부에서 캡처 시작을 요청하는 함수(연주 감지 시 ViewModel에서 호출)
     fun startCapture() {
