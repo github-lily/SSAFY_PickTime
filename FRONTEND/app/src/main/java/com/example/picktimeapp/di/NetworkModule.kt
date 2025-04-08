@@ -11,6 +11,7 @@ import com.example.picktimeapp.network.PracticeListApi
 import com.example.picktimeapp.network.PracticeStepApi
 import com.example.picktimeapp.network.SignUpApi
 import com.example.picktimeapp.network.UserApi
+import com.example.picktimeapp.network.YoloServerApi
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -134,5 +135,12 @@ object NetworkModule {
     @Singleton
     fun provideLogoutApi(retrofit: Retrofit): LogoutApi =
         retrofit.create(LogoutApi::class.java)
+
+
+    // AI 서버 통신
+    @Provides
+    @Singleton
+    fun provideYoloServerApi(retrofit: Retrofit): YoloServerApi =
+        retrofit.create(YoloServerApi::class.java)
 }
 

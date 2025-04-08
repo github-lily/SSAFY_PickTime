@@ -10,39 +10,54 @@ import android.graphics.YuvImage
 import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 
 class CameraFrameAnalyzer(
     private val onResult: (Bitmap,Long) -> Unit,
-    private val shouldRun: () -> Boolean
+    private val shouldRun: () -> Boolean,
+    //mediapipe
+    private val handLandmarkerHelper: HandLandmarkerHelper, // 손 추론
+    private val overlayView: MediapipeOverlayView,          // 결과 표시
+    private val isFrontCamera: Boolean = true               // 셀카인 경우 좌우 반전
 ) : ImageAnalysis.Analyzer {
 
     private var lastInferenceTime = 0L
     private val inferenceInterval = 500L // 추론 간격 (밀리초)
     private val TAG = "CameraFrameAnalyzer"
 
-    override fun analyze(image: ImageProxy) {
+    override fun analyze(imageProxy: ImageProxy) {
         val currentTime = System.currentTimeMillis()
 
         // ✅ 추론 중지 요청되면 건너뜀
         if (!shouldRun()) {
-            image.close()
+            imageProxy.close()
             return
         }
 
         // 추론 간격 제한
         if (currentTime - lastInferenceTime < inferenceInterval) {
-            image.close()
+            imageProxy.close()
             return
         }
 
         try {
             // 이미지 변환 시도
-            val bitmap = imageProxyToBitmap(image)
+            val bitmap = imageProxyToBitmap(imageProxy)
             if (bitmap != null) {
 
                 onResult(bitmap, currentTime)
+                
+                // 🎯 Mediapipe 추론도 함께 실행
+                try {
+                    handLandmarkerHelper.detectLiveStream(bitmap, isFrontCamera = isFrontCamera)
+                } catch (e: Exception) {
+                    Log.e(TAG, "HandLandmarker 추론 중 오류: ${e.message}")
+                }
 
+                
                 lastInferenceTime = currentTime
                 bitmap.recycle() // 원본 비트맵 메모리 해제
             } else {
@@ -51,7 +66,7 @@ class CameraFrameAnalyzer(
         } catch (e: Exception) {
             Log.e(TAG, "이미지 처리 중 오류: ${e.message}")
         } finally {
-            image.close() // 항상 리소스 해제
+            imageProxy.close() // 항상 리소스 해제
         }
     }
 
@@ -132,5 +147,15 @@ class CameraFrameAnalyzer(
 
         return bitmap
     }
+
+    fun bitmapToMultipart(bitmap: Bitmap, name: String = "frame.jpg"): MultipartBody.Part {
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+        val requestBody = stream.toByteArray()
+            .toRequestBody("image/jpeg".toMediaTypeOrNull())
+
+        return MultipartBody.Part.createFormData("image", name, requestBody)
+    }
+
 
 }

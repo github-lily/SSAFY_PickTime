@@ -38,8 +38,7 @@ class MediapipeOverlayView(context: Context?, attrs: AttributeSet?) :
     }
 
     private fun initPaints() {
-        linePaint.color =
-            ContextCompat.getColor(context!!, Color.YELLOW)
+        linePaint.color =Color.YELLOW
         linePaint.strokeWidth = LANDMARK_STROKE_WIDTH
         linePaint.style = Paint.Style.STROKE
 
@@ -54,25 +53,26 @@ class MediapipeOverlayView(context: Context?, attrs: AttributeSet?) :
             for (landmark in handLandmarkerResult.landmarks()) {
                 for (normalizedLandmark in landmark) {
                     canvas.drawPoint(
-                        normalizedLandmark.x() * imageWidth * scaleFactor,
+                        (1 - normalizedLandmark.x()) * imageWidth * scaleFactor, // 👈 좌우반전
                         normalizedLandmark.y() * imageHeight * scaleFactor,
                         pointPaint
                     )
                 }
 
-                HandLandmarker.HAND_CONNECTIONS.forEach {
-                    canvas.drawLine(
-                        landmark.get(it!!.start())
-                            .x() * imageWidth * scaleFactor,
-                        landmark.get(it.start())
-                            .y() * imageHeight * scaleFactor,
-                        landmark.get(it.end())
-                            .x() * imageWidth * scaleFactor,
-                        landmark.get(it.end())
-                            .y() * imageHeight * scaleFactor,
-                        linePaint
-                    )
-                }
+                // 선 그리는거
+//                HandLandmarker.HAND_CONNECTIONS.forEach {
+//                    canvas.drawLine(
+//                        landmark.get(it!!.start())
+//                            .x() * imageWidth * scaleFactor,
+//                        landmark.get(it.start())
+//                            .y() * imageHeight * scaleFactor,
+//                        landmark.get(it.end())
+//                            .x() * imageWidth * scaleFactor,
+//                        landmark.get(it.end())
+//                            .y() * imageHeight * scaleFactor,
+//                        linePaint
+//                    )
+//                }
             }
         }
     }

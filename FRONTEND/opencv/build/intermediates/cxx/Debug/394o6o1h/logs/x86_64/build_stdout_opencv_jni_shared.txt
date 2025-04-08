@@ -1,2 +1,0 @@
-ninja: Entering directory `C:\Projects\S12P21B101\FRONTEND\opencv\.cxx\Debug\394o6o1h\x86_64'
-ninja: no work to do.
