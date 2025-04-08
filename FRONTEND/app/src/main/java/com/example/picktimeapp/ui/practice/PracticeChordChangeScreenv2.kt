@@ -331,14 +331,14 @@ fun PracticeChordChangeScreen(
                         screenWidth = screenWidth,
                         onDismiss = {
                             showScoreDialog = false
-                            navController.navigate("practice/$stepId") {
-                                popUpTo("practice/$stepId") { inclusive = true } // 현재 화면 제거 후 재시작하겠다.
+                            navController.navigate("practicechordchange/$stepId") {
+                                popUpTo("practicechordchange/$stepId") { inclusive = true } // 현재 화면 제거 후 재시작하겠다.
                             }
                         },
                         onExit = {
                             showScoreDialog = false
-                            navController.navigate(Routes.PRACTICE_LIST) {
-                                popUpTo(Routes.PRACTICE_LIST) { inclusive = true } // 현재 화면 제거
+                            navController.navigate("practice/${stepId + 1}") {
+                                popUpTo("practice/${stepId + 1}") { inclusive = true } // 현재 화면 제거
                             }
                         }
                     )
