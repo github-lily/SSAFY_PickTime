@@ -1,5 +1,6 @@
 package com.example.picktimeapp.util
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageFormat
@@ -7,66 +8,108 @@ import android.graphics.Matrix
 import android.graphics.PixelFormat
 import android.graphics.Rect
 import android.graphics.YuvImage
+import android.os.Environment
 import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.toRequestBody
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 
 class CameraFrameAnalyzer(
-    private val onResult: (Bitmap,Long) -> Unit,
-//    private val shouldRun: () -> Boolean,
-    //mediapipe
-//    private val handLandmarkerHelper: HandLandmarkerHelper, // 손 추론
-//    private val overlayView: MediapipeOverlayView,          // 결과 표시
-//    private val isFrontCamera: Boolean = true               // 셀카인 경우 좌우 반전
+    // Context를 생성자로 전달하여 파일 저장 시 사용
+    private val context: Context,
+    private val viewModel: CameraAnalyzerViewModel,
+    private val onResult: (Bitmap) -> Unit,     // 1장 실시간 전송용
+    private val shouldRun: () -> Boolean        // detection_done 상태 판단
 ) : ImageAnalysis.Analyzer {
 
-    private var lastInferenceTime = 0L
-    private val inferenceInterval = 500L // 추론 간격 (밀리초)
+    // 캡처 모드용 내부 상태
+    private var isCapturing = false
+    private var frameCount = 0
+    private val targetFrameCount = 10  // 예: n 프레임을 10개로 설정
     private val TAG = "CameraFrameAnalyzer"
 
-    override fun analyze(imageProxy: ImageProxy) {
-        val currentTime = System.currentTimeMillis()
+    // 저장한 이미지들을 임시로 보관할 리스트 (옵션)
+    private val capturedBitmaps = mutableListOf<Bitmap>()
 
-//        // ✅ 추론 중지 요청되면 건너뜀
-//        if (!shouldRun()) {
-//            imageProxy.close()
-//            return
-//        }
-//
-//        // 추론 간격 제한
-//        if (currentTime - lastInferenceTime < inferenceInterval) {
-//            imageProxy.close()
-//            return
-//        }
+    // 10장 수집 완료 후 호출될 콜백
+    var onCaptureComplete: ((List<Bitmap>) -> Unit)? = null
 
-        try {
-            // 이미지 변환 시도
-            val bitmap = imageProxyToBitmap(imageProxy)
-            if (bitmap != null) {
-
-                onResult(bitmap, currentTime)
-                
-                // 🎯 Mediapipe 추론도 함께 실행
-//                try {
-//                    handLandmarkerHelper.detectLiveStream(bitmap, isFrontCamera = isFrontCamera)
-//                } catch (e: Exception) {
-//                    Log.e(TAG, "HandLandmarker 추론 중 오류: ${e.message}")
-//                }
-
-                
-                lastInferenceTime = currentTime
-                bitmap.recycle() // 원본 비트맵 메모리 해제
+    init {
+        // 클래스 초기화 시 sessionId 체크 후 없으면 요청
+        CoroutineScope(Dispatchers.IO).launch {
+            val sessionId = getSessionId(context)
+            Log.d(TAG, "초기 sessionId: $sessionId")
+            if (sessionId.isNullOrBlank()) {
+                Log.d(TAG, "세션 없음 → 서버에 요청 시작")
+                viewModel.requestSessionIdAndSave(context)
             } else {
-                Log.e(TAG, "비트맵 변환 실패")
+                Log.d(TAG, "이미 세션 있음: $sessionId")
             }
+        }
+    }
+
+    // 외부에서 캡처 시작을 요청하는 함수(연주 감지 시 ViewModel에서 호출)
+    fun startCapture() {
+        isCapturing = true
+        frameCount = 0
+        capturedBitmaps.clear()
+    }
+
+    override fun analyze(imageProxy: ImageProxy) {
+        // imageProxy를 Bitmap으로 변환
+        val bitmap = imageProxyToBitmap(imageProxy) ?: run {
+            imageProxy.close()
+            return
+        }
+
+        // 10장 수집 모드
+        // 이미지 분석 전에 필요한 전처리 실행
+        if (isCapturing && frameCount < targetFrameCount) {
+            // 수정된 saveBitmapToFile 함수를 사용하여 파일 저장 (Context 전달)
+            capturedBitmaps.add(bitmap)
+            saveBitmapToFile(bitmap, "capture_frame_${frameCount}.jpg", context)
+            // 예: onResult(bitmap)
+            frameCount++
+
+            if (frameCount == targetFrameCount) {
+                // 캡처 완료 후 데이터 전송 또는 상위 관리자에 넘김
+                isCapturing = false
+                // 데이터 조합 후 전송하는 로직 호출
+
+                onCaptureComplete?.invoke(capturedBitmaps.toList())
+            }
+        }
+
+        // detection_done == false 상태일 때만 1장씩 실시간 전송
+        else if (shouldRun()) {
+            onResult(bitmap)
+        }
+
+            imageProxy.close()
+    }
+
+    // 수정된 Bitmap을 파일로 저장하는 함수 (앱 전용 외부 저장소 사용)
+    private fun saveBitmapToFile(bitmap: Bitmap, fileName: String, context: Context) {
+        try {
+            // 앱 전용 외부 저장소의 Pictures 디렉토리 하위에 "testImg" 폴더 생성
+            val picturesDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            val appDir = File(picturesDir, "testImg")
+            if (!appDir.exists()) {
+                appDir.mkdirs()
+            }
+
+            val file = File(appDir, fileName)
+            FileOutputStream(file).use { outputStream ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
+            }
+            Log.d(TAG, "Saved bitmap to: ${file.absolutePath}")
         } catch (e: Exception) {
-            Log.e(TAG, "이미지 처리 중 오류: ${e.message}")
-        } finally {
-            imageProxy.close() // 항상 리소스 해제
+            e.printStackTrace()
         }
     }
 
@@ -108,7 +151,6 @@ class CameraFrameAnalyzer(
         yBuffer.get(nv21, 0, ySize)
 
         // UV 플레인 인터리빙
-        // U와 V 플레인은 Y 플레인보다 작을 수 있음
         val uvPixelStride = image.planes[1].pixelStride
         val uvRowStride = image.planes[1].rowStride
         val uvWidth = image.width / 2
@@ -122,7 +164,6 @@ class CameraFrameAnalyzer(
                 if (uvIndex < uBuffer.limit()) {
                     nv21[nv21Index] = vBuffer.get(uvIndex)
                 }
-
                 if (uvIndex + 1 < vBuffer.limit()) {
                     nv21[nv21Index + 1] = uBuffer.get(uvIndex)
                 }
@@ -133,8 +174,6 @@ class CameraFrameAnalyzer(
         val yuvImage = YuvImage(nv21, ImageFormat.NV21, image.width, image.height, null)
         val out = ByteArrayOutputStream()
         yuvImage.compressToJpeg(Rect(0, 0, image.width, image.height), 90, out)
-
-        // Bitmap으로 변환
         val jpegData = out.toByteArray()
         var bitmap = BitmapFactory.decodeByteArray(jpegData, 0, jpegData.size)
 
@@ -147,15 +186,4 @@ class CameraFrameAnalyzer(
 
         return bitmap
     }
-
-    fun bitmapToMultipart(bitmap: Bitmap, name: String = "frame.jpg"): MultipartBody.Part {
-        val stream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
-        val requestBody = stream.toByteArray()
-            .toRequestBody("image/jpeg".toMediaTypeOrNull())
-
-        return MultipartBody.Part.createFormData("image", name, requestBody)
-    }
-
-
 }

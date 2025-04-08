@@ -39,7 +39,7 @@ import com.example.picktimeapp.util.ChordImageMap
 import android.media.MediaPlayer
 import android.net.Uri
 import android.util.Log
-import com.example.picktimeapp.ui.game.SongData
+import com.example.picktimeapp.util.ChordCheckViewModel
 
 
 @Composable
@@ -47,6 +47,7 @@ fun PracticeChordPressScreen(
         navController: NavController,
          stepId : Int,
          viewModel: PracticeStepViewModel = hiltViewModel(),
+        chordCheckViewModel: ChordCheckViewModel = hiltViewModel()
 ) {
 
     val stepData = viewModel.stepData.value
@@ -195,6 +196,7 @@ fun PracticeChordPressScreen(
                         .padding(end = screenWidth * 0.03f, bottom = screenHeight * 0.03f)
                 ) {
                     CameraPreview(
+                        viewModel = chordCheckViewModel,
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .offset {

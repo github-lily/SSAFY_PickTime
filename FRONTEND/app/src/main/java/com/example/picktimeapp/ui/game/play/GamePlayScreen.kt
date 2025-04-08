@@ -39,16 +39,16 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.IntOffset
 import com.example.picktimeapp.ui.camera.CameraPreview
-import com.example.picktimeapp.ui.camera.CameraPreviewTest
 import com.example.picktimeapp.ui.components.ScoreDialogCustom
 import com.example.picktimeapp.ui.nav.Routes
+import com.example.picktimeapp.util.ChordCheckViewModel
 
 @Composable
 fun GamePlayScreen(
     navController: NavController,
-    songId: Int
+    songId: Int,
+    chordCheckViewModel: ChordCheckViewModel = hiltViewModel()
 ) {
     val viewModel : GamePlayViewModel = hiltViewModel()
 
@@ -300,14 +300,15 @@ fun GamePlayScreen(
                         modifier = Modifier.fillMaxHeight(),
                         verticalArrangement = Arrangement.Bottom
                     ) {
-                        CameraPreviewTest(
+                        CameraPreview(
                             modifier = Modifier
                                 .size(
                                     width = screenWidth * 0.20f,
                                     height = screenHeight * 0.20f
                                 )
                                 .clip(RoundedCornerShape(12.dp))
-                                .zIndex(999f)
+                                .zIndex(999f),
+                            viewModel = chordCheckViewModel
                         )
                     }
                 }

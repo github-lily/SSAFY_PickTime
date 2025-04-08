@@ -39,6 +39,7 @@ import com.example.picktimeapp.ui.nav.Routes
 import com.example.picktimeapp.ui.theme.Brown20
 import com.example.picktimeapp.ui.theme.Gray90
 import com.example.picktimeapp.ui.theme.TitleFont
+import com.example.picktimeapp.util.ChordCheckViewModel
 import kotlinx.coroutines.delay
 
 
@@ -46,8 +47,10 @@ import kotlinx.coroutines.delay
 fun PracticeChordChangeScreen(
     stepId: Int,
     navController: NavController,
-    viewModel: PracticeStepViewModel = hiltViewModel()
+    viewModel: PracticeStepViewModel = hiltViewModel(),
+    chordCheckViewModel: ChordCheckViewModel = hiltViewModel()
 ) {
+
 
 
     // 일시정시 버튼을 눌렀을 때
@@ -277,6 +280,7 @@ fun PracticeChordChangeScreen(
                         .fillMaxWidth()
                 ) {
                     CameraPreview(
+                        viewModel = chordCheckViewModel,
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .offset {

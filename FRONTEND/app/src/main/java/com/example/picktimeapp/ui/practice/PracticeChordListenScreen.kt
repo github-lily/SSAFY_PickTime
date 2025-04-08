@@ -37,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.picktimeapp.util.ChordCheckViewModel
 import com.example.picktimeapp.util.ChordImageMap
 
 
@@ -45,7 +46,8 @@ import com.example.picktimeapp.util.ChordImageMap
 fun PracticeChordListenScreen(
     navController: NavController,
     stepId : Int,
-    viewModel: PracticeStepViewModel = hiltViewModel()
+    viewModel: PracticeStepViewModel = hiltViewModel(),
+    chordCheckViewModel: ChordCheckViewModel = hiltViewModel()
 ) {
 
     val stepData = viewModel.stepData.value
@@ -191,6 +193,7 @@ fun PracticeChordListenScreen(
                         .padding(end = screenWidth * 0.03f, bottom = screenHeight * 0.03f)
                 ) {
                     CameraPreview(
+                        viewModel = chordCheckViewModel,
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .offset {
