@@ -53,7 +53,11 @@ fun SlidingCodeBar3(
     val progressInCurrentBlock = (elapsedTime % durationPerNoteSec) / durationPerNoteSec
     val offsetX = -progressInCurrentBlock * blockWidthPx // 왼쪽으로 이동하는 것처럼 하기
 
-    val visibleNotes = chords.drop(currentIndex).take(6)
+    val visibleNotes = if (currentIndex < chords.size) {
+        chords.drop(currentIndex).take(6)
+    } else {
+        emptyList()
+    }
 
     Box(modifier = modifier.height(blockHeight).clipToBounds()) {
         Row(
