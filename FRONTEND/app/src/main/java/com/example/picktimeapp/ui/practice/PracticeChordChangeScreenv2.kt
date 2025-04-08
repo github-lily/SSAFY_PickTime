@@ -5,6 +5,10 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -26,6 +30,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
 import com.example.picktimeapp.ui.camera.CameraPreview
 import com.example.picktimeapp.ui.components.PracticeTopBar
@@ -58,6 +63,7 @@ fun PracticeChordChangeScreen(
 
     LaunchedEffect(stepId) {
         viewModel.fetchPracticeStep(stepId)
+        Log.d("PracticeChordChangeScreen", "✅ 현재 전달된 stepId: $stepId")
     }
 
     BoxWithConstraints (
@@ -185,7 +191,7 @@ fun PracticeChordChangeScreen(
                     titleText = "Step 3",
                     onPauseClick = {
                         showPauseDialog.value = true
-                        isPaused.value = true
+//                        isPaused.value = true
                     }
                 )
             }
@@ -256,30 +262,44 @@ fun PracticeChordChangeScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .padding(horizontal = screenWidth * 0.03f, vertical = screenHeight * 0.03f),
-                    verticalAlignment = Alignment.CenterVertically,
+                        .padding(horizontal = screenWidth * 0.03f),
+                    verticalAlignment = Alignment.Bottom,
                     horizontalArrangement = Arrangement.End
                 ) {
-                    // 카메라 나오는 쪽
-                    Box(
+
+               Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    CameraPreview(
                         modifier = Modifier
-                            .padding(start = screenWidth * 0.02f, bottom = screenWidth * 0.015f, end = screenWidth * 0.02f)
-                    ) {
-                        Column(
-                            modifier = Modifier.fillMaxHeight(),
-                            verticalArrangement = Arrangement.Bottom
-                        ) {
-                            CameraPreview(
-                                modifier = Modifier
-                                    .size(
-                                        width = screenWidth * 0.20f,
-                                        height = screenHeight * 0.20f
-                                    )
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .zIndex(999f)
+                            .align(Alignment.BottomCenter)
+                            .offset {
+                                with(density) {
+                                    IntOffset(x = (screenWidth * 0.3f).toPx().toInt(), y = 0)
+                                }
+                            }
+                            .size(
+                                width = screenWidth * 0.20f,
+                                height = screenHeight * 0.20f
                             )
-                        }
+                            .clip(RoundedCornerShape(12.dp))
+                    )
+
+                    IconButton(
+                        onClick = { navController.navigate("practice/${stepId + 1}")  },
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(bottom = 8.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = "다음으로",
+                            modifier = Modifier.size(screenWidth * 0.2f),
+                            tint = Gray90
+                        )
                     }
+                }
                 }
 
 
@@ -294,7 +314,9 @@ fun PracticeChordChangeScreen(
                         // 종료하기
                         onExit = {
                             showPauseDialog.value = false
-                            navController.navigate("practicelist")
+                            navController.navigate(Routes.PRACTICE_LIST) {
+                                popUpTo(Routes.PRACTICE_LIST) { inclusive = true }
+                            }
                         }
                     )
                 }
