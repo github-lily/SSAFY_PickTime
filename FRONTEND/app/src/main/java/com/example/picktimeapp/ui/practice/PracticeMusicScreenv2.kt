@@ -70,6 +70,8 @@ fun PracticeMusicScreen(
 
     LaunchedEffect(stepId) {
         viewModel.fetchPracticeStep(stepId)
+        Log.d("PracticeChordChangeScreen", "✅ 현재 전달된 stepId: $stepId")
+
     }
 
     BoxWithConstraints (

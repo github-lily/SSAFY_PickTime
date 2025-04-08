@@ -253,10 +253,19 @@ fun AppNavGraph() {
         }
 
         // 🔥 Practice Music 🔥
-        composable(Routes.PRACTICE_MUSIC) { backStackEntry ->
-            val stepId = backStackEntry.arguments?.getString("stepId")?.toIntOrNull() ?: -1
+        composable(
+            route = Routes.PRACTICE_MUSIC,
+            arguments = listOf(navArgument("stepId") {
+                type = NavType.IntType
+            })
+        ) { backStackEntry ->
+            val stepId = backStackEntry.arguments?.getInt("stepId") ?: -1
             PracticeMusicScreen(stepId = stepId, navController = navController)
         }
+//        composable(Routes.PRACTICE_MUSIC) { backStackEntry ->
+//            val stepId = backStackEntry.arguments?.getString("stepId")?.toIntOrNull() ?: -1
+//            PracticeMusicScreen(stepId = stepId, navController = navController)
+//        }
 
         // 연습모드 API test용
         composable("practice-test") {
