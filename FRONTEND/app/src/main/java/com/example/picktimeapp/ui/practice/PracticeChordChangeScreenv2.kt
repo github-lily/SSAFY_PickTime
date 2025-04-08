@@ -103,7 +103,7 @@ fun PracticeChordChangeScreen(
         //비교 결과를 저장할 구조
         val correctnessList = remember { mutableStateListOf<Boolean>() }
 
-        val repeatCount = 5
+        val repeatCount = 3
         val repeatedChords = remember(allChords) {
             List(repeatCount) { allChords }.flatten()
         }
@@ -152,7 +152,7 @@ fun PracticeChordChangeScreen(
                     val now = System.currentTimeMillis()
                     val current = (now - startTime - pauseOffset) / 1000f // pause 시간 빼기!!
                     elapsedTime = current
-                    val newIndex = (current / 2f).toInt() // 2초마다 코드 하나씩
+                    val newIndex = (current / durationPerNoteSec).toInt()
 
                     if (newIndex < repeatedChords.size && newIndex != currentChordIndex.value) {
                             currentChordIndex.value = newIndex
@@ -164,8 +164,8 @@ fun PracticeChordChangeScreen(
                                 Log.d("PracticeMusicScreen", "🧠 AI에게 요청할 코드: $currentChord")
                             }
                         }
-                    delay(16)
                 }
+                delay(16)
             }
 
 
@@ -197,7 +197,7 @@ fun PracticeChordChangeScreen(
                     titleText = "Step 3",
                     onPauseClick = {
                         showPauseDialog.value = true
-//                        isPaused.value = true
+                        isPaused.value = true
                     }
                 )
             }
