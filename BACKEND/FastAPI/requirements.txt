@@ -1,23 +1,14 @@
-torch
-torchvision
-opencv-python
-numpy
-matplotlib
-crepe
-scipy
-tqdm
-pandas
-mediapipe
-scikit-learn
-librosa
-tensorflow
-tensorflow-hub
-pyaudio
 fastapi
 uvicorn
-websockets
 python-multipart
-pydantic
+numpy
+opencv-python
+mediapipe
 ultralytics
-PyYAML
-black
+
+# fastapi==0.95.2
+# uvicorn==0.22.0
+# numpy
+# opencv-python
+# mediapipe
+# ultralytics
