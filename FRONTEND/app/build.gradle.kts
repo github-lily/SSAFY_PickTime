@@ -146,6 +146,6 @@ dependencies {
     //chord JSON을 파싱할 때 사용 , Gson 직접 사용을 위한 의존성
     implementation("com.google.code.gson:gson:2.10.1")
 
-    implementation(libs.mediapipe.vision)
+//    implementation(libs.mediapipe.vision)
 
 }

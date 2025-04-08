@@ -1,3 +1,5 @@
+
+# === 기본 Android ===
 *.iml
 .gradle
 /local.properties
@@ -13,3 +15,25 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# === Native 빌드 아티팩트 ===
+*.so
+*.a
+*.dll
+*.exe
+/intermediates/
+/obj/
+/merged_native_libs/
+/outputs/
+/tmp/
+/debug/
+/release/
+
+# === 로그, 임시파일 ===
+*.log
+*.tmp
+*.bin
+*.json
+
+# === Kotlin/Compose ===
+.kotlinc/

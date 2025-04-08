@@ -17,11 +17,11 @@ import java.io.ByteArrayOutputStream
 
 class CameraFrameAnalyzer(
     private val onResult: (Bitmap,Long) -> Unit,
-    private val shouldRun: () -> Boolean,
+//    private val shouldRun: () -> Boolean,
     //mediapipe
-    private val handLandmarkerHelper: HandLandmarkerHelper, // 손 추론
-    private val overlayView: MediapipeOverlayView,          // 결과 표시
-    private val isFrontCamera: Boolean = true               // 셀카인 경우 좌우 반전
+//    private val handLandmarkerHelper: HandLandmarkerHelper, // 손 추론
+//    private val overlayView: MediapipeOverlayView,          // 결과 표시
+//    private val isFrontCamera: Boolean = true               // 셀카인 경우 좌우 반전
 ) : ImageAnalysis.Analyzer {
 
     private var lastInferenceTime = 0L
@@ -31,17 +31,17 @@ class CameraFrameAnalyzer(
     override fun analyze(imageProxy: ImageProxy) {
         val currentTime = System.currentTimeMillis()
 
-        // ✅ 추론 중지 요청되면 건너뜀
-        if (!shouldRun()) {
-            imageProxy.close()
-            return
-        }
-
-        // 추론 간격 제한
-        if (currentTime - lastInferenceTime < inferenceInterval) {
-            imageProxy.close()
-            return
-        }
+//        // ✅ 추론 중지 요청되면 건너뜀
+//        if (!shouldRun()) {
+//            imageProxy.close()
+//            return
+//        }
+//
+//        // 추론 간격 제한
+//        if (currentTime - lastInferenceTime < inferenceInterval) {
+//            imageProxy.close()
+//            return
+//        }
 
         try {
             // 이미지 변환 시도
@@ -51,11 +51,11 @@ class CameraFrameAnalyzer(
                 onResult(bitmap, currentTime)
                 
                 // 🎯 Mediapipe 추론도 함께 실행
-                try {
-                    handLandmarkerHelper.detectLiveStream(bitmap, isFrontCamera = isFrontCamera)
-                } catch (e: Exception) {
-                    Log.e(TAG, "HandLandmarker 추론 중 오류: ${e.message}")
-                }
+//                try {
+//                    handLandmarkerHelper.detectLiveStream(bitmap, isFrontCamera = isFrontCamera)
+//                } catch (e: Exception) {
+//                    Log.e(TAG, "HandLandmarker 추론 중 오류: ${e.message}")
+//                }
 
                 
                 lastInferenceTime = currentTime
