@@ -1,4 +1,4 @@
-package com.example.picktimeapp.ui.practice
+package com.example.picktimeapp.ui.practice.v1
 // 코드 운지 확인 페이지 스텝 1
 
 import androidx.compose.foundation.Image
@@ -39,15 +39,16 @@ import com.example.picktimeapp.util.ChordImageMap
 import android.media.MediaPlayer
 import android.net.Uri
 import android.util.Log
+import com.example.picktimeapp.ui.practice.PracticeStepViewModel
 import com.example.picktimeapp.util.ChordCheckViewModel
 
 
 @Composable
 fun PracticeChordPressScreen(
-        navController: NavController,
-         stepId : Int,
-         viewModel: PracticeStepViewModel = hiltViewModel(),
-        chordCheckViewModel: ChordCheckViewModel = hiltViewModel()
+    navController: NavController,
+    stepId : Int,
+    viewModel: PracticeStepViewModel = hiltViewModel(),
+    chordCheckViewModel: ChordCheckViewModel = hiltViewModel()
 ) {
 
     val stepData = viewModel.stepData.value
