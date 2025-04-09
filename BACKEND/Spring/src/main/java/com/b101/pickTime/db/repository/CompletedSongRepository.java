@@ -20,6 +20,6 @@ public interface CompletedSongRepository extends JpaRepository<CompletedSong, In
 
     Optional<CompletedSong> findByUserUserIdAndSongSongId(Integer userId, Integer songId);
 
-    @Query("SELECT cs.score FROM CompletedSong cs WHERE cs.user.userId = :userId AND cs.song.songId = :songId")
-    Integer findScoreByUserIdAndSongId(@Param("userId") Integer userId, @Param("songId") Integer songId);
+
+    CompletedSong findTopScoreByUserUserIdAndSongSongIdOrderByScoreDesc(@Param("userId") Integer userId, @Param("songId") Integer songId);
 }

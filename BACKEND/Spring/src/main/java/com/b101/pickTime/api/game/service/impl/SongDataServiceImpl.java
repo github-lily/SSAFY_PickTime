@@ -4,6 +4,7 @@ import com.b101.pickTime.api.game.response.SongDataResDto;
 import com.b101.pickTime.api.game.response.SongGameResDto;
 import com.b101.pickTime.api.game.service.SongDataService;
 import com.b101.pickTime.db.document.SongData;
+import com.b101.pickTime.db.entity.CompletedSong;
 import com.b101.pickTime.db.repository.CompletedSongRepository;
 import com.b101.pickTime.db.repository.SongDataRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,8 @@ public class SongDataServiceImpl implements SongDataService {
 
         for(SongData songData : songDatas){
             SongDataResDto song = songDataToDto(songData);
-            Integer star = completedSongRepository.findScoreByUserIdAndSongId(userId, songData.getSongDataId());
+            CompletedSong cs = completedSongRepository.findTopScoreByUserUserIdAndSongSongIdOrderByScoreDesc(userId, songData.getSongDataId());
+            Integer star = cs != null ? cs.getScore() : null;
             song.setStar(star == null ? 0 : star);
 
             songs.add(song);
