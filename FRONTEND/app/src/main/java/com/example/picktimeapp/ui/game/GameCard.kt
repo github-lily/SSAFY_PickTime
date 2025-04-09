@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.style.TextOverflow
 import com.example.picktimeapp.ui.theme.Brown40
+import com.example.picktimeapp.ui.theme.Brown60
 
 data class SongData(
     val songId: Int,
@@ -100,7 +101,7 @@ fun GameCard(
                         Icon(
                             painter = painterResource(id = if (isPlaying) R.drawable.speaker else R.drawable.play_btn),
                             contentDescription = "Sound",
-                            tint = Brown40,
+                            tint = Brown60,
                             modifier = Modifier
                                 .size(playBtnSize)
                                 .clickable {

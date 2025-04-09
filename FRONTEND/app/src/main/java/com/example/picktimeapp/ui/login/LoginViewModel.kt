@@ -79,7 +79,7 @@ class LoginViewModel @Inject constructor(
                     }
                 } else {
                     errorMessage.value = "로그인 실패: 회원정보를 찾을 수 없습니다. ${response.code()}"
-                    onFail("로그인 실패: 회원정보를 찾을 수 없습니다. ${response.code()}")
+                    onFail("회원정보를 찾을 수 없습니다.")
                 }
 
             } catch (e: CancellationException) {
