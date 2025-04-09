@@ -14,6 +14,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import javax.inject.Inject
@@ -115,11 +117,16 @@ class CameraAnalyzerViewModel @Inject constructor(
         }
     }
 
+    //private val deletionScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     fun deleteSession(context: Context){
-        viewModelScope.launch {
+        GlobalScope.launch(Dispatchers.IO) {
             val sessionId = getSessionId(context) ?: return@launch
             chordDetectApi.stop(sessionId)
+            clearDataStore(context)
+            Log.d("SESSION", "세션 삭제")
         }
     }
+
+    
 
 }

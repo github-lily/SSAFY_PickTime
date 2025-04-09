@@ -32,7 +32,7 @@ interface ChordDetectApi{
         @Part files: List<MultipartBody.Part>
     ): FingerDetectionResponse
 
-    @POST("stop/{sessionId")
+    @POST("stop/{sessionId}")
     suspend fun stop(
         @Path("sessionId") sessionId: String
     ) : Response<ResponseBody>

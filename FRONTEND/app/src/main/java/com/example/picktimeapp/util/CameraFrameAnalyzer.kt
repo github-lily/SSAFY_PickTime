@@ -122,10 +122,9 @@ class CameraFrameAnalyzer(
             onResult(bitmap)
         }
 
-
-
             imageProxy.close()
     }
+
 
     // 수정된 Bitmap을 파일로 저장하는 함수 (앱 전용 외부 저장소 사용)
     private fun saveBitmapToFile(bitmap: Bitmap, fileName: String, context: Context) {

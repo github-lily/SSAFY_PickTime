@@ -13,6 +13,7 @@ import androidx.camera.view.PreviewView
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -101,6 +102,7 @@ fun CameraPreview(
         FeedbackController(cameraAnalyzer)
     }
 
+    //val coroutineScope = rememberCoroutineScope()
     // Composable이 제거될 때 리소스 정리 (카메라, 오디오 처리 등)
     DisposableEffect(key1 = true) {
         onDispose {
@@ -108,7 +110,10 @@ fun CameraPreview(
             Thread.sleep(100)
             cameraExecutor.shutdown()
             AudioComm.stopAudioProcessing()
+
+
             cameraViewModel.deleteSession(context)
+
         }
     }
 
