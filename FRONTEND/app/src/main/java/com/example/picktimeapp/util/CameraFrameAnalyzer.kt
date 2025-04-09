@@ -65,12 +65,21 @@ class CameraFrameAnalyzer(
         capturedBitmaps.clear()
     }
 
+    // 프레임 전송 속도
+    private var lastSendTime = 0L
+    private val minIntervalMillis = 500L // 최소 전송 간격(0.3초에 한번 보냄)
+
+
     override fun analyze(imageProxy: ImageProxy) {
         // imageProxy를 Bitmap으로 변환
         val bitmap = imageProxyToBitmap(imageProxy) ?: run {
             imageProxy.close()
             return
         }
+
+        // 프레임 전송 속도
+        val currentTime = System.currentTimeMillis()
+        
 
         // 10장 수집 모드
         // 이미지 분석 전에 필요한 전처리 실행
@@ -110,9 +119,13 @@ class CameraFrameAnalyzer(
         }
 
         // detection_done == false 상태일 때만 1장씩 실시간 전송
-        else if (shouldRun()) {
+        // 프레임 전송 속도 조절 포함됨
+        else if (shouldRun() && currentTime - lastSendTime >= minIntervalMillis) {
+            lastSendTime = currentTime
             onResult(bitmap)
         }
+
+
 
             imageProxy.close()
     }

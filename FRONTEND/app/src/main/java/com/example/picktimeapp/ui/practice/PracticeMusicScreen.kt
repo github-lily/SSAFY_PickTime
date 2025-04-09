@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import com.example.picktimeapp.ui.camera.CameraPreview
+import com.example.picktimeapp.ui.components.NextScoreDialogCustom
 import com.example.picktimeapp.ui.components.PracticeTopBar
 import com.example.picktimeapp.ui.components.ScoreDialogCustom
 import com.example.picktimeapp.ui.nav.Routes
@@ -371,7 +372,7 @@ fun PracticeMusicScreen(
                     )
                 }
                 if (showScoreDialog) {
-                    ScoreDialogCustom(
+                    NextScoreDialogCustom(
                         score = stepFourScore,
                         screenWidth = screenWidth,
                         onDismiss = {
