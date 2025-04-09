@@ -53,7 +53,7 @@ object Routes {
     const val PRACTICE_CHORDPRESS = "practicechordpress"
     const val PRACTICE_CHORDLISTEN = "practicechordlisten"
     const val PRACTICE_CHORDCHANGE = "practicechordchange/{stepId}"
-    const val PRACTICE_MUSIC = "practice/{stepId}"
+    const val PRACTICE_MUSIC = "practicemusic/{stepId}"
     const val GAME_PLAY_WITH_ID = "game/{songId}"
 
 }
