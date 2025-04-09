@@ -121,8 +121,8 @@ fun GamePlayScreen(
         // 현재 코드 몇 번째인지
         val currentChordIndex = remember { mutableStateOf(0) }
 
-        //비교 결과를 저장할 구조
-        val correctnessList = remember { mutableStateListOf<Boolean>() }
+        // 맞힌 노트 개수 계산
+        var correctCount by remember { mutableStateOf(0) }
 
         // 노래 재생하도록 하기
         LaunchedEffect(gameData?.songUri) {
@@ -183,10 +183,9 @@ fun GamePlayScreen(
                     if (newIndex < totalChords) {
                         if (newIndex != currentChordIndex.value) {
                             currentChordIndex.value = newIndex
-                            // ✅ 일단 기본으로 false 추가해보기
                             val currentChord = allChords[newIndex]
                             if (currentChord != "X") {
-                                correctnessList.add(false)
+                                correctCount++
                                 Log.d("GamePlayScreen", "🎯 코드 바뀜! index=$newIndex, 코드=$currentChord → false 추가됨")
                                 Log.d("GamePlayScreen", "🧠 AI에게 요청할 코드: $currentChord")
                             }
@@ -203,7 +202,15 @@ fun GamePlayScreen(
             if (!hasSentResult  && totalChords > 0 ) {
                 hasSentResult = true
 
-                score = 2
+                val totalCount = allChords.count { it != "X" } // 실제 연습한 코드 개수
+                val rawScore = if (totalCount > 0) ((correctCount.toFloat() / totalCount) * 100).toInt() else 0
+                score = when (rawScore) {
+                    in 0..30 -> 1
+                    in 31..70 -> 2
+                    in 71..100 -> 3
+                    else -> 0
+                }
+
                 Log.d("GamePlayScreen", "🎯 게임 끝났습니다. 점수 = $score")
                 viewModel.sendGameResult(songId, score) {
                     showScoreDialog = true

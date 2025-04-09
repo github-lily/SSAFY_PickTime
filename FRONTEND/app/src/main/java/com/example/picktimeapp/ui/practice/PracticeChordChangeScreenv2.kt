@@ -50,9 +50,6 @@ fun PracticeChordChangeScreen(
     viewModel: PracticeStepViewModel = hiltViewModel(),
     chordCheckViewModel: ChordCheckViewModel = hiltViewModel()
 ) {
-
-
-
     // 일시정시 버튼을 눌렀을 때
     val isPaused = remember { mutableStateOf(false) }
 
@@ -103,8 +100,8 @@ fun PracticeChordChangeScreen(
         // 현재 코드 몇 번째인지
         val currentChordIndex = remember { mutableStateOf(0) }
 
-        //비교 결과를 저장할 구조
-        val correctnessList = remember { mutableStateListOf<Boolean>() }
+        // 맞힌 노트 개수 계산
+        var correctCount by remember { mutableStateOf(0) }
 
         val repeatCount = 3
         val repeatedChords = remember(allChords) {
@@ -163,7 +160,7 @@ fun PracticeChordChangeScreen(
                             // ✅ 일단 기본으로 false 추가해보기
                             val currentChord = repeatedChords[newIndex]
                             if (currentChord != "X") {
-                                correctnessList.add(false)
+                                correctCount++
                                 Log.d("PracticeMusicScreen", "🎯 코드 바뀜! index=$newIndex, 코드=$currentChord → false 추가됨")
                                 Log.d("PracticeMusicScreen", "🧠 AI에게 요청할 코드: $currentChord")
                             }
@@ -172,7 +169,17 @@ fun PracticeChordChangeScreen(
                     if (!hasSentResult  && elapsedTime >= totalDuration) {
                         hasSentResult = true
 
-                        stepThreeScore = 3
+                        val totalCount = allChords.count { it != "X" } // 실제 연습한 코드 개수
+                        val rawScore = if (totalCount > 0) ((correctCount.toFloat() / totalCount) * 100).toInt() else 0
+
+                        stepThreeScore = when (rawScore) {
+                            in 0..30 -> 1
+                            in 31..70 -> 2
+                            in 71..100 -> 3
+                            else -> 0
+                        }
+
+
 
                         showScoreDialog = true
                         Log.d("PracticePlayScreen", "🎯 연습모드3 끝났습니다. 점수 = $stepThreeScore")
