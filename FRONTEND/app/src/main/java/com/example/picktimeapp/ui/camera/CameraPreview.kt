@@ -78,16 +78,20 @@ fun CameraPreview(
                 val parts = Utils.bitmapListToMultipartParts(frames)
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    val sessionId = getSessionId(context)
-                    if (!sessionId.isNullOrBlank()) {
-                        cameraViewModel.analyzeFrames(parts, sessionId)
-                        // 필요 시 아래처럼 handleAiResponse도 호출 가능:
-                        // val response = ... 받아서 넘기기
-                    } else {
-                        Log.e("CameraPreview", "세션 ID가 null이거나 비어 있음")
-                    }
+                    cameraViewModel.analyzeFrames(
+                        parts = parts,
+                        context = context,
+                        onResult = { response ->
+                            chordCheckViewModel.handleAiResponse(
+                                fingerPositions = response.fingerPositions,
+                                detectionDoneFromServer = response.detectionDone,
+                                audioOk = chordCheckViewModel.audioResult == true
+                            )
+                        }
+                    )
                 }
             }
+
         }
     }
 
