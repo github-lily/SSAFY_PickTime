@@ -6,7 +6,6 @@ import cv2
 import logging
 from typing import List
 import os
-from uploadFile import save_upload_file
 
 logger = logging.getLogger(__name__)
 
@@ -57,6 +56,9 @@ def detect(
         raise HTTPException(status_code=400, detail="Failed to decode image")
 
     result = tracker.process_frame(frame)
+    logger.info("** detect API **")
+    logger.info(f"detection_done: {result['detection_done']}")
+    logger.info(f"finger_positions: {result['finger_positions']}")
     return {
         "detection_done": result["detection_done"],
         "finger_positions": result["finger_positions"]
@@ -123,7 +125,9 @@ def tracking(
         return final
 
     aggregated_positions = aggregate_finger_positions(results)
-    
+    logger.info("** tracking API **")
+    logger.info(f"detection_done: {overall_detection}")
+    logger.info(f"finger_positions: {aggregated_positions}")
     return {
         "detection_done": overall_detection,
         "finger_positions": aggregated_positions
@@ -136,5 +140,5 @@ def stop_session(
     if get_session(session_id) is None:
         raise HTTPException(status_code=400, detail="Invalid session_id")
     remove_session(session_id)
-    logger.info(f"세션 삭제됨됨")
+    logger.info(f"세션 삭제됨")
     return {"message": f"Session {session_id} stopped."}
