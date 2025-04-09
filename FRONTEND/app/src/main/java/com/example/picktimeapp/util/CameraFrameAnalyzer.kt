@@ -51,7 +51,7 @@ class CameraFrameAnalyzer(
             Log.d(TAG, "초기 sessionId: $sessionId")
             if (sessionId.isNullOrBlank()) {
                 Log.d(TAG, "세션 없음 → 서버에 요청 시작")
-                viewModel.requestSessionIdAndSave(context)
+                viewModel.requestSessionIdAndSave()
             } else {
                 Log.d(TAG, "이미 세션 있음: $sessionId")
             }
@@ -94,7 +94,15 @@ class CameraFrameAnalyzer(
                         Log.e("세션", "세션 ID가 null입니다.")
                         return@launch
                     }
-                    val result = viewModel.analyzeFrames(parts, sessionId)
+                    viewModel.analyzeFrames(
+                        parts = parts,
+                        context = context,
+                        onResult = { response ->
+                            // 받은 응답을 처리 (여기선 단순 로그 출력 가능)
+                            Log.d(TAG, "10장 응답 결과: ${response.detectionDone}, fingers = ${response.fingerPositions}")
+                        }
+                    )
+
                 }
 
                 //onCaptureComplete?.invoke(capturedBitmaps.toList())
