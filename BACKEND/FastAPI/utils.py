@@ -2,7 +2,7 @@
 import math
 import cv2
 import numpy as np
-from config import CLASS_NUT, CLASS_FRET, NUM_FRETS, MIN_SCORE_NUT, MIN_SCORE_FRET
+from config import CLASS_NUT, CLASS_FRET, NUM_FRETS
 
 def distance(p1, p2):
     return np.linalg.norm(np.array(p1) - np.array(p2))
@@ -108,48 +108,158 @@ def measure_error_from_geometry(fcorners, init_geo):
     rel_errors = [abs(r - avg_ratio) for r in ratios]
     return sum(rel_errors) / len(rel_errors)
 
-def match_line_corners(detected_list, init_corners):
+# def match_line_corners(detected_list, init_corners):
+#     if init_corners[0] is None:
+#         return [None]*(NUM_FRETS+1)
+#     old_nut_center = get_center(*init_corners[0])
+#     detected_nuts = [d for d in detected_list if d['class_id'] == CLASS_NUT]
+#     if not detected_nuts:
+#         return [None]*(NUM_FRETS+1)
+#     nut_center_now = get_center(*detected_nuts[0]['lr'])
+#     dx = nut_center_now[0] - old_nut_center[0]
+#     dy = nut_center_now[1] - old_nut_center[1]
+#     new_corners = [None]*(NUM_FRETS+1)
+#     new_corners[0] = detected_nuts[0]['lr']
+#     # 각도 보정 (기존 nut과 마지막 frets 비교)
+#     old_far_fret = None
+#     for i in range(NUM_FRETS, 0, -1):
+#         if init_corners[i] is not None:
+#             old_far_fret = get_center(*init_corners[i])
+#             break
+#     detected_frets = [d for d in detected_list if d['class_id'] == CLASS_FRET]
+#     detected_fret_centers = [get_center(*d['lr']) for d in detected_frets]
+#     new_far_fret = detected_fret_centers[-1] if detected_fret_centers else None
+#     angle_diff = 0.0
+#     if old_far_fret and new_far_fret:
+#         angle_diff = angle_degrees(old_nut_center, new_far_fret) - angle_degrees(old_nut_center, old_far_fret)
+#     for ditem in detected_list:
+#         if ditem['class_id'] != CLASS_FRET:
+#             continue
+#         d_center = get_center(*ditem['lr'])
+#         shifted = (d_center[0] - dx, d_center[1] - dy)
+#         rotated = rotate_point(shifted[0], shifted[1], -angle_diff, old_nut_center)
+#         best_i = -1
+#         best_dist = float('inf')
+#         for i in range(1, NUM_FRETS+1):
+#             if init_corners[i] is None:
+#                 continue
+#             old_center = get_center(*init_corners[i])
+#             d_val = distance(rotated, old_center)
+#             if d_val < best_dist:
+#                 best_dist = d_val
+#                 best_i = i
+#         if best_i >= 0:
+#             new_corners[best_i] = ditem['lr']
+#     return new_corners
+def match_line_corners_ordered(detected_list, init_corners, fret_geometry):
     if init_corners[0] is None:
-        return [None]*(NUM_FRETS+1)
+        return [None] * (NUM_FRETS + 1)
     old_nut_center = get_center(*init_corners[0])
+    old_far_fret = find_last_valid_fret_center(init_corners)
+    if old_far_fret is None:
+        return [None] * (NUM_FRETS + 1)
+    far_dist_init = distance(old_nut_center, old_far_fret)
+    expected_norm = [None] * (NUM_FRETS + 1)
+    for i in range(1, NUM_FRETS + 1):
+        if fret_geometry[i] is not None:
+            expected_norm[i] = fret_geometry[i]['dist_from_nut'] / far_dist_init
     detected_nuts = [d for d in detected_list if d['class_id'] == CLASS_NUT]
     if not detected_nuts:
-        return [None]*(NUM_FRETS+1)
+        return [None] * (NUM_FRETS + 1)
     nut_center_now = get_center(*detected_nuts[0]['lr'])
     dx = nut_center_now[0] - old_nut_center[0]
     dy = nut_center_now[1] - old_nut_center[1]
-    new_corners = [None]*(NUM_FRETS+1)
-    new_corners[0] = detected_nuts[0]['lr']
-    # 각도 보정 (기존 nut과 마지막 frets 비교)
-    old_far_fret = None
-    for i in range(NUM_FRETS, 0, -1):
-        if init_corners[i] is not None:
-            old_far_fret = get_center(*init_corners[i])
-            break
-    detected_frets = [d for d in detected_list if d['class_id'] == CLASS_FRET]
-    detected_fret_centers = [get_center(*d['lr']) for d in detected_frets]
-    new_far_fret = detected_fret_centers[-1] if detected_fret_centers else None
-    angle_diff = 0.0
-    if old_far_fret and new_far_fret:
-        angle_diff = angle_degrees(old_nut_center, new_far_fret) - angle_degrees(old_nut_center, old_far_fret)
-    for ditem in detected_list:
-        if ditem['class_id'] != CLASS_FRET:
+    candidates = []
+    for d in detected_list:
+        if d['class_id'] != CLASS_FRET:
             continue
-        d_center = get_center(*ditem['lr'])
+        d_center = get_center(*d['lr'])
         shifted = (d_center[0] - dx, d_center[1] - dy)
-        rotated = rotate_point(shifted[0], shifted[1], -angle_diff, old_nut_center)
-        best_i = -1
-        best_dist = float('inf')
-        for i in range(1, NUM_FRETS+1):
-            if init_corners[i] is None:
-                continue
-            old_center = get_center(*init_corners[i])
-            d_val = distance(rotated, old_center)
-            if d_val < best_dist:
-                best_dist = d_val
-                best_i = i
-        if best_i >= 0:
-            new_corners[best_i] = ditem['lr']
+        # 간단한 회전 보정 (여기서는 0도 회전)
+        rotated = rotate_point(shifted[0], shifted[1], 0, old_nut_center)
+        cand_norm = distance(old_nut_center, rotated) / far_dist_init
+        candidates.append((cand_norm, d['lr']))
+    candidates.sort(key=lambda x: x[0])
+    new_corners = [None] * (NUM_FRETS + 1)
+    new_corners[0] = detected_nuts[0]['lr']
+    cand_idx = 0
+    THRESHOLD_NORM = 0.05
+    for fret_idx in range(1, NUM_FRETS + 1):
+        expected_val = expected_norm[fret_idx]
+        if expected_val is None:
+            continue
+        assigned = None
+        while cand_idx < len(candidates):
+            cand_norm, cand_lr = candidates[cand_idx]
+            if abs(cand_norm - expected_val) <= THRESHOLD_NORM:
+                assigned = cand_lr
+                cand_idx += 1
+                break
+            if cand_norm < expected_val:
+                cand_idx += 1
+            else:
+                break
+        new_corners[fret_idx] = assigned
+    return new_corners
+
+def smooth_fret_corners(corners_array, smooth_ratio=0.5, THRESHOLD=10):
+    smoothed = corners_array.copy()
+    for i in range(1, NUM_FRETS):
+        if smoothed[i] is None or smoothed[i - 1] is None or smoothed[i + 1] is None:
+            continue
+        center_curr = np.array(get_center(*smoothed[i]))
+        center_left = np.array(get_center(*smoothed[i - 1]))
+        center_right = np.array(get_center(*smoothed[i + 1]))
+        center_avg = (center_left + center_right) / 2
+        diff = center_avg - center_curr
+        error_percent = (np.linalg.norm(diff) / np.linalg.norm(center_avg)) * 100
+        if error_percent > THRESHOLD:
+            new_center = center_curr + smooth_ratio * diff
+            top_curr, bot_curr = smoothed[i]
+            offset_top = np.array(top_curr) - center_curr
+            offset_bot = np.array(bot_curr) - center_curr
+            new_top = new_center + offset_top
+            new_bot = new_center + offset_bot
+            smoothed[i] = (tuple(new_top), tuple(new_bot))
+    return smoothed
+
+def enforce_fret_ordering(fret_corners, nut_center, far_center, min_spacing):
+    """
+    nut_center와 far_center 사이의 방향으로 각 프렛 중심의 투영값을 계산한 후,
+    각 프렛의 투영값이 최소 간격(min_spacing)만큼 증가하도록 보정.
+    """
+    direction = np.array(far_center) - np.array(nut_center)
+    norm_dir = np.linalg.norm(direction)
+    if norm_dir < 1e-5:
+        return fret_corners
+    unit = direction / norm_dir
+
+    projections = []
+    for fc in fret_corners:
+        if fc is None:
+            projections.append(None)
+        else:
+            center = np.array(get_center(*fc))
+            proj = np.dot(center - np.array(nut_center), unit)
+            projections.append(proj)
+
+    new_corners = fret_corners.copy()
+    for i in range(1, len(projections)):
+        if projections[i] is None:
+            continue
+        prev_proj = projections[i - 1]
+        if prev_proj is None:
+            continue
+        if projections[i] <= prev_proj + min_spacing:
+            desired_proj = prev_proj + min_spacing
+            diff_proj = desired_proj - projections[i]
+            center = np.array(get_center(*new_corners[i]))
+            new_center = center + diff_proj * unit
+            top, bot = new_corners[i]
+            new_top = np.array(top) + diff_proj * unit
+            new_bot = np.array(bot) + diff_proj * unit
+            new_corners[i] = (tuple(new_top), tuple(new_bot))
+            projections[i] = desired_proj
     return new_corners
 
 def check_fret_length(corners_array, last_known, short_factor=0.8):
@@ -288,3 +398,23 @@ def find_string_of_point_v9(px, py, polygons):
         if res >= 0:
             return 6 - i  # 보통 6번줄이 위쪽
     return None
+
+# --- 새로 추가된 함수들 ---
+
+def find_last_valid_fret_center(corners):
+    for i in range(NUM_FRETS, 0, -1):
+        if corners[i] is not None:
+            return get_center(*corners[i])
+    return None
+
+def find_left_idx(corners, i):
+    for idx in range(i - 1, -1, -1):
+        if corners[idx] is not None:
+            return idx
+    return -1
+
+def find_right_idx(corners, i):
+    for idx in range(i + 1, NUM_FRETS + 1):
+        if corners[idx] is not None:
+            return idx
+    return -1
