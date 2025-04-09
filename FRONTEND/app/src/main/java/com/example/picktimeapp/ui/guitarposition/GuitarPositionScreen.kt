@@ -37,7 +37,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.picktimeapp.ui.camera.YoloViewModel
 import com.example.picktimeapp.ui.components.PauseDialogCustom
 import com.example.picktimeapp.ui.nav.Routes
 import com.example.picktimeapp.ui.practice.PracticeStepViewModel
@@ -50,7 +49,6 @@ import kotlinx.coroutines.delay
 fun GuitarPositionScreen(
     navController: NavController,
     stepId : Int,
-
     chordCheckViewModel: ChordCheckViewModel = hiltViewModel()
 ) {
 
@@ -58,6 +56,8 @@ fun GuitarPositionScreen(
     val viewModel: PracticeStepViewModel = hiltViewModel()      // AI 서버 통신용 인스턴스
     val stepData = viewModel.stepData.value
     val stepType = stepData?.stepType
+
+
 
     val showPauseDialog = remember { mutableStateOf(false) }
     val detectionDone = remember { mutableStateOf(false) }
@@ -70,6 +70,7 @@ fun GuitarPositionScreen(
 
     // ✅ detectionDone == true면 화면 이동
     LaunchedEffect(detectionDone.value) {
+        Log.d("GuitarPositionScreen", "detectionDone: ${detectionDone.value}")
         if (detectionDone.value) {
             delay(500) // 이동 전 약간의 여유
             navController.navigate("practicechordinfo/$stepId") {
@@ -158,7 +159,7 @@ fun GuitarPositionScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             CameraPreview(
-                                viewModel = chordCheckViewModel,
+                                chordCheckViewModel = chordCheckViewModel,
                                 modifier = Modifier
                                     .matchParentSize(),
                                 onFrameCaptured = { bitmap ->

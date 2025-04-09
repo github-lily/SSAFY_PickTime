@@ -341,7 +341,7 @@ fun PracticeMusicScreen(
                             verticalArrangement = Arrangement.Bottom
                         ) {
                             CameraPreview(
-                                viewModel = chordCheckViewModel,
+                                chordCheckViewModel = chordCheckViewModel,
                                 modifier = Modifier
                                     .size(
                                         width = screenWidth * 0.20f,

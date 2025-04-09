@@ -214,7 +214,7 @@ fun PracticeChordCheckScreen(
                         .padding(end = screenWidth * 0.03f, bottom = screenHeight * 0.03f)
                 ) {
                     CameraPreview(
-                        viewModel = chordCheckViewModel,
+                        chordCheckViewModel = chordCheckViewModel,
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .offset {
