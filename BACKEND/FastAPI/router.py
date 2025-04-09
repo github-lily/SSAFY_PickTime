@@ -61,7 +61,7 @@ def detect(
         "detection_done": result["detection_done"],
         "finger_positions": result["finger_positions"]
     }
-
+    
 # 추적용
 @api_router.post("/tracking/{session_id}")
 def tracking(
