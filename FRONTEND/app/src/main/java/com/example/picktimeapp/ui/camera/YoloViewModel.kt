@@ -5,9 +5,9 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.picktimeapp.data.model.DetectionResponse
 import com.example.picktimeapp.network.YoloPositionResponse
 import com.example.picktimeapp.network.YoloServerApi
+import com.example.picktimeapp.util.Utils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -30,10 +30,10 @@ class YoloViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             try {
-                val imagePart = bitmapToMultipart(bitmap)
+                val imagePart = Utils.bitmapToMultipart(bitmap)
                 val response = yoloServerApi.sendFrame(imagePart)
 
-                if (response.detection_done == true) {
+                if (response.detectionDone == true) {
                     positionDetected.value = true
                     Log.d("AI", "Position 인식 성공")
                 } else {
@@ -48,15 +48,4 @@ class YoloViewModel @Inject constructor(
         }
     }
 
-}
-
-
-// 서버 통신할 수 있는 Multipart 방식으로 변환
-private fun bitmapToMultipart(bitmap: Bitmap, name: String = "frame.jpg"): MultipartBody.Part {
-    val stream = ByteArrayOutputStream()
-    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
-    val requestBody = stream.toByteArray()
-        .toRequestBody("image/jpeg".toMediaTypeOrNull())
-
-    return MultipartBody.Part.createFormData("image", name, requestBody)
 }

@@ -189,6 +189,7 @@ object NetworkModule {
     // AI 서버 통신
     @Provides
     @Singleton
+    @Named("AI")
     fun provideChordDetectApi(@Named("AI") retrofit: Retrofit): ChordDetectApi =
         retrofit.create(ChordDetectApi::class.java)
 

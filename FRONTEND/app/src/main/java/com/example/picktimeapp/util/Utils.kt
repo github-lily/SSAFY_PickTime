@@ -5,7 +5,7 @@ package com.example.picktimeapp.util
 import android.content.Context
 import android.graphics.Bitmap
 import com.example.picktimeapp.data.model.ChordFingeringData
-import com.example.picktimeapp.data.model.FingerPosition
+import com.example.picktimeapp.data.model.FingerPositionData
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -15,7 +15,7 @@ import java.io.ByteArrayOutputStream
 
 
 object Utils {
-    fun loadStandardChordMap(context: Context): Map<String, Map<String, FingerPosition>> {
+    fun loadStandardChordMap(context: Context): Map<String, Map<String, FingerPositionData>> {
         val assetManager = context.assets
         val inputStream = assetManager.open("guitar_chord_fingerings_standard.json")
         val json = inputStream.bufferedReader().use { it.readText() }
@@ -25,13 +25,13 @@ object Utils {
         val chordList: List<ChordFingeringData> = gson.fromJson(json, type)
 
         // 변환: List → Map<String, Map<String, FingerPosition>>
-        val chordMap = mutableMapOf<String, Map<String, FingerPosition>>()
+        val chordMap = mutableMapOf<String, Map<String, FingerPositionData>>()
 
         for (item in chordList) {
-            val fingerMap = mutableMapOf<String, FingerPosition>()
+            val fingerMap = mutableMapOf<String, FingerPositionData>()
             for (pos in item.chordFingering.positions) {
                 for (string in pos.strings) {
-                    fingerMap[pos.finger.toString()] = FingerPosition(
+                    fingerMap[pos.finger.toString()] = FingerPositionData(
                         fretboard = pos.fret,
                         string = string
                     )
@@ -52,5 +52,24 @@ object Utils {
 
         return MultipartBody.Part.createFormData("image", name, requestBody)
     }
+
+    fun bitmapListToMultipartParts(
+        bitmaps: List<Bitmap>,
+        baseName: String = "frame"
+    ): List<MultipartBody.Part> {
+        return bitmaps.mapIndexed { index, bitmap ->
+            val stream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+            val requestBody = stream.toByteArray()
+                .toRequestBody("image/jpeg".toMediaTypeOrNull())
+
+            MultipartBody.Part.createFormData(
+                name = "image_$index", // 서버에서 image_0, image_1... 로 받게
+                filename = "${baseName}_$index.jpg",
+                body = requestBody
+            )
+        }
+    }
+
 
 }
