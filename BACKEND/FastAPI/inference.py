@@ -140,7 +140,7 @@ class GuitarTracker:
             new_corners = match_line_corners_ordered(detected_list, self.init_corners, self.fret_geometry)
             self.fret_corners = new_corners
             self.fret_corners = check_fret_length(self.fret_corners, self.fret_last_known)
-            self.fret_corners = interpolate_corners(self.fret_corners, self.fret_last_known, self.far_fret_box)
+            self.fret_corners = interpolate_corners(self.fret_corners, self.fret_last_known, self.fret_geometry, self.far_fret_box)
             self.fret_corners = smooth_fret_corners(self.fret_corners)
             if self.fret_corners[0] is not None and self.fret_corners[NUM_FRETS] is not None:
                 nut_center = get_center(*self.fret_corners[0])
