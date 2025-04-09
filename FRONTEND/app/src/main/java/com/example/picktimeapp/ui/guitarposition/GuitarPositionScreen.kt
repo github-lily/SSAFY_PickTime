@@ -53,14 +53,13 @@ fun GuitarPositionScreen(
 ) {
 
     val cameraAnalyzerViewModel: CameraAnalyzerViewModel = hiltViewModel()          // AI 서버 통신용 인스턴스
-    val viewModel: PracticeStepViewModel = hiltViewModel()      // AI 서버 통신용 인스턴스
+    val viewModel: PracticeStepViewModel = hiltViewModel()              // AI 서버 통신용 인스턴스
     val stepData = viewModel.stepData.value
     val stepType = stepData?.stepType
-
-
+    val detectionDone = cameraAnalyzerViewModel.positionDetected        // 탐지
 
     val showPauseDialog = remember { mutableStateOf(false) }
-    val detectionDone = remember { mutableStateOf(false) }
+
     val context = LocalContext.current
 
     // ✅ BE API 호출
@@ -69,6 +68,7 @@ fun GuitarPositionScreen(
     }
 
     // ✅ detectionDone == true면 화면 이동
+    // LaunchedEffect(key)는 key가 바뀔 때마다 재실행
     LaunchedEffect(detectionDone.value) {
         Log.d("GuitarPositionScreen", "detectionDone: ${detectionDone.value}")
         if (detectionDone.value) {

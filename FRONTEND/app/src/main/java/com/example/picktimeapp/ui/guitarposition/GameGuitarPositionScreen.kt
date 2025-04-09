@@ -1,5 +1,6 @@
 package com.example.picktimeapp.ui.guitarposition
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +29,7 @@ import androidx.navigation.NavController
 
 
 import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -35,6 +37,7 @@ import com.example.picktimeapp.ui.components.PauseDialogCustom
 import com.example.picktimeapp.ui.nav.Routes
 import com.example.picktimeapp.util.CameraAnalyzerViewModel
 import com.example.picktimeapp.util.ChordCheckViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun GameGuitarPositionScreen(
@@ -44,7 +47,19 @@ fun GameGuitarPositionScreen(
 ) {
 
     val cameraAnalyzerViewModel: CameraAnalyzerViewModel = hiltViewModel()
+    val detectionDone = cameraAnalyzerViewModel.positionDetected
 
+    // ✅ detectionDone == true면 화면 이동
+    // LaunchedEffect(key)는 key가 바뀔 때마다 재실행
+    LaunchedEffect(detectionDone.value) {
+        Log.d("GuitarPositionScreen", "detectionDone: ${detectionDone.value}")
+        if (detectionDone.value) {
+            delay(500) // 이동 전 약간의 여유
+            navController.navigate("game/${gameId}") {
+                popUpTo("game/${gameId}") { inclusive = true }
+            }
+        }
+    }
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val screenWidth = maxWidth

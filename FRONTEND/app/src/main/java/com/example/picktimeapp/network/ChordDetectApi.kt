@@ -16,7 +16,7 @@ interface ChordDetectApi{
     @POST("init")
     suspend fun init() : Response<SessionResponse>
 
-    // ✅ 파일 한 장 전송 (기타ㅅ 판단용)
+    // ✅ 파일 한 장 전송 (기타 판단용)
     @Multipart
     @POST("detect/{sessionId}")
     suspend fun sendFrame(

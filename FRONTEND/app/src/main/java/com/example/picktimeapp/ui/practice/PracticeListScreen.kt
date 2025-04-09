@@ -383,7 +383,7 @@ fun StepItem(step: StepItem, scale: Float,  onClick: (Int) -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick(step.stepId) }
-            .padding(vertical = 8.dp * scale, horizontal = 18.dp * scale),
+            .padding(vertical = 3.dp * scale, horizontal = 18.dp * scale),
 
         verticalAlignment = Alignment.CenterVertically
     ) {
