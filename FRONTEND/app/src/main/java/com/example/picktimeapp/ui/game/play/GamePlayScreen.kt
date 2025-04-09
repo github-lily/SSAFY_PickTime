@@ -4,6 +4,7 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -43,6 +44,7 @@ import com.example.picktimeapp.ui.camera.CameraPreview
 import com.example.picktimeapp.ui.components.ScoreDialogCustom
 import com.example.picktimeapp.ui.nav.Routes
 import com.example.picktimeapp.util.ChordCheckViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun GamePlayScreen(
@@ -50,6 +52,20 @@ fun GamePlayScreen(
     songId: Int,
     chordCheckViewModel: ChordCheckViewModel = hiltViewModel()
 ) {
+    // 겟 레디하기
+    val isStarted = remember { mutableStateOf(false) }
+    var countdownNumber by remember { mutableStateOf<Int?>(3) }
+    LaunchedEffect(Unit) {
+        for (i in 3 downTo 1) {
+            countdownNumber = i
+            delay(1000)
+        }
+        countdownNumber = null // 끝나면 숫자 숨겨
+        isStarted.value = true // 끝나면 시작하자
+    }
+
+    //----------------------------------------
+
     val viewModel : GamePlayViewModel = hiltViewModel()
 
     // 노래 불러오기 위해
@@ -125,8 +141,8 @@ fun GamePlayScreen(
         val correctnessList = remember { mutableStateListOf<Boolean>() }
 
         // 노래 재생하도록 하기
-        LaunchedEffect(gameData?.songUri) {
-            if (gameData?.songUri != null) {
+        LaunchedEffect(gameData?.songUri, isStarted.value) {
+            if (gameData?.songUri != null && isStarted.value) {
                 try {
                     if (!mediaPlayer.isPlaying) {
                         mediaPlayer.reset() // ⭐ reset으로 초기화 먼저!
@@ -167,7 +183,9 @@ fun GamePlayScreen(
         }
 
         // 시간 계산해서 현재 코드 몇 번쨰인지 업데이트 및 경과 시간 추적
-        LaunchedEffect(allChords, gameData?.durationSec) {
+        LaunchedEffect(allChords, gameData?.durationSec, isStarted.value) {
+            if (!isStarted.value) return@LaunchedEffect
+
             val startTime = System.currentTimeMillis()
             val totalChords = allChords.size
 
@@ -347,6 +365,32 @@ fun GamePlayScreen(
                         }
                     }
                 )
+            }
+        }
+
+        // 준비 UI 띄우기 ------------------------------
+        if (countdownNumber != null) {
+            val imageRes = when (countdownNumber) {
+                3 -> R.drawable.girini_count_3
+                2 -> R.drawable.girini_count_2
+                1 -> R.drawable.girini_count_1
+                else -> null
+            }
+
+            imageRes?.let {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.5f)), // 반투명 배경
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = it),
+                        contentDescription = "카운트다운",
+                        modifier = Modifier
+                            .size(600.dp) // 크기는 원하는 대로 조절
+                    )
+                }
             }
         }
     }
