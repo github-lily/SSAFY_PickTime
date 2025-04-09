@@ -24,8 +24,8 @@ import com.example.picktimeapp.ui.mypage.PasswordCheckScreen
 import com.example.picktimeapp.ui.practice.PracticeChordChangeScreen
 import com.example.picktimeapp.ui.practice.PracticeChordCheckScreen
 import com.example.picktimeapp.ui.practice.PracticeChordInfoScreen
-import com.example.picktimeapp.ui.practice.PracticeChordListenScreen
-import com.example.picktimeapp.ui.practice.PracticeChordPressScreen
+import com.example.picktimeapp.ui.practice.v1.PracticeChordListenScreen
+import com.example.picktimeapp.ui.practice.v1.PracticeChordPressScreen
 import com.example.picktimeapp.ui.practice.PracticeListScreen
 import com.example.picktimeapp.ui.practice.PracticeMusicScreen
 import com.example.picktimeapp.ui.tunning.TuningScreen

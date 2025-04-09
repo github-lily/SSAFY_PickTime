@@ -1,4 +1,4 @@
-package com.example.picktimeapp.ui.practice
+package com.example.picktimeapp.ui.practice.v1
 // 소리 내볼까요 패이지 음성인식 스텝2
 
 import android.media.MediaPlayer
@@ -37,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.picktimeapp.ui.practice.PracticeStepViewModel
 import com.example.picktimeapp.util.ChordCheckViewModel
 import com.example.picktimeapp.util.ChordImageMap
 
