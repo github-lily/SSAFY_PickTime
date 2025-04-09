@@ -5,6 +5,8 @@ import numpy as np
 import cv2
 import logging
 from typing import List
+import os
+from uploadFile import save_upload_file
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +32,10 @@ def detect(
     session_id: str = Path(...),
     file: UploadFile = File(...)
 ):
+    # 파일을 저장할 경로 설정 (원하는 파일명과 경로로 변경)
+    save_path = os.path.join("uploaded_images", file.filename)
+    save_upload_file(file, save_path)
+    logger.info(f"파일이 저장되었습니다: {save_path}")
     tracker = get_session(session_id)
     if tracker is None:
         raise HTTPException(status_code=400, detail="Invalid session_id")
