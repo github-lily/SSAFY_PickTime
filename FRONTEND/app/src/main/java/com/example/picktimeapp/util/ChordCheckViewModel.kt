@@ -4,30 +4,34 @@ package com.example.picktimeapp.util
 // 앱 시작 후 최초 한 번 guitar_chord_fingerings_standard.json을 읽어와서 메모리에 저장
 // 이후 finger_positions와 비교할 때 참조용으로 사용
 
-import com.example.picktimeapp.data.model.FingerPosition
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import android.app.Application
+import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.picktimeapp.data.model.FingerPositionData
+import com.example.picktimeapp.network.ChordDetectApi
 import com.example.picktimeapp.network.YoloServerApi
 import com.example.picktimeapp.util.Utils.bitmapToMultipart
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Named
 
 
 @HiltViewModel
 class ChordCheckViewModel @Inject constructor(
     application: Application,
-    private val yoloServerApi: YoloServerApi
+    @Named("AI") private val chordDetectApi: ChordDetectApi
 ) : AndroidViewModel(application) {
 
+    val context = getApplication<Application>().applicationContext
     // 기준 코드 정보
     private val standardMap = Utils.loadStandardChordMap(application.applicationContext)
 
@@ -51,8 +55,8 @@ class ChordCheckViewModel @Inject constructor(
     private val _detectionDone = mutableStateOf(false)
     val detectionDone: State<Boolean> = _detectionDone
 
-    private val _fingerPositions = mutableStateOf<Map<String, FingerPosition>?>(null)
-    val fingerPositions: State<Map<String, FingerPosition>?> = _fingerPositions
+    private val _fingerPositions = mutableStateOf<Map<String, FingerPositionData>?>(null)
+    val fingerPositions: State<Map<String, FingerPositionData>?> = _fingerPositions
 
     private val _correctChord = mutableStateOf<Boolean?>(null)
     val correctChord: State<Boolean?> = _correctChord
@@ -63,7 +67,7 @@ class ChordCheckViewModel @Inject constructor(
 
     // AI 응답 관리
     fun handleAiResponse(
-        fingerPositions: Map<String, FingerPosition>?,
+        fingerPositions: Map<String, FingerPositionData>?,
         detectionDoneFromServer: Boolean, // 탐지완료
         audioOk: Boolean
     ) {
@@ -96,8 +100,8 @@ class ChordCheckViewModel @Inject constructor(
     }
 
     private fun checkFingerMatch(
-        expected: Map<String, FingerPosition>,
-        actual: Map<String, FingerPosition>
+        expected: Map<String, FingerPositionData>,
+        actual: Map<String, FingerPositionData>
     ): Boolean {
         return expected.all { (finger, pos) ->
             actual[finger]?.let {
@@ -108,8 +112,8 @@ class ChordCheckViewModel @Inject constructor(
 
     // 피드백을 담은 리스트(하나씩 시간차로 보여질 예정)
     private fun makeFeedbackList(
-        expected: Map<String, FingerPosition>,
-        actual: Map<String, FingerPosition>
+        expected: Map<String, FingerPositionData>,
+        actual: Map<String, FingerPositionData>
     ): List<String> {
         val messages = mutableListOf<String>()
 
@@ -132,8 +136,8 @@ class ChordCheckViewModel @Inject constructor(
 
     // 피드백 메시지를 시간차를 두고 보여주는 함수
     fun showSequentialFeedback(
-        expected: Map<String, com.example.picktimeapp.data.model.FingerPosition>,
-        actual: Map<String, com.example.picktimeapp.data.model.FingerPosition>
+        expected: Map<String, com.example.picktimeapp.data.model.FingerPositionData>,
+        actual: Map<String, com.example.picktimeapp.data.model.FingerPositionData>
     ) {
         viewModelScope.launch {
             val messages = makeFeedbackList(expected, actual)
@@ -149,16 +153,23 @@ class ChordCheckViewModel @Inject constructor(
     fun sendSingleFrame(bitmap: Bitmap) {
         viewModelScope.launch {
             try {
+                val sessionId = getSessionId(context)
+
+                if(sessionId == null){
+                    Log.e("세션", "세션 ID가 null입니다.")
+                    return@launch
+                }
+
                 val part = bitmapToMultipart(bitmap,"image") // 아래 확장함수 참고
-                val response = yoloServerApi.sendFrame(part)
+                val response = chordDetectApi.sendFrame(sessionId = sessionId, image = part)
 
                 // 탐지 여부 상태 업데이트
-                _detectionDone.value = response.detection_done
+                _detectionDone.value = response.detectionDone
 
                 // 탐지 완료되었으면 결과 저장
                 // 응답으로 detection_done 값과 finger_positions 수신
-                if (response.detection_done && response.finger_positions != null) {
-                    _fingerPositions.value = response.finger_positions
+                if (response.detectionDone && response.fingerPositions != null) {
+                    _fingerPositions.value = response.fingerPositions
                 }
             } catch (e: Exception) {
                 Log.e("ViewModel", "1장 전송 오류: ${e.message}")
@@ -170,14 +181,21 @@ class ChordCheckViewModel @Inject constructor(
     fun sendFrameList(bitmaps: List<Bitmap>) {
         viewModelScope.launch {
             try {
+                val sessionId = getSessionId(context)
+
+                if(sessionId == null){
+                    Log.e("세션", "세션 ID가 null입니다.")
+                    return@launch
+                }
+
                 val parts = bitmaps.mapIndexed { idx, bitmap ->
                     bitmapToMultipart(bitmap, "image$idx.jpg")
                 }
 
-                val response = yoloServerApi.sendFrames(parts)
+                val response = chordDetectApi.sendFrames(sessionId = sessionId, images = parts)
 
-                if (response.finger_positions != null) {
-                    _fingerPositions.value = response.finger_positions
+                if (response.fingerPositions != null) {
+                    _fingerPositions.value = response.fingerPositions
 
                     // 기준 코드 다시 불러오기
                     val expected = standardMap[currentChordName] ?: return@launch
