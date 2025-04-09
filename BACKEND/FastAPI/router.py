@@ -31,16 +31,23 @@ def init_session():
 def detect(
     session_id: str = Path(...),
     file: UploadFile = File(...)
-):
-    # 파일을 저장할 경로 설정 (원하는 파일명과 경로로 변경)
-    save_path = os.path.join("uploaded_images", file.filename)
-    save_upload_file(file, save_path)
-    logger.info(f"파일이 저장되었습니다: {save_path}")
+    ):
     tracker = get_session(session_id)
     if tracker is None:
         raise HTTPException(status_code=400, detail="Invalid session_id")
+    
     try:
+        # ✅ 파일 바이트 읽기 (딱 한 번)
         file_bytes = file.file.read()
+        print("📥 받은 파일 크기:", len(file_bytes))
+        
+        # ✅ 파일 저장 (원하면 file_bytes를 이용)
+        save_path = os.path.join("uploaded_images", file.filename)
+        with open(save_path, "wb") as f:
+            f.write(file_bytes)
+        logger.info(f"파일이 저장되었습니다: {save_path}")
+
+        # ✅ 디코딩
         np_arr = np.frombuffer(file_bytes, np.uint8)
         frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
         if frame is None:
@@ -48,12 +55,13 @@ def detect(
     except Exception as e:
         logger.exception("이미지 디코딩 오류")
         raise HTTPException(status_code=400, detail="Failed to decode image")
+
     result = tracker.process_frame(frame)
     return {
         "detection_done": result["detection_done"],
         "finger_positions": result["finger_positions"]
     }
-
+    
 # 추적용
 @api_router.post("/tracking/{session_id}")
 def tracking(
