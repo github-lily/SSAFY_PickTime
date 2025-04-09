@@ -31,7 +31,7 @@ def init_session():
 def detect(
     session_id: str = Path(...),
     file: UploadFile = File(...)
-    ):
+):
     tracker = get_session(session_id)
     if tracker is None:
         raise HTTPException(status_code=400, detail="Invalid session_id")
