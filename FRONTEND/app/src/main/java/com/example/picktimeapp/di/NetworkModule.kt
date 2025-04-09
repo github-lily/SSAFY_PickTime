@@ -1,5 +1,6 @@
 package com.example.picktimeapp.di
 
+import com.example.picktimeapp.auth.AuthAuthenticator
 import com.example.picktimeapp.auth.TokenManager
 import com.example.picktimeapp.network.ChordDetectApi
 import com.example.picktimeapp.network.GameListsApi
@@ -10,6 +11,7 @@ import com.example.picktimeapp.network.PasswordUpdateApi
 import com.example.picktimeapp.network.PickTimeApi
 import com.example.picktimeapp.network.PracticeListApi
 import com.example.picktimeapp.network.PracticeStepApi
+import com.example.picktimeapp.network.ReissueApi
 import com.example.picktimeapp.network.SignUpApi
 import com.example.picktimeapp.network.UserApi
 import com.example.picktimeapp.network.YoloServerApi
@@ -44,12 +46,23 @@ object NetworkModule {
     @Singleton
     fun provideGson(): Gson = GsonBuilder().create()
 
+    @Provides
+    @Singleton
+    @Named("Reissue")
+    fun provideReissueRetrofit(gson: Gson): Retrofit =
+        Retrofit.Builder()
+            .baseUrl("https://j12b101.p.ssafy.io/api-dev/") // 기존 BASE_URL 동일
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build() // ❗ OkHttpClient 연결 X
+
+
     // OkHttpClient 인스턴스를 제공하는 함수
     @Provides
     @Singleton
-    fun provideOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient =
+    fun provideOkHttpClient(authInterceptor: AuthInterceptor, authAuthenticator : AuthAuthenticator): OkHttpClient =
         OkHttpClient.Builder()
-            .addInterceptor(authInterceptor) // 👈 추가
+            .addInterceptor(authInterceptor) // 기존 인증 헤더 붙이는 Interceptor
+            .authenticator(authAuthenticator)
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             })
@@ -59,6 +72,8 @@ object NetworkModule {
     @Singleton
     fun provideAuthInterceptor(tokenManager: TokenManager): AuthInterceptor =
         AuthInterceptor(tokenManager)
+
+
 
 
     // Retrofit 인스턴스를 제공하는 함수
@@ -76,6 +91,21 @@ object NetworkModule {
     @Singleton
     fun provideLoginApi(retrofit: Retrofit): LoginApi =
         retrofit.create(LoginApi::class.java)
+
+    // 리프레시토큰
+    @Provides
+    @Singleton
+    fun provideReissueApi(@Named("Reissue") retrofit: Retrofit): ReissueApi =
+        retrofit.create(ReissueApi::class.java)
+
+
+    @Provides
+    @Singleton
+    fun provideAuthAuthenticator(
+        tokenManager: TokenManager,
+        reissueApi: ReissueApi
+    ): AuthAuthenticator = AuthAuthenticator(tokenManager, reissueApi)
+
 
 
     // SignUpApi
@@ -162,6 +192,7 @@ object NetworkModule {
     @Named("AI")
     fun provideChordDetectApi(@Named("AI") retrofit: Retrofit): ChordDetectApi =
         retrofit.create(ChordDetectApi::class.java)
+
 
 }
 

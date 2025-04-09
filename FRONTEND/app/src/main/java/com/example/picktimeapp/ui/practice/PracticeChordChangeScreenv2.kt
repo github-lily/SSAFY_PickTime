@@ -2,6 +2,7 @@ package com.example.picktimeapp.ui.practice
 
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -29,6 +30,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
@@ -51,7 +54,19 @@ fun PracticeChordChangeScreen(
     chordCheckViewModel: ChordCheckViewModel = hiltViewModel()
 ) {
 
+    // 겟 레디하기
+    val isStarted = remember { mutableStateOf(false) }
+    var countdownNumber by remember { mutableStateOf<Int?>(3) }
+    LaunchedEffect(Unit) {
+        for (i in 3 downTo 1) {
+            countdownNumber = i
+            delay(1000)
+        }
+        countdownNumber = null // 끝나면 숫자 숨겨
+        isStarted.value = true // 끝나면 시작하자
+    }
 
+    // --------------------------------------------------//
 
     // 일시정시 버튼을 눌렀을 때
     val isPaused = remember { mutableStateOf(false) }
@@ -143,8 +158,8 @@ fun PracticeChordChangeScreen(
         }
 
         // 시간 계산해서 현재 코드 몇 번쨰인지 업데이트 및 경과 시간 추적
-        LaunchedEffect(repeatedChords) {
-            if (repeatedChords.isEmpty()) return@LaunchedEffect
+        LaunchedEffect(repeatedChords, isStarted.value) {
+            if (!isStarted.value || repeatedChords.isEmpty()) return@LaunchedEffect
 
             val startTime = System.currentTimeMillis()
 
@@ -248,6 +263,8 @@ fun PracticeChordChangeScreen(
                         screenHeight = screenHeight,
                         modifier = Modifier.zIndex(1f)
                     )
+
+                    // 일단 코드 박스는 준비가 끝나면 하자
                         SlidingCodeBar3(
                             screenWidth = screenWidth,
                             currentIndex = currentChordIndex.value,
@@ -312,7 +329,7 @@ fun PracticeChordChangeScreen(
                 }
 
 
-                // 팝업창 띄우기
+                // 팝업창 띄우기 ------------------------------
                 if (showPauseDialog.value) {
                     PauseDialogCustom(
                         screenWidth = screenWidth,
@@ -329,26 +346,54 @@ fun PracticeChordChangeScreen(
                         }
                     )
                 }
+
+                // 점수창 띄우기 ------------------------------
                 if (showScoreDialog) {
                     ScoreDialogCustom(
                         score = stepThreeScore,
                         screenWidth = screenWidth,
                         onDismiss = {
                             showScoreDialog = false
-                            navController.navigate("practice/$stepId") {
-                                popUpTo("practice/$stepId") { inclusive = true } // 현재 화면 제거 후 재시작하겠다.
+                            navController.navigate("practicechordchange/$stepId") {
+                                popUpTo("practicechordchange/$stepId") { inclusive = true } // 현재 화면 제거 후 재시작하겠다.
                             }
                         },
                         onExit = {
                             showScoreDialog = false
-                            navController.navigate(Routes.PRACTICE_LIST) {
-                                popUpTo(Routes.PRACTICE_LIST) { inclusive = true } // 현재 화면 제거
+                            navController.navigate("practice/${stepId + 1}") {
+                                popUpTo("practice/${stepId + 1}") { inclusive = true } // 현재 화면 제거
                             }
                         }
                     )
                 }
+
             }
         }
 
+        // 준비 UI 띄우기 ------------------------------
+        if (countdownNumber != null) {
+            val imageRes = when (countdownNumber) {
+                3 -> R.drawable.girini_count_3
+                2 -> R.drawable.girini_count_2
+                1 -> R.drawable.girini_count_1
+                else -> null
+            }
+
+            imageRes?.let {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.5f)), // 반투명 배경
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = it),
+                        contentDescription = "카운트다운",
+                        modifier = Modifier
+                            .size(600.dp) // 크기는 원하는 대로 조절
+                    )
+                }
+            }
+        }
     }
 }

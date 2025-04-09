@@ -31,6 +31,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -43,6 +44,7 @@ import com.example.picktimeapp.ui.theme.Brown20
 import com.example.picktimeapp.ui.theme.Gray90
 import com.example.picktimeapp.ui.theme.TitleFont
 import com.example.picktimeapp.util.ChordCheckViewModel
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -52,6 +54,18 @@ fun PracticeMusicScreen(
     viewModel: PracticeStepViewModel = hiltViewModel(),
     chordCheckViewModel: ChordCheckViewModel = hiltViewModel()
 ) {
+
+    // 겟 레디하기
+    val isStarted = remember { mutableStateOf(false) }
+    var countdownNumber by remember { mutableStateOf<Int?>(3) }
+    LaunchedEffect(Unit) {
+        for (i in 3 downTo 1) {
+            countdownNumber = i
+            delay(1000)
+        }
+        countdownNumber = null // 끝나면 숫자 숨겨
+        isStarted.value = true // 끝나면 시작하자
+    }
 
     // 노래 불러오기 위해
     val context = LocalContext.current
@@ -129,8 +143,8 @@ fun PracticeMusicScreen(
         val correctnessList = remember { mutableStateListOf<Boolean>() }
 
         // 노래 재생하도록 하기
-        LaunchedEffect(song?.songUri) {
-            if (song?.songUri != null) {
+        LaunchedEffect(song?.songUri, isStarted.value) {
+            if (song?.songUri != null && isStarted.value) {
                 try {
                     if (!mediaPlayer.isPlaying) {
                         mediaPlayer.reset() // ⭐ reset으로 초기화 먼저!
@@ -172,7 +186,9 @@ fun PracticeMusicScreen(
         }
 
         // 시간 계산해서 현재 코드 몇 번쨰인지 업데이트 및 경과 시간 추적
-        LaunchedEffect(allChords, song?.durationSec) {
+        LaunchedEffect(allChords, song?.durationSec, isStarted.value) {
+            if (!isStarted.value) return@LaunchedEffect
+
             val startTime = System.currentTimeMillis()
             val totalChords = allChords.size
 
@@ -360,6 +376,32 @@ fun PracticeMusicScreen(
                                 popUpTo(Routes.PRACTICE_LIST) { inclusive = true } // 현재 화면 제거
                             }
                         }
+                    )
+                }
+            }
+        }
+
+        // 준비 UI 띄우기 ------------------------------
+        if (countdownNumber != null) {
+            val imageRes = when (countdownNumber) {
+                3 -> R.drawable.girini_count_3
+                2 -> R.drawable.girini_count_2
+                1 -> R.drawable.girini_count_1
+                else -> null
+            }
+
+            imageRes?.let {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.5f)), // 반투명 배경
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = it),
+                        contentDescription = "카운트다운",
+                        modifier = Modifier
+                            .size(600.dp) // 크기는 원하는 대로 조절
                     )
                 }
             }
