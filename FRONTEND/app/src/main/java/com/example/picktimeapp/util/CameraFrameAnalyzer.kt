@@ -31,7 +31,7 @@ class CameraFrameAnalyzer(
     // 캡처 모드용 내부 상태
     private var isCapturing = false
     private var frameCount = 0
-    private val targetFrameCount = 10  // 예: n 프레임을 10개로 설정
+    private val targetFrameCount = 5  // 예: n 프레임을 10개로 설정
     private val TAG = "CameraFrameAnalyzer"
 
     // 저장한 이미지들을 임시로 보관할 리스트 (옵션)
