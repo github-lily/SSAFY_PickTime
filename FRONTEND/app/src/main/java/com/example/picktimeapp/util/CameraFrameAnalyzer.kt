@@ -62,6 +62,10 @@ class CameraFrameAnalyzer(
         capturedBitmaps.clear()
     }
 
+    fun stopCapture() {
+        isCapturing = false
+    }
+
     // 프레임 전송 속도
     private var lastSendTime = 0L
     private val minIntervalMillis = 500L // 최소 전송 간격(0.3초에 한번 보냄)
@@ -110,7 +114,7 @@ class CameraFrameAnalyzer(
                     )
 
                 }
-
+                stopCapture()
                 //onCaptureComplete?.invoke(capturedBitmaps.toList())
             }
         }

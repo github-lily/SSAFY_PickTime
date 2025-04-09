@@ -119,15 +119,6 @@ fun TuningScreen(
             Text(text = viewModel.tuningFeedback.value)
 //            Spacer(modifier = Modifier.height(50.dp))
 
-            // 임시: 수동으로 녹음 중지 버튼
-//            Row {
-//                Text(
-//                    text = "튜닝 중지",
-//                    modifier = Modifier
-//                        .clickable { viewModel.stopAudioProcessing() }
-//                        .padding(16.dp)
-//                )
-//            }
 
             Row(
                 modifier = Modifier.fillMaxWidth(),

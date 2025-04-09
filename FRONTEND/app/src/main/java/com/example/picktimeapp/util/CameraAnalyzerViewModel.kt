@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.picktimeapp.audio.AudioComm
 import com.example.picktimeapp.data.model.FingerDetectionResponse
 import com.example.picktimeapp.network.ChordDetectApi
 import com.example.picktimeapp.network.YoloPositionResponse
@@ -61,6 +62,7 @@ class CameraAnalyzerViewModel @Inject constructor(
 
                 if (response.detectionDone == true) {
                     positionDetected.value = true
+                    AudioComm.audioCaptureOn()
                     Log.d("AI", "Position 인식 성공")
                 } else {
                     Log.e("AI", "Position 인식 실패 : ${response.detectionDone}")

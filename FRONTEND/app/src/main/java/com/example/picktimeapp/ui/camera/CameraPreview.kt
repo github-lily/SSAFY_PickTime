@@ -1,5 +1,6 @@
 package com.example.picktimeapp.ui.camera
 
+import android.Manifest
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
@@ -12,6 +13,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -26,6 +28,9 @@ import com.example.picktimeapp.util.CameraFrameAnalyzer
 import com.example.picktimeapp.util.ChordCheckViewModel
 import com.example.picktimeapp.util.Utils
 import com.example.picktimeapp.util.getSessionId
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -52,8 +57,6 @@ fun CameraPreview(
     // 카메라 백그라운드 처리를 위한 Executor 생성
     // 카메라 작업을 위한 별도의 단일 스레드 Executor 생성
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
-
-
 
     // 단일 Analyzer(분석기) 인스턴스 생성 및 상태 유지(FeedbackController와 함께 공유)
     val cameraAnalyzer = remember {
@@ -110,9 +113,9 @@ fun CameraPreview(
             Thread.sleep(100)
             cameraExecutor.shutdown()
             AudioComm.stopAudioProcessing()
+            AudioComm.audioCaptureOff()
 
-
-            cameraViewModel.deleteSession(context)
+            //cameraViewModel.deleteSession(context)
 
         }
     }
@@ -135,7 +138,7 @@ fun CameraPreview(
                 analyzer = cameraAnalyzer
             )
             // 오디오 분석 시작
-            //AudioComm.startAudioProcessing()
+            AudioComm.startAudioProcessing()
 
             // 구성된 PreviewView를 반환하여 화면에 표시
             previewView
