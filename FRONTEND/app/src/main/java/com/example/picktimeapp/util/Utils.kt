@@ -43,6 +43,7 @@ object Utils {
         return chordMap
     }
 
+    // 1장 변환
     // Bitmap → Multipart 변환 확장 함수
     fun bitmapToMultipart(bitmap: Bitmap, name: String = "frame.jpg"): MultipartBody.Part {
         val stream = ByteArrayOutputStream()
@@ -53,6 +54,7 @@ object Utils {
         return MultipartBody.Part.createFormData("file", name, requestBody)
     }
 
+    // 10개 프레임 변환
     fun bitmapListToMultipartParts(
         bitmaps: List<Bitmap>,
         baseName: String = "frame"

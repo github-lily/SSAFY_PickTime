@@ -64,7 +64,7 @@ object NetworkModule {
             .addInterceptor(authInterceptor) // 기존 인증 헤더 붙이는 Interceptor
             .authenticator(authAuthenticator)
             .addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
+                level = HttpLoggingInterceptor.Level.BASIC
             })
             .build()
 

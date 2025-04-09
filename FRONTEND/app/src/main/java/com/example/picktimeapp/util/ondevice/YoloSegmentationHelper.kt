@@ -23,8 +23,6 @@
 //    private var shouldRun = true
 //    // 추론을 실행할 때 사용할 모델 인터프리터를 담을 변수
 //    private var interpreter: Interpreter? = null
-////    private val modelName = "ai/best_v3_1920_720.tflite"
-//    //    private val modelName = "ai/best_v3_1920_720.tflite"
 //    private val modelName = "ai/best_1280_736_float32.tflite"
 //    init {
 //        try {

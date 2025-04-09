@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.picktimeapp.ui.components.PauseDialogCustom
 import com.example.picktimeapp.ui.nav.Routes
+import com.example.picktimeapp.util.CameraAnalyzerViewModel
 import com.example.picktimeapp.util.ChordCheckViewModel
 
 @Composable
@@ -41,6 +42,9 @@ fun GameGuitarPositionScreen(
     gameId : Int,
     chordCheckViewModel: ChordCheckViewModel = hiltViewModel()
 ) {
+
+    val cameraAnalyzerViewModel: CameraAnalyzerViewModel = hiltViewModel()
+
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val screenWidth = maxWidth
@@ -124,7 +128,7 @@ fun GameGuitarPositionScreen(
                         ) {
                             CameraPreview(
                                 modifier = Modifier .matchParentSize(),
-                                viewModel = chordCheckViewModel
+                                chordCheckViewModel = chordCheckViewModel
                             )
 
                             Image(

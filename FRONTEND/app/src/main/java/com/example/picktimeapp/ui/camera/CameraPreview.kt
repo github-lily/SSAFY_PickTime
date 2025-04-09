@@ -23,6 +23,11 @@ import com.example.picktimeapp.controller.FeedbackController
 import com.example.picktimeapp.util.CameraAnalyzerViewModel
 import com.example.picktimeapp.util.CameraFrameAnalyzer
 import com.example.picktimeapp.util.ChordCheckViewModel
+import com.example.picktimeapp.util.Utils
+import com.example.picktimeapp.util.getSessionId
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.concurrent.Executors
 import java.util.concurrent.ExecutorService
 
@@ -34,7 +39,7 @@ import java.util.concurrent.ExecutorService
 @Composable
 fun CameraPreview(
     modifier: Modifier = Modifier,
-    viewModel: ChordCheckViewModel,
+    chordCheckViewModel: ChordCheckViewModel,
     onFrameCaptured: (Bitmap) -> Unit = {}
 ) {
     // 현재 Context와 LifecycleOwner를 가져옵니다.
@@ -48,25 +53,44 @@ fun CameraPreview(
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
 
 
+
     // 단일 Analyzer(분석기) 인스턴스 생성 및 상태 유지(FeedbackController와 함께 공유)
     val cameraAnalyzer = remember {
         CameraFrameAnalyzer(
             context = context,
+            viewModel = cameraViewModel,
 
             // 📌 실시간 1장 전송용 콜백 (detection_done == false 일 때만 호출됨)
             onResult = { bitmap ->
-                viewModel.sendSingleFrame(bitmap)
+                cameraViewModel.analyzeFrame(bitmap, context) { response ->
+                    chordCheckViewModel.handleAiResponse(
+                        fingerPositions = response.fingerPositions,
+                        detectionDoneFromServer = response.detectionDone,
+                        audioOk = chordCheckViewModel.audioResult == true
+                    )
+                }
             },
-            viewModel = cameraViewModel,
             // 📌 1장 전송 여부 판단 조건 (detectionDone == true면, shouldRun == false가 되어 실시간 전송 중단)
-            shouldRun = { viewModel.detectionDone.value == false }
+            shouldRun = { chordCheckViewModel.detectionDone.value == false }
         ).apply {
-            // ✅ 10장 수집 완료 시 호출될 콜백 (연주 감지 후)
+            // ✅ 10장 수집 완료 시
             onCaptureComplete = { frames ->
-                viewModel.sendFrameList(frames)
+                val parts = Utils.bitmapListToMultipartParts(frames)
+
+                CoroutineScope(Dispatchers.IO).launch {
+                    val sessionId = getSessionId(context)
+                    if (!sessionId.isNullOrBlank()) {
+                        cameraViewModel.analyzeFrames(parts, sessionId)
+                        // 필요 시 아래처럼 handleAiResponse도 호출 가능:
+                        // val response = ... 받아서 넘기기
+                    } else {
+                        Log.e("CameraPreview", "세션 ID가 null이거나 비어 있음")
+                    }
+                }
             }
         }
     }
+
 
     // FeedbackController 생성: AudioComm 이벤트가 발생하면 cameraFrameAnalyzer.startCapture() 호출
     remember {
