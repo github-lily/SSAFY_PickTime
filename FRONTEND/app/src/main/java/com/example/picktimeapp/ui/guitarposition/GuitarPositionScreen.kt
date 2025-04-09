@@ -32,6 +32,7 @@ import androidx.navigation.NavController
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -69,15 +70,27 @@ fun GuitarPositionScreen(
 
     // ✅ detectionDone == true면 화면 이동
     // LaunchedEffect(key)는 key가 바뀔 때마다 재실행
-    LaunchedEffect(detectionDone.value) {
-        Log.d("GuitarPositionScreen", "detectionDone: ${detectionDone.value}")
-        if (detectionDone.value) {
-            delay(500) // 이동 전 약간의 여유
-            navController.navigate("practicechordinfo/$stepId") {
-                popUpTo("guitarposition/$stepId") { inclusive = true }
+    LaunchedEffect(cameraAnalyzerViewModel) {
+        snapshotFlow { cameraAnalyzerViewModel.positionDetected.value }
+            .collect { isDetected ->
+                if (isDetected) {
+                    delay(500)
+                    navController.navigate("practicechordinfo/$stepId") {
+                        popUpTo("guitarposition/$stepId") { inclusive = true }
+                    }
+                }
             }
-        }
     }
+
+//    LaunchedEffect(detectionDone.value) {
+//        Log.d("GuitarPositionScreen", "detectionDone: ${detectionDone.value}")
+//        if (detectionDone.value) {
+//            delay(500) // 이동 전 약간의 여유
+//            navController.navigate("practicechordinfo/$stepId") {
+//                popUpTo("guitarposition/$stepId") { inclusive = true }
+//            }
+//        }
+//    }
 
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val screenWidth = maxWidth

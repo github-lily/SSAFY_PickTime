@@ -38,6 +38,7 @@ import com.example.picktimeapp.ui.theme.Brown80
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import com.example.picktimeapp.ui.camera.CameraPreview
@@ -136,9 +137,11 @@ fun GamePlayScreen(
 
         // 현재 코드 몇 번째인지
         val currentChordIndex = remember { mutableStateOf(0) }
+        var currentChord by remember { mutableStateOf<String?>(null) }
 
         // 맞힌 노트 개수 계산
         var correctCount by remember { mutableStateOf(0) }
+
 
         // 노래 재생하도록 하기
         LaunchedEffect(gameData?.songUri, isStarted.value) {
@@ -156,6 +159,18 @@ fun GamePlayScreen(
                 }
             }
         }
+
+        // 코드 정답여부 확인
+        LaunchedEffect(chordCheckViewModel) {
+            snapshotFlow { chordCheckViewModel.isCorrect }
+                .collect { correct ->
+                    if (correct && currentChord != null) {
+                        correctCount++
+                        Log.d("GamePlayScreen", "✅ 정답! 코드: $currentChord, 점수 = $correctCount")
+                    }
+                }
+        }
+
 
         // 만약 일시정시 버튼을 눌렀다면
         LaunchedEffect(isPaused.value) {
@@ -201,9 +216,10 @@ fun GamePlayScreen(
                     if (newIndex < totalChords) {
                         if (newIndex != currentChordIndex.value) {
                             currentChordIndex.value = newIndex
-                            val currentChord = allChords[newIndex]
-                            if (currentChord != "X") {
-                                correctCount++
+                            val newChord = allChords[newIndex]
+                            if (newChord != "X") {
+                                chordCheckViewModel.setChordName(newChord) // 바뀐 chordName 보냄.. 다음것도 미리 보내면 좀 빨라질까? 아니면 한번에 보내고 인덱스로 확인하면..?
+                                currentChord = newChord
                                 Log.d("GamePlayScreen", "🎯 코드 바뀜! index=$newIndex, 코드=$currentChord → false 추가됨")
                                 Log.d("GamePlayScreen", "🧠 AI에게 요청할 코드: $currentChord")
                             }
