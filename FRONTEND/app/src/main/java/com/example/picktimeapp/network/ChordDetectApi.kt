@@ -16,20 +16,20 @@ interface ChordDetectApi{
     @POST("init")
     suspend fun init() : Response<SessionResponse>
 
-    // ✅ 프레임 여러 장 전송 (코드 판단용)
+    // ✅ 파일 한 장 전송 (기타ㅅ 판단용)
     @Multipart
     @POST("detect/{sessionId}")
-    suspend fun sendFrames(
+    suspend fun sendFrame(
         @Path("sessionId") sessionId: String,
-        @Part images: List<MultipartBody.Part>
+        @Part file: MultipartBody.Part
     ): FingerDetectionResponse
 
 
     @Multipart
     @POST("tracking/{sessionId}")
-    suspend fun sendFrame(
+    suspend fun sendFrames(
         @Path("sessionId") sessionId: String,
-        @Part image: MultipartBody.Part
+        @Part files: List<MultipartBody.Part>
     ): FingerDetectionResponse
 
     @GET("test")

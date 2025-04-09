@@ -1,6 +1,11 @@
 package com.example.picktimeapp.audio
 
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 // AudioEventListener 인터페이스 정의
 interface AudioEventListener {
@@ -9,16 +14,26 @@ interface AudioEventListener {
 
 object AudioComm {
 
-    const val amplitudeThreshold = 700.0
+    const val amplitudeThreshold = 1000.0
     private var targetChord = ""
 
     // 이벤트 리스너를 위한 변수
     var eventListener: AudioEventListener? = null
 
+    private var chordDetectedForThisStroke = false
+    private val resetDelayMs = 500L
+    private var resetJob: Job? = null
+
     private val audioCapture = AudioCapture(4096) { audioData ->
 
         val rms = calculateRMS(audioData)
         if (rms < amplitudeThreshold) {
+            // RMS 낮아지면 리셋 타이머 시작
+            resetJob?.cancel()
+            resetJob = CoroutineScope(Dispatchers.Default).launch {
+                delay(resetDelayMs)
+                chordDetectedForThisStroke = false
+            }
             return@AudioCapture
         }
 
