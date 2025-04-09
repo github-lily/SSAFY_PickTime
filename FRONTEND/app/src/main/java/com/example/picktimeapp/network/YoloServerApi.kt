@@ -1,6 +1,6 @@
 package com.example.picktimeapp.network
 
-import com.example.picktimeapp.data.model.FingerPosition
+import com.example.picktimeapp.data.model.FingerPositionData
 import okhttp3.MultipartBody
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -24,7 +24,7 @@ interface YoloServerApi {
 
 // ✅ 응답 데이터 클래스
 data class YoloPositionResponse(
-    val detection_done: Boolean,
-    val finger_positions: Map<String, FingerPosition>?
+    val detectionDone: Boolean,
+    val fingerPositions: Map<String, FingerPositionData>?
 )
 

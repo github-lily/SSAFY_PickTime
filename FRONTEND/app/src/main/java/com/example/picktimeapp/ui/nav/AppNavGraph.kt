@@ -53,7 +53,7 @@ object Routes {
     const val PRACTICE_CHORDPRESS = "practicechordpress"
     const val PRACTICE_CHORDLISTEN = "practicechordlisten"
     const val PRACTICE_CHORDCHANGE = "practicechordchange/{stepId}"
-    const val PRACTICE_MUSIC = "practice/{stepId}"
+    const val PRACTICE_MUSIC = "practicemusic/{stepId}"
     const val GAME_PLAY_WITH_ID = "game/{songId}"
 
 }
@@ -174,11 +174,6 @@ fun AppNavGraph() {
             val songId = backStackEntry.arguments?.getString("songId")?.toIntOrNull() ?: -1
             GamePlayScreen(navController = navController, songId = songId)
         }
-        // 뭐 받아올 때 예시코드 --지우지 마시오!!!--
-//        composable("${Routes.GAME_PLAY}/{title}") { backStackEntry ->
-//            val title = backStackEntry.arguments?.getString("title") ?: ""
-//            GamePlayScreen(navController = navController, title = title)
-//        }
 
 
 // 🔥🔥🔥🔥🔥 연습모드 🔥🔥🔥🔥🔥
