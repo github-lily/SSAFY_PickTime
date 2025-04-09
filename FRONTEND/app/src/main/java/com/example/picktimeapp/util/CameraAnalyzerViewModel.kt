@@ -64,8 +64,9 @@ class CameraAnalyzerViewModel @Inject constructor(
                     positionDetected.value = true
                     AudioComm.audioCaptureOn()
                     Log.d("AI", "Position 인식 성공")
+                    Log.d("CameraAnalyzerViewModel", "Position 인식 성공 : ${response.detectionDone}")
                 } else {
-                    Log.e("AI", "Position 인식 실패 : ${response.detectionDone}")
+                    Log.e("CameraAnalyzerViewModel", "Position 인식 실패 : ${response.detectionDone}")
                 }
 
                 onResult(response)

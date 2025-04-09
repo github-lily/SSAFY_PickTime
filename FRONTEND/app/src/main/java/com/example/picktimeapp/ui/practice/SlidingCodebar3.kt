@@ -111,6 +111,7 @@ fun SlidingCodeBar3(
                 Box(
                     modifier = Modifier
                         .size(blockWidth, blockHeight)
+                        .padding(end = blockWidth * 0.2f)
                         .graphicsLayer {
                             this.alpha = alpha.value
                             this.scaleX = scale.value
@@ -126,7 +127,7 @@ fun SlidingCodeBar3(
                             text = chord,
                             fontWeight = FontWeight.Bold,
                             fontSize = 40.sp,
-                            color = Color.Black
+                            color = Color.Black,
                         )
                 }
             }
