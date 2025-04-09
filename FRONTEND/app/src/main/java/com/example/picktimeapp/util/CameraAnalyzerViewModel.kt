@@ -50,7 +50,7 @@ class CameraAnalyzerViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             val sessionId: String = getSessionId(context) ?: return@launch
-
+            Log.d("CameraAnalyzerViewModel","$sessionId")
             try {
                 val imagePart = Utils.bitmapToMultipart(bitmap)
                 val response = chordDetectApi.sendFrame(
@@ -104,5 +104,13 @@ class CameraAnalyzerViewModel @Inject constructor(
             }
         }
     }
+
+//    fun deleteSession(context: Context){
+//        viewModelScope.launch {
+//            try{
+//                chordDetectApi
+//            }
+//        }
+//    }
 
 }
