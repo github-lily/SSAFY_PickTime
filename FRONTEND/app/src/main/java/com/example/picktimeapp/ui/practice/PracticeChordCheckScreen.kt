@@ -61,7 +61,8 @@ fun PracticeChordCheckScreen(
     val context = LocalContext.current
     val mediaPlayer = remember { MediaPlayer() }
 
-
+    // 맞힌 노트 개수 계산
+    var correctCount by remember { mutableStateOf(0) }
 
 
     // ✅ BE API 호출
@@ -98,7 +99,7 @@ fun PracticeChordCheckScreen(
         Scaffold(
             topBar = {
                 PracticeTopBar(
-                    titleText = "코코코오오오오코옹ㅋ오코옼옼오ㅗ오오코드연습",
+                    titleText = "코드 배우기",
                     onPauseClick = { showPauseDialog.value = true }
                 )}
         ) { innerPadding ->
