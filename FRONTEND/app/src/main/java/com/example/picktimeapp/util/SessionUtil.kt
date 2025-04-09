@@ -25,3 +25,7 @@ val Context.sessionIdFlow: Flow<String?>
 suspend fun getSessionId(context: Context): String? {
     return context.dataStore.data.map { prefs -> prefs[SESSION_ID_KEY] }.firstOrNull()
 }
+
+suspend fun clearDataStore(context: Context) {
+    context.dataStore.edit { it.clear() }
+}

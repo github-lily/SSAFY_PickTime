@@ -80,6 +80,7 @@ fun CameraPreview(
             Thread.sleep(100)
             cameraExecutor.shutdown()
             AudioComm.stopAudioProcessing()
+
         }
     }
 
@@ -101,7 +102,7 @@ fun CameraPreview(
                 analyzer = cameraAnalyzer
             )
             // 오디오 분석 시작
-            AudioComm.startAudioProcessing()
+            //AudioComm.startAudioProcessing()
 
             // 구성된 PreviewView를 반환하여 화면에 표시
             previewView

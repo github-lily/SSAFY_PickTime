@@ -4,12 +4,16 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.picktimeapp.data.model.FingerDetectionResponse
 import com.example.picktimeapp.network.ChordDetectApi
 import com.example.picktimeapp.network.YoloPositionResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import javax.inject.Inject
@@ -17,10 +21,27 @@ import javax.inject.Named
 
 @HiltViewModel
 class CameraAnalyzerViewModel @Inject constructor(
-    @Named("AI") private val chordDetectApi: ChordDetectApi
+    @Named("AI") private val chordDetectApi: ChordDetectApi,
+    @ApplicationContext private val context : Context
 ) : ViewModel() {
 
     val positionDetected = mutableStateOf(false)
+    private val TAG = "CameraAnalyzerViewModel"
+
+    init {
+        // 클래스 초기화 시 sessionIdCoroutineScope(Dispatchers.IO).launch 체크 후 없으면 요청
+
+        CoroutineScope(Dispatchers.IO).launch {
+            val sessionId = getSessionId(context)
+            Log.d(TAG, "초기 sessionId: $sessionId")
+            if (sessionId.isNullOrBlank()) {
+                Log.d(TAG, "세션 없음 → 서버에 요청 시작")
+                requestSessionIdAndSave(context)
+            } else {
+                Log.d(TAG, "이미 세션 있음: $sessionId")
+            }
+        }
+    }
 
     fun analyzeFrame(
         bitmap: Bitmap,
