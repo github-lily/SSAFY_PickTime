@@ -36,7 +36,7 @@ class CameraAnalyzerViewModel @Inject constructor(
             Log.d(TAG, "초기 sessionId: $sessionId")
             if (sessionId.isNullOrBlank()) {
                 Log.d(TAG, "세션 없음 → 서버에 요청 시작")
-                requestSessionIdAndSave(context)
+                requestSessionIdAndSave()
             } else {
                 Log.d(TAG, "이미 세션 있음: $sessionId")
             }
@@ -61,7 +61,7 @@ class CameraAnalyzerViewModel @Inject constructor(
                     positionDetected.value = true
                     Log.d("AI", "Position 인식 성공")
                 } else {
-                    Log.e("AI", "Position 인식 실패")
+                    Log.e("AI", "Position 인식 실패 : ${response.detectionDone}")
                 }
 
                 onResult(response)
@@ -72,21 +72,31 @@ class CameraAnalyzerViewModel @Inject constructor(
         }
     }
 
-    fun analyzeFrames(parts:  List<MultipartBody.Part>, sessionId: String) {
+    // 여러장 보내기
+    fun analyzeFrames(
+        parts: List<MultipartBody.Part>,
+        context: Context,
+        onResult: (FingerDetectionResponse) -> Unit
+    ) {
         viewModelScope.launch {
-            Log.d("ANALYZE", "호출")
-            val response = chordDetectApi.sendFrames(sessionId = sessionId, files = parts)
-            Log.d("ANALYZE", response.toString())
-//            if (response.isSuccessful) {
-//                val result = response.body()?.string() ?: "null"
-//                Log.d("TEST_RESULT", result)
-//            } else {
-//                Log.e("TEST", "에러 응답: ${response.code()}")
-//            }
+            val sessionId = getSessionId(context)
+            if (sessionId == null) {
+                Log.e("ANALYZE", "세션 ID가 null입니다.")
+                return@launch
+            }
+
+            try {
+                val response = chordDetectApi.sendFrames(sessionId, parts)
+                Log.d("ANALYZE", "10장 분석 결과: $response")
+                onResult(response)
+            } catch (e: Exception) {
+                Log.e("ANALYZE", "10장 분석 중 오류: ${e.message}")
+            }
         }
     }
 
-    fun requestSessionIdAndSave(context: Context){
+
+    fun requestSessionIdAndSave() {
         viewModelScope.launch {
             try {
                 val response = chordDetectApi.init()
@@ -104,5 +114,4 @@ class CameraAnalyzerViewModel @Inject constructor(
             }
         }
     }
-
 }
