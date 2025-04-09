@@ -333,7 +333,7 @@ fun GamePlayScreen(
                                 )
                                 .clip(RoundedCornerShape(12.dp))
                                 .zIndex(999f),
-                            viewModel = chordCheckViewModel
+                            chordCheckViewModel = chordCheckViewModel
                         )
                     }
                 }

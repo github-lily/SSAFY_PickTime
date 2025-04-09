@@ -316,7 +316,7 @@ fun PracticeChordChangeScreen(
                         .fillMaxWidth()
                 ) {
                     CameraPreview(
-                        viewModel = chordCheckViewModel,
+                        chordCheckViewModel = chordCheckViewModel,
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .offset {
