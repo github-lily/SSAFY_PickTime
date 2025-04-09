@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
 import com.example.picktimeapp.ui.camera.CameraPreview
+import com.example.picktimeapp.ui.components.NextScoreDialogCustom
 import com.example.picktimeapp.ui.components.PracticeTopBar
 import com.example.picktimeapp.ui.components.ScoreDialogCustom
 import com.example.picktimeapp.ui.nav.Routes
@@ -401,7 +402,7 @@ fun PracticeChordChangeScreen(
 
                 // 점수창 띄우기 ------------------------------
                 if (showScoreDialog) {
-                    ScoreDialogCustom(
+                    NextScoreDialogCustom(
                         score = stepThreeScore,
                         screenWidth = screenWidth,
                         onDismiss = {
