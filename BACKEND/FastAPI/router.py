@@ -18,6 +18,7 @@ def index():
 def init_session():
     try:
         session_id = create_session()
+        logger.info(f"세션 생성됨: {session_id}")
         return {"session_id": session_id}
     except Exception as e:
         logger.exception("세션 생성 오류")
@@ -114,9 +115,12 @@ def tracking(
         "finger_positions": aggregated_positions
     }
 
-@api_router.post("/stop")
-def stop_session(session_id: str):
+@api_router.post("/stop/{session_id}")
+def stop_session(
+    session_id: str = Path(...)
+):
     if get_session(session_id) is None:
         raise HTTPException(status_code=400, detail="Invalid session_id")
     remove_session(session_id)
+    logger.info(f"세션 삭제됨됨")
     return {"message": f"Session {session_id} stopped."}
