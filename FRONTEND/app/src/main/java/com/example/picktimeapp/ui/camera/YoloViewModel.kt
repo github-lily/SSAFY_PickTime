@@ -19,33 +19,33 @@ import java.io.ByteArrayOutputStream
 
 @HiltViewModel
 class YoloViewModel @Inject constructor(
-    private val yoloServerApi: YoloServerApi
+    //private val yoloServerApi: YoloServerApi
 ) : ViewModel() {
 
-    val positionDetected = mutableStateOf(false)
-
-    fun sendFrameToServer(
-        bitmap: Bitmap,
-        onResult: (YoloPositionResponse) -> Unit
-    ) {
-        viewModelScope.launch {
-            try {
-                val imagePart = Utils.bitmapToMultipart(bitmap)
-                val response = yoloServerApi.sendFrame(imagePart)
-
-                if (response.detectionDone == true) {
-                    positionDetected.value = true
-                    Log.d("AI", "Position 인식 성공")
-                } else {
-                    Log.e("AI", "Position 인식 실패")
-                }
-
-                onResult(response)
-
-            } catch (e: Exception) {
-                Log.e("AI", "통신 오류: ${e.message}")
-            }
-        }
-    }
+//    val positionDetected = mutableStateOf(false)
+//
+//    fun sendFrameToServer(
+//        bitmap: Bitmap,
+//        onResult: (YoloPositionResponse) -> Unit
+//    ) {
+//        viewModelScope.launch {
+//            try {
+//                val imagePart = Utils.bitmapToMultipart(bitmap)
+//                val response = yoloServerApi.sendFrame(imagePart)
+//
+//                if (response.detectionDone == true) {
+//                    positionDetected.value = true
+//                    Log.d("AI", "Position 인식 성공")
+//                } else {
+//                    Log.e("AI", "Position 인식 실패")
+//                }
+//
+//                onResult(response)
+//
+//            } catch (e: Exception) {
+//                Log.e("AI", "통신 오류: ${e.message}")
+//            }
+//        }
+//    }
 
 }

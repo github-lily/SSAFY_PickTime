@@ -34,30 +34,34 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.picktimeapp.ui.camera.YoloViewModel
 import com.example.picktimeapp.ui.components.PauseDialogCustom
 import com.example.picktimeapp.ui.nav.Routes
 import com.example.picktimeapp.ui.practice.PracticeStepViewModel
+import com.example.picktimeapp.util.CameraAnalyzerViewModel
 import com.example.picktimeapp.util.ChordCheckViewModel
+import com.example.picktimeapp.util.getSessionId
 import kotlinx.coroutines.delay
 
 @Composable
 fun GuitarPositionScreen(
     navController: NavController,
     stepId : Int,
+
     chordCheckViewModel: ChordCheckViewModel = hiltViewModel()
 ) {
 
-    val yoloViewModel: YoloViewModel = hiltViewModel()          // AI 서버 통신용 인스턴스
+    val cameraAnalyzerViewModel: CameraAnalyzerViewModel = hiltViewModel()          // AI 서버 통신용 인스턴스
     val viewModel: PracticeStepViewModel = hiltViewModel()      // AI 서버 통신용 인스턴스
     val stepData = viewModel.stepData.value
     val stepType = stepData?.stepType
 
     val showPauseDialog = remember { mutableStateOf(false) }
     val detectionDone = remember { mutableStateOf(false) }
-
+    val context = LocalContext.current
 
     // ✅ BE API 호출
     LaunchedEffect(stepId) {
@@ -158,8 +162,9 @@ fun GuitarPositionScreen(
                                 modifier = Modifier
                                     .matchParentSize(),
                                 onFrameCaptured = { bitmap ->
-                                    yoloViewModel.sendFrameToServer(
+                                    cameraAnalyzerViewModel.analyzeFrame(
                                         bitmap = bitmap,
+                                        context = context,
                                         onResult = { result ->
                                             if (result.detectionDone) {
                                                 detectionDone.value = true

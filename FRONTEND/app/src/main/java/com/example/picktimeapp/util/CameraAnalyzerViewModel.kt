@@ -23,15 +23,17 @@ class CameraAnalyzerViewModel @Inject constructor(
     val positionDetected = mutableStateOf(false)
 
     fun analyzeFrame(
-        part: MultipartBody.Part,
-        sessionId: String,
+        bitmap: Bitmap,
+        context: Context,
         onResult: (FingerDetectionResponse) -> Unit
     ) {
         viewModelScope.launch {
+            val sessionId: String = getSessionId(context) ?: return@launch
+
             try {
-                //val imagePart = Utils.bitmapToMultipart(bitmap)
+                val imagePart = Utils.bitmapToMultipart(bitmap)
                 val response = chordDetectApi.sendFrame(
-                    sessionId = sessionId, image = part
+                    sessionId = sessionId, file = imagePart
                 )
 
                 if (response.detectionDone == true) {
@@ -52,7 +54,7 @@ class CameraAnalyzerViewModel @Inject constructor(
     fun analyzeFrames(parts:  List<MultipartBody.Part>, sessionId: String) {
         viewModelScope.launch {
             Log.d("ANALYZE", "호출")
-            val response = chordDetectApi.sendFrames(sessionId = sessionId, images = parts)
+            val response = chordDetectApi.sendFrames(sessionId = sessionId, files = parts)
             Log.d("ANALYZE", response.toString())
 //            if (response.isSuccessful) {
 //                val result = response.body()?.string() ?: "null"

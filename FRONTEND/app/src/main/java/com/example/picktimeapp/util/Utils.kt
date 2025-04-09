@@ -50,7 +50,7 @@ object Utils {
         val requestBody = stream.toByteArray()
             .toRequestBody("image/jpeg".toMediaTypeOrNull())
 
-        return MultipartBody.Part.createFormData("image", name, requestBody)
+        return MultipartBody.Part.createFormData("file", name, requestBody)
     }
 
     fun bitmapListToMultipartParts(
@@ -64,7 +64,7 @@ object Utils {
                 .toRequestBody("image/jpeg".toMediaTypeOrNull())
 
             MultipartBody.Part.createFormData(
-                name = "image_$index", // 서버에서 image_0, image_1... 로 받게
+                name = "files", // 서버에서 image_0, image_1... 로 받게
                 filename = "${baseName}_$index.jpg",
                 body = requestBody
             )

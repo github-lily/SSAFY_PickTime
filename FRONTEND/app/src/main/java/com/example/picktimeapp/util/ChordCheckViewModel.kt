@@ -161,7 +161,7 @@ class ChordCheckViewModel @Inject constructor(
                 }
 
                 val part = bitmapToMultipart(bitmap,"image") // 아래 확장함수 참고
-                val response = chordDetectApi.sendFrame(sessionId = sessionId, image = part)
+                val response = chordDetectApi.sendFrame(sessionId = sessionId, file = part)
 
                 // 탐지 여부 상태 업데이트
                 _detectionDone.value = response.detectionDone
@@ -192,7 +192,7 @@ class ChordCheckViewModel @Inject constructor(
                     bitmapToMultipart(bitmap, "image$idx.jpg")
                 }
 
-                val response = chordDetectApi.sendFrames(sessionId = sessionId, images = parts)
+                val response = chordDetectApi.sendFrames(sessionId = sessionId, files = parts)
 
                 if (response.fingerPositions != null) {
                     _fingerPositions.value = response.fingerPositions

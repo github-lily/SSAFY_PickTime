@@ -87,7 +87,7 @@ class CameraFrameAnalyzer(
                 // 데이터 조합 후 전송하는 로직 호출
 
                 CoroutineScope(Dispatchers.IO).launch {
-                    val parts = Utils.bitmapListToMultipartParts(capturedBitmaps)
+                    val parts = Utils.bitmapListToMultipartParts(capturedBitmaps.toList())
                     val sessionId = getSessionId(context)
 
                     if (sessionId == null) {
