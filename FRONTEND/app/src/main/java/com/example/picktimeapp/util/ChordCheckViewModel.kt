@@ -10,16 +10,11 @@ import androidx.compose.runtime.setValue
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import android.app.Application
-import android.content.Context
-import android.graphics.Bitmap
-import android.util.Log
 import androidx.compose.runtime.State
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.picktimeapp.data.model.FingerPositionData
 import com.example.picktimeapp.network.ChordDetectApi
-import com.example.picktimeapp.network.YoloServerApi
-import com.example.picktimeapp.util.Utils.bitmapToMultipart
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Named

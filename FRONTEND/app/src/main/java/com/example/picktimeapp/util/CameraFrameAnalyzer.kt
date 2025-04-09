@@ -16,9 +16,6 @@ import com.example.picktimeapp.util.Utils.bitmapListToMultipartParts
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -125,10 +122,9 @@ class CameraFrameAnalyzer(
             onResult(bitmap)
         }
 
-
-
             imageProxy.close()
     }
+
 
     // 수정된 Bitmap을 파일로 저장하는 함수 (앱 전용 외부 저장소 사용)
     private fun saveBitmapToFile(bitmap: Bitmap, fileName: String, context: Context) {
