@@ -108,7 +108,7 @@ fun CameraPreview(
             Thread.sleep(100)
             cameraExecutor.shutdown()
             AudioComm.stopAudioProcessing()
-
+            cameraViewModel.deleteSession(context)
         }
     }
 

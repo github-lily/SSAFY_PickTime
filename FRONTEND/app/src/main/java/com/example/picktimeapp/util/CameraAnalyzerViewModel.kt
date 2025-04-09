@@ -115,12 +115,11 @@ class CameraAnalyzerViewModel @Inject constructor(
         }
     }
 
-//    fun deleteSession(context: Context){
-//        viewModelScope.launch {
-//            try{
-//                chordDetectApi
-//            }
-//        }
-//    }
+    fun deleteSession(context: Context){
+        viewModelScope.launch {
+            val sessionId = getSessionId(context) ?: return@launch
+            chordDetectApi.stop(sessionId)
+        }
+    }
 
 }
