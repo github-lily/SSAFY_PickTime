@@ -3,28 +3,63 @@ package com.example.picktimeapp.util
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.picktimeapp.data.model.FingerDetectionResponse
 import com.example.picktimeapp.network.ChordDetectApi
+import com.example.picktimeapp.network.YoloPositionResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import okhttp3.MultipartBody
 import javax.inject.Inject
+import javax.inject.Named
 
 @HiltViewModel
 class CameraAnalyzerViewModel @Inject constructor(
-    private val chordDetectApi: ChordDetectApi
+    @Named("AI") private val chordDetectApi: ChordDetectApi
 ) : ViewModel() {
 
-    fun analyzeFrame(bitmap: Bitmap) {
+    val positionDetected = mutableStateOf(false)
+
+    fun analyzeFrame(
+        part: MultipartBody.Part,
+        sessionId: String,
+        onResult: (FingerDetectionResponse) -> Unit
+    ) {
         viewModelScope.launch {
-            val response = chordDetectApi.test()
-            if (response.isSuccessful) {
-                val result = response.body()?.string() ?: "null"
-                Log.d("TEST_RESULT", result)
-            } else {
-                Log.e("TEST", "에러 응답: ${response.code()}")
+            try {
+                //val imagePart = Utils.bitmapToMultipart(bitmap)
+                val response = chordDetectApi.sendFrame(
+                    sessionId = sessionId, image = part
+                )
+
+                if (response.detectionDone == true) {
+                    positionDetected.value = true
+                    Log.d("AI", "Position 인식 성공")
+                } else {
+                    Log.e("AI", "Position 인식 실패")
+                }
+
+                onResult(response)
+
+            } catch (e: Exception) {
+                Log.e("AI", "통신 오류: ${e.message}")
             }
+        }
+    }
+
+    fun analyzeFrames(parts:  List<MultipartBody.Part>, sessionId: String) {
+        viewModelScope.launch {
+            Log.d("ANALYZE", "호출")
+            val response = chordDetectApi.sendFrames(sessionId = sessionId, images = parts)
+            Log.d("ANALYZE", response.toString())
+//            if (response.isSuccessful) {
+//                val result = response.body()?.string() ?: "null"
+//                Log.d("TEST_RESULT", result)
+//            } else {
+//                Log.e("TEST", "에러 응답: ${response.code()}")
+//            }
         }
     }
 

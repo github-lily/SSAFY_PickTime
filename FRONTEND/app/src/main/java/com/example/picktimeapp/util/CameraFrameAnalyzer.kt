@@ -12,9 +12,13 @@ import android.os.Environment
 import android.util.Log
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
+import com.example.picktimeapp.util.Utils.bitmapListToMultipartParts
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -40,7 +44,8 @@ class CameraFrameAnalyzer(
     var onCaptureComplete: ((List<Bitmap>) -> Unit)? = null
 
     init {
-        // 클래스 초기화 시 sessionId 체크 후 없으면 요청
+        // 클래스 초기화 시 sessionIdCoroutineScope(Dispatchers.IO).launch 체크 후 없으면 요청
+
         CoroutineScope(Dispatchers.IO).launch {
             val sessionId = getSessionId(context)
             Log.d(TAG, "초기 sessionId: $sessionId")
@@ -72,7 +77,7 @@ class CameraFrameAnalyzer(
         if (isCapturing && frameCount < targetFrameCount) {
             // 수정된 saveBitmapToFile 함수를 사용하여 파일 저장 (Context 전달)
             capturedBitmaps.add(bitmap)
-            saveBitmapToFile(bitmap, "capture_frame_${frameCount}.jpg", context)
+            //saveBitmapToFile(bitmap, "capture_frame_${frameCount}.jpg", context)
             // 예: onResult(bitmap)
             frameCount++
 
@@ -81,7 +86,18 @@ class CameraFrameAnalyzer(
                 isCapturing = false
                 // 데이터 조합 후 전송하는 로직 호출
 
-                onCaptureComplete?.invoke(capturedBitmaps.toList())
+                CoroutineScope(Dispatchers.IO).launch {
+                    val parts = Utils.bitmapListToMultipartParts(capturedBitmaps)
+                    val sessionId = getSessionId(context)
+
+                    if (sessionId == null) {
+                        Log.e("세션", "세션 ID가 null입니다.")
+                        return@launch
+                    }
+                    val result = viewModel.analyzeFrames(parts, sessionId)
+                }
+
+                //onCaptureComplete?.invoke(capturedBitmaps.toList())
             }
         }
 
@@ -186,4 +202,5 @@ class CameraFrameAnalyzer(
 
         return bitmap
     }
+
 }

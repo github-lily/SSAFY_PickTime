@@ -161,7 +161,7 @@ fun GuitarPositionScreen(
                                     yoloViewModel.sendFrameToServer(
                                         bitmap = bitmap,
                                         onResult = { result ->
-                                            if (result.detection_done) {
+                                            if (result.detectionDone) {
                                                 detectionDone.value = true
                                             }
                                         }
