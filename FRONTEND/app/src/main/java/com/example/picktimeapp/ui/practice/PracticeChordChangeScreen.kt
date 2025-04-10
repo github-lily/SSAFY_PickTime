@@ -227,7 +227,7 @@ fun PracticeChordChangeScreen(
                     if (newIndex < repeatedChords.size && newIndex != currentChordIndex.value) {
                         currentChordIndex.value = newIndex
 
-                        val newChord = repeatedChords[newIndex]
+                            val newChord = repeatedChords[newIndex]
 
                             if (newChord != "X") {
                             chordCheckViewModel.setChordName(newChord)  // ✅ 코드 설정
@@ -242,7 +242,7 @@ fun PracticeChordChangeScreen(
                         hasSentResult = true
                         isCalculatingScore = true
 
-                        delay(1000) // ✅ 판별 반영을 기다리는 시간 (1초)
+                        delay(2000) // ✅ 판별 반영을 기다리는 시간 (1초)
 
 
 
@@ -546,23 +546,5 @@ fun PracticeChordChangeScreen(
                     )
                 }
         }
-//        if (isCalculatingScore) {
-//            Box(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .background(Color.Black.copy(alpha = 0.5f)),
-//                contentAlignment = Alignment.Center
-//            ) {
-//                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-//                    Image(
-//                        painter = painterResource(id = R.drawable.girini_score),
-//                        contentDescription = "점수 계산 중",
-//                        modifier = Modifier.size(150.dp)
-//                    )
-//
-//                }
-//            }
-//        }
-
     }
 }
