@@ -12,6 +12,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -56,6 +57,7 @@ fun CameraPreview(
         CameraFrameAnalyzer(
             context = context,
             viewModel = cameraViewModel,
+            chordCheckViewModel = chordCheckViewModel,
 
             // 📌 실시간 1장 전송용 콜백 (detection_done == false 일 때만 호출됨)
             onResult = { bitmap ->
@@ -63,7 +65,6 @@ fun CameraPreview(
                     chordCheckViewModel.handleAiResponse(
                         fingerPositions = response.fingerPositions,
                         detectionDoneFromServer = response.detectionDone,
-                        audioOk = chordCheckViewModel.audioResult == true
                     )
                 }
             },
@@ -82,7 +83,6 @@ fun CameraPreview(
                             chordCheckViewModel.handleAiResponse(
                                 fingerPositions = response.fingerPositions,
                                 detectionDoneFromServer = response.detectionDone,
-                                audioOk = chordCheckViewModel.audioResult == true
                             )
                         }
                     )
@@ -93,9 +93,19 @@ fun CameraPreview(
     }
 
 
+    // 외부 화면에서 analyzer에 접근할 수 있도록 도와주는 코드
+    // getCameraAnalyzer()로 사용 가능
+    LaunchedEffect(Unit) {
+        chordCheckViewModel.setCameraAnalyzer(cameraAnalyzer)
+    }
+
+
     // FeedbackController 생성: AudioComm 이벤트가 발생하면 cameraFrameAnalyzer.startCapture() 호출
     remember {
-        AudioCaptureController(cameraAnalyzer)
+        AudioCaptureController(
+            cameraFrameAnalyzer = cameraAnalyzer,
+            chordCheckViewModel = chordCheckViewModel
+        )
     }
 
     //val coroutineScope = rememberCoroutineScope()

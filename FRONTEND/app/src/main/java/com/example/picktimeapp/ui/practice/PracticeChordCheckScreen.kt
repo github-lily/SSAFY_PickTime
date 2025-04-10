@@ -50,10 +50,12 @@ fun PracticeChordCheckScreen(
     val chordName = if (chords.isNotEmpty()) chords.first().chordName else "로딩 중..."
 
 
-    val showPauseDialog = remember { mutableStateOf(false) }                                // 일시정지 모달
-    val feedbackText = remember { mutableStateOf("로딩 중...") }     // 피드백 상태관리
-    val isCorrect = remember { mutableStateOf(false) }
-    val detectionDone = remember { mutableStateOf(false) }
+    val showPauseDialog = remember { mutableStateOf(false) }     // 일시정지 모달
+    val feedbackText = chordCheckViewModel.feedbackMessage
+    val isCorrect = chordCheckViewModel.isCorrect
+    val detectionDone by chordCheckViewModel.detectionDone
+
+
 
 
     // 소리 설정
@@ -73,18 +75,20 @@ fun PracticeChordCheckScreen(
 
 
     // ✅ AI API 호출 정답이면 자동 이동
-    LaunchedEffect(isCorrect.value) {
-        if (isCorrect.value) {
+    LaunchedEffect(isCorrect) {
+        if (isCorrect) {
             delay(2000)
-            navController.navigate(Routes.PRACTICE_CHORDCHANGE)
+            navController.navigate("practicechordchange/$stepId")
         }
     }
 
     // 피드백상자용 비동기처리
     LaunchedEffect(stepData?.chords) {
         val name = stepData?.chords?.firstOrNull()?.chordName
+        Log.d("ChordCheck", "코드 이름 : $name")
         if (name != null) {
-            feedbackText.value = "$name 코드를 연주해볼까요?"
+            chordCheckViewModel.setChordName(name)
+            chordCheckViewModel.updateFeedbackMessage("$name 코드를 연주해볼까요?")
         }
     }
 
@@ -119,7 +123,7 @@ fun PracticeChordCheckScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = feedbackText.value,
+                        text = feedbackText,
                         style = MaterialTheme.typography.bodySmall,
                         color = Gray90,
                         fontWeight = FontWeight.Normal,
@@ -159,6 +163,8 @@ fun PracticeChordCheckScreen(
                             IconButton(
                                 onClick = {
                                     val chordSoundUri = viewModel.stepData.value?.chords?.firstOrNull()?.chordSoundUri
+//                                    Log.d("ChordPress", "사운드 URI: $chordSoundUri")
+
                                     if (!chordSoundUri.isNullOrBlank()) {
                                         try {
                                             val uri = Uri.parse(chordSoundUri)
