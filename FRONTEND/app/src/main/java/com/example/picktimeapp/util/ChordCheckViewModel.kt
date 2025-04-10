@@ -59,6 +59,15 @@ class ChordCheckViewModel @Inject constructor(
     private val _correctChord = mutableStateOf<Boolean?>(null)
     val correctChord: State<Boolean?> = _correctChord
 
+    private var cameraAnalyzer: CameraFrameAnalyzer? = null
+
+    fun setCameraAnalyzer(analyzer: CameraFrameAnalyzer) {
+        this.cameraAnalyzer = analyzer
+    }
+
+    fun getCameraAnalyzer(): CameraFrameAnalyzer? = cameraAnalyzer
+
+
     fun setChordName(name: String) {
         currentChordName = name
     }
@@ -107,27 +116,22 @@ class ChordCheckViewModel @Inject constructor(
         // 연결 다시 정상됨
         if (!detectionDone.value && detectionDoneFromServer) {
             _detectionDone.value = true
-            feedbackMessage = "다시 연주해 보세요."
+
+            // ✨ 기타는 인식됐지만 오디오가 감지되기 전이면 메시지 출력 보류
+            if (audioResult != null) {
+                feedbackMessage = "다시 연주해 보세요."
+            }
+
             isCorrect = false
             return
         }
+
 
 
         // 👉 손 위치 저장 (판별은 tryFinalCheck)
         _fingerPositions.value = fingerPositions
         tryFinalCheck()
 
-//        // 기준 코드 정보와 비교
-//        val expected = standardMap[currentChordName] ?: return
-//        val comparisonResult = checkFingerMatch(expected, fingerPositions ?: emptyMap())
-//
-//        if (comparisonResult && audioResult == true) {
-//            isCorrect = true
-//            feedbackMessage = "정확히 연주했어요!"
-//        } else {
-//            isCorrect = false
-//            showSequentialFeedback(expected, fingerPositions ?: emptyMap())
-//        }
     }
 
     // 음성 매칭하는 함수
@@ -162,7 +166,7 @@ class ChordCheckViewModel @Inject constructor(
         }
 
         Log.d("ChordCheck", "🎯 총 일치 손가락 수: $matchedCount → ${if (matchedCount >= 2) "정답 처리됨" else "오답 처리됨"}")
-        return matchedCount >= 2
+        return matchedCount >= 1
     }
 
 

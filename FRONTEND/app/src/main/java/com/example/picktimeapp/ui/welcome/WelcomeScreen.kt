@@ -101,57 +101,6 @@ fun WelcomeScreen(
                         Text("회원가입", fontSize = 24.sp, fontWeight = FontWeight.Medium)
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // 마이페이지 버튼
-                    Button(
-                        onClick = {
-                            onNavigateToMyPage()
-                        },
-                        modifier = buttonModifier,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Brown40,
-                            contentColor = DarkGreen10
-                        ),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Text("마이페이지", fontSize = 24.sp, fontWeight = FontWeight.Medium)
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-
-                    // 기타 위치 확인용
-                    Button(
-                        onClick = {
-                            onNavigateToGuitarPosition()
-                        },
-                        modifier = buttonModifier,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Brown40,
-                            contentColor = DarkGreen10
-                        ),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Text("기타 카메라 테스트", fontSize = 24.sp, fontWeight = FontWeight.Medium)
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // 연습모드 step4
-                    Button(
-                        onClick = {
-                            onNavigateToMusic()
-                        },
-                        modifier = buttonModifier,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Brown40,
-                            contentColor = DarkGreen10
-                        ),
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Text("연습모드 step4", fontSize = 24.sp, fontWeight = FontWeight.Medium)
-                    }
 
                     Spacer(modifier = Modifier.height(16.dp))
 

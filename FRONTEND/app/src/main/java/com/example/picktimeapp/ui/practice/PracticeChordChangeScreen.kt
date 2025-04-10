@@ -37,6 +37,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.sp
+import com.example.picktimeapp.audio.AudioComm
+import com.example.picktimeapp.controller.AudioCaptureController
 import com.example.picktimeapp.ui.camera.CameraPreview
 import com.example.picktimeapp.ui.components.NextScoreDialogCustom
 import com.example.picktimeapp.ui.components.PracticeTopBar
@@ -70,6 +72,14 @@ fun PracticeChordChangeScreen(
         isStarted.value = true // 끝나면 시작하자
     }
 
+    // 오디오 이벤트 등록
+    LaunchedEffect(Unit) {
+        chordCheckViewModel.getCameraAnalyzer()?.let { analyzer ->
+            AudioCaptureController(analyzer, chordCheckViewModel)
+            AudioComm.startAudioProcessing()
+            AudioComm.audioCaptureOn()
+        }
+    }
 
 
     // 일시정시 버튼을 눌렀을 때
@@ -104,13 +114,18 @@ fun PracticeChordChangeScreen(
     LaunchedEffect(Unit) {
         snapshotFlow { Pair(chordCheckViewModel.isCorrect, currentChord) }
             .collect { (correct, chord) ->
-                if (correct && chord != null && chord != lastScoredChord) {
-                    correctCount++
-                    lastScoredChord = chord
-                    Log.d("Practice", "✅ 정답 코드 = $chord, 점수 = $correctCount")
+                if (chord != null) {
+                    if (correct && chord != lastScoredChord) {
+                        correctCount++
+                        lastScoredChord = chord
+                        Log.d("Practice", "✅ 정답 코드 = $chord, 누적 점수 = $correctCount")
+                    } else if (!correct) {
+                        Log.d("Practice", "❌ 오답 또는 미완: 코드 = $chord, 현재 점수 = $correctCount")
+                    }
                 }
             }
     }
+
 
     LaunchedEffect(stepId) {
         viewModel.fetchPracticeStep(stepId)
@@ -156,7 +171,7 @@ fun PracticeChordChangeScreen(
 
         val repeatCount = 3
         val repeatedChords = remember(allChords) {
-            List(repeatCount) { allChords }.flatten()
+            List(repeatCount) { allChords }.flatten()       // [A, B, A, B, A, B]
         }
         val totalDuration = repeatedChords.size * 2f
 
@@ -207,9 +222,10 @@ fun PracticeChordChangeScreen(
                     val newIndex = (current / durationPerNoteSec).toInt()
 
                     if (newIndex < repeatedChords.size && newIndex != currentChordIndex.value) {
-                            currentChordIndex.value = newIndex
+                        currentChordIndex.value = newIndex
 
-                            val newChord = allChords[newIndex]
+                        val newChord = repeatedChords[newIndex]
+
                             if (newChord != "X") {
                             chordCheckViewModel.setChordName(newChord)  // ✅ 코드 설정
                             currentChord = newChord

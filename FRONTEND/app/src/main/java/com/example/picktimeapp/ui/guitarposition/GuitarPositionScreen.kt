@@ -217,7 +217,7 @@ fun GuitarPositionScreen(
                             when (stepType) {
                                 1 -> navController.navigate("practicechordinfo/$stepId")
                                 2 -> navController.navigate("practicechordchange/$stepId")
-                                3 -> navController.navigate("practice/$stepId")
+                                3 -> navController.navigate("practicemusic/$stepId")
                                 else -> Log.e("GuitarPositionScreen", "알 수 없는 stepType: $stepType")
                             }},
                         modifier = Modifier
