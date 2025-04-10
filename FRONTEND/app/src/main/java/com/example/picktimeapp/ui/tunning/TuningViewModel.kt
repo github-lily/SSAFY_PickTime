@@ -133,12 +133,16 @@ class TuningViewModel @Inject constructor() : ViewModel() {
             if (targetFrequency > 0 && targetNoteName.isNotEmpty()) {
                 val difference = newFreq - targetFrequency
                 val tolerance = 1.0
-
                 _tuningFeedback.value = when {
-                    difference > tolerance -> "$targetNoteName - 음이 높습니다."
-                    difference < -tolerance -> "$targetNoteName - 음이 낮습니다."
-                    else -> "$targetNoteName - 음이 맞습니다."
+                    difference > tolerance -> "음이 높습니다."
+                    difference < -tolerance -> "음이 낮습니다."
+                    else -> "음이 맞습니다."
                 }
+//                _tuningFeedback.value = when {
+//                    difference > tolerance -> "$targetNoteName - 음이 높습니다."
+//                    difference < -tolerance -> "$targetNoteName - 음이 낮습니다."
+//                    else -> "$targetNoteName - 음이 맞습니다."
+//                }
             }
         }
         // 만약 newFreq가 0.0 이하이면 기존 noteName 값을 유지 (업데이트하지 않음)
