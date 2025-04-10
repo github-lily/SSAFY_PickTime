@@ -18,6 +18,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.picktimeapp.ui.components.SideNavigation
 import com.example.picktimeapp.ui.nav.Routes
+import com.example.picktimeapp.util.CameraAnalyzerViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 @Composable
 fun GameModeScreen(navController: NavController, viewModel: GameListsViewModel = hiltViewModel()) {
@@ -26,6 +28,7 @@ fun GameModeScreen(navController: NavController, viewModel: GameListsViewModel =
     val isLoading = viewModel.isLoading
     val errorMessage = viewModel.errorMessage
     val context = LocalContext.current
+    val cameraAnalyzerViewModel : CameraAnalyzerViewModel = hiltViewModel()
 
     DisposableEffect(Unit) {
         onDispose {
@@ -117,6 +120,7 @@ fun GameModeScreen(navController: NavController, viewModel: GameListsViewModel =
                                     star = song.star
                                 ),
                                 onPlayClick = {
+                                    cameraAnalyzerViewModel.deleteSession(context)
                                     navController.navigate("gameguitartunning/${song.songId}")
                                 },
                                 onSoundClick = {

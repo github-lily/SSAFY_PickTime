@@ -395,7 +395,7 @@ fun GamePlayScreen(
             }
             if (showScoreDialog) {
                 ScoreDialogCustom(
-                    score = score,
+                    score = 2,
                     screenWidth = screenWidth,
                     onDismiss = {
                         showScoreDialog = false

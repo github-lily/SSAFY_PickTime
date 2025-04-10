@@ -402,7 +402,7 @@ fun PracticeMusicScreen(
                 }
                 if (showScoreDialog) {
                     NextScoreDialogCustom(
-                        score = stepFourScore,
+                        score = 3,
                         screenWidth = screenWidth,
                         onDismiss = {
                             showScoreDialog = false
