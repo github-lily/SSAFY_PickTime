@@ -61,7 +61,7 @@ object Utils {
     ): List<MultipartBody.Part> {
         return bitmaps.mapIndexed { index, bitmap ->
             val stream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 70, stream)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, stream)
             val requestBody = stream.toByteArray()
                 .toRequestBody("image/jpeg".toMediaTypeOrNull())
 
