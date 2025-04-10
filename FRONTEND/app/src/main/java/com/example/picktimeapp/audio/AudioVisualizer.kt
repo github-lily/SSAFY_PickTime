@@ -109,14 +109,14 @@ fun AudioVisualizerBar(
                     drawRect(
                         color = Color.Transparent,
                         topLeft = Offset(x = 0f, y = barTopPx),
-                        size = Size(width = canvasWidthPx, height = barHeightPx)
+                        size = Size(width = canvasWidthPx, height = barHeightPx + 50)
                     )
                 }
 
                 // 기린 이미지: 막대의 윗부분에 고정 배치
                 val giraffePainter = painterResource(id = R.drawable.tunning_girin)
                 val giraffeTopDp = with(LocalDensity.current) { barTopPx.toDp() }
-                val giraffeOffsetX = (-45).dp
+                val giraffeOffsetX = (-30).dp
 
                 Image(
                     painter = giraffePainter,
