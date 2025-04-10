@@ -67,6 +67,9 @@ fun GamePlayScreen(
 
     //----------------------------------------
 
+    // 점수 계산 중 모달 상태
+    var isCalculatingScore by remember { mutableStateOf(false) }
+
     val viewModel : GamePlayViewModel = hiltViewModel()
 
     // 노래 불러오기 위해
@@ -247,6 +250,10 @@ fun GamePlayScreen(
             if (!hasSentResult  && totalChords > 0 ) {
                 hasSentResult = true
 
+                isCalculatingScore = true
+
+                delay(2000) // ✅ 판별 반영을 기다리는 시간 (2초)
+
                 val totalCount = allChords.count { it != "X" } // 실제 연습한 코드 개수
                 val rawScore = if (totalCount > 0) ((correctCount.toFloat() / totalCount) * 100).toInt() else 0
                 score = when (rawScore) {
@@ -256,7 +263,11 @@ fun GamePlayScreen(
                     else -> 0
                 }
 
+
                 Log.d("GamePlayScreen", "🎯 게임 끝났습니다. 점수 = $score")
+
+                isCalculatingScore = false
+
                 viewModel.sendGameResult(songId, score) {
                     showScoreDialog = true
                 }
@@ -425,6 +436,23 @@ fun GamePlayScreen(
                             .size(600.dp) // 크기는 원하는 대로 조절
                     )
                 }
+            }
+        }
+
+        // 점수 계산 중 표시 모달
+        if (isCalculatingScore) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.5f)), // 반투명 배경
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.girini_score),
+                    contentDescription = "점수계산중",
+                    modifier = Modifier
+                        .size(600.dp) // 크기는 원하는 대로 조절
+                )
             }
         }
     }
