@@ -92,41 +92,4 @@ class LoginViewModel @Inject constructor(
             }
         }
     }
-//    fun login() {
-//        viewModelScope.launch {
-//            try {
-//                Log.d(
-//                    "LoginViewModel",
-//                    "📦 로그인 요청 바디: username='${email.value}', password='${password.value}'"
-//                )
-//
-//
-//                val response = loginApi.login(
-//                    username = email.value,
-//                    password = password.value
-//                )
-//
-//                if (response.isSuccessful) {
-//                    val token = response.headers()["Authorization"]
-//
-//                    if (token != null) {
-//                        tokenManager.saveAccessToken(token)
-////                        loginResult.value = null  // 이후 필요 시 사용자 정보 가져오는 구조로 확장
-//                        Log.d("LoginViewModel", "✅ 로그인 성공 - 토큰: $token")
-//                    } else {
-//                        errorMessage.value = "토큰이 없습니다."
-//                        Log.e("LoginViewModel", "❌ 로그인 성공했지만 토큰 없음")
-//                    }
-//                } else {
-//                    val error = response.errorBody()?.string()
-//                    errorMessage.value = "로그인 실패: ${response.code()}"
-//                    Log.e("LoginViewModel", "❌ 로그인 실패 - 코드: ${response.code()}, 바디: $error")
-//                }
-//
-//            } catch (e: Exception) {
-//                errorMessage.value = "로그인 실패: ${e.message}"
-//                Log.e("LoginViewModel", "❌ 로그인 실패 - 예외 발생: ${e.message}", e)
-//            }
-//        }
-//    }
 }
