@@ -72,6 +72,9 @@ fun PracticeChordChangeScreen(
         isStarted.value = true // 끝나면 시작하자
     }
 
+    // 점수 계산 중 모달 상태
+    var isCalculatingScore by remember { mutableStateOf(false) }
+
     // 오디오 이벤트 등록
     LaunchedEffect(Unit) {
         chordCheckViewModel.getCameraAnalyzer()?.let { analyzer ->
@@ -237,6 +240,11 @@ fun PracticeChordChangeScreen(
                     // 마지막 코드까지 도달했을 때 종료
                     if (!hasSentResult  && elapsedTime >= totalDuration) {
                         hasSentResult = true
+                        isCalculatingScore = true
+
+                        delay(1000) // ✅ 판별 반영을 기다리는 시간 (1초)
+
+
 
                         val totalCount = allChords.count { it != "X" } // 실제 연습한 코드 개수
                         val rawScore = if (totalCount > 0) ((correctCount.toFloat() / totalCount) * 100).toInt() else 0
@@ -249,7 +257,10 @@ fun PracticeChordChangeScreen(
                         }
 
 
+                        Log.d("GamePlayScreen", "정답 개수 = $correctCount / 전체 = $totalCount")
+                        Log.d("GamePlayScreen", "점수 계산 결과 → rawScore = $rawScore, 점수 = $stepThreeScore")
 
+                        isCalculatingScore = false
                         showScoreDialog = true
                         Log.d("PracticePlayScreen", "🎯 연습모드3 끝났습니다. 점수 = $stepThreeScore")
 
@@ -518,5 +529,40 @@ fun PracticeChordChangeScreen(
                 }
             }
         }
+
+        // 점수 계산 중 표시 모달
+        if (isCalculatingScore) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.Black.copy(alpha = 0.5f)), // 반투명 배경
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.girini_score),
+                        contentDescription = "점수계산중",
+                        modifier = Modifier
+                            .size(600.dp) // 크기는 원하는 대로 조절
+                    )
+                }
+        }
+//        if (isCalculatingScore) {
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .background(Color.Black.copy(alpha = 0.5f)),
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+//                    Image(
+//                        painter = painterResource(id = R.drawable.girini_score),
+//                        contentDescription = "점수 계산 중",
+//                        modifier = Modifier.size(150.dp)
+//                    )
+//
+//                }
+//            }
+//        }
+
     }
 }

@@ -101,11 +101,11 @@ fun AppNavGraph() {
             LoginScreen(
                 viewModel = viewModel,
                 onLoginClick = {
-                    navController.navigate(Routes.MYPAGE) {
+                    navController.navigate(Routes.PRACTICE_LIST) {
                         popUpTo(Routes.LOGIN) { inclusive = true }
                     }
                 },
-                onFindPasswordClick = { /* 구현 필요 */ },
+                onFindPasswordClick = { /*  */ },
                 onSignUpClick = {
                     navController.navigate(Routes.SIGNUP)
                 }
