@@ -12,6 +12,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -89,6 +90,13 @@ fun CameraPreview(
             }
 
         }
+    }
+
+
+    // 외부 화면에서 analyzer에 접근할 수 있도록 도와주는 코드
+    // getCameraAnalyzer()로 사용 가능
+    LaunchedEffect(Unit) {
+        chordCheckViewModel.setCameraAnalyzer(cameraAnalyzer)
     }
 
 

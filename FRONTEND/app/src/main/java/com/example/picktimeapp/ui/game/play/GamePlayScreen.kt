@@ -167,11 +167,18 @@ fun GamePlayScreen(
         LaunchedEffect(Unit) {
             snapshotFlow { Pair(chordCheckViewModel.isCorrect, currentChord) }
                 .collect { (correct, chord) ->
-                    if (correct && chord != null && chord != lastScoredChord) {
-                        correctCount++
-                        lastScoredChord = chord
-                        Log.d("Practice", "✅ 정답 코드 = $chord, 점수 = $correctCount")
+                    if (chord != null) {
+                        if (correct && chord != lastScoredChord) {
+                            correctCount++
+                            lastScoredChord = chord
+                            Log.d("GamePlay", "✅ 정답 코드: $chord | 현재 점수: $correctCount")
+                        } else if (!correct) {
+                            Log.d("GamePlay", "❌ 오답 코드: $chord | 정답 아님 또는 감지 실패")
+                        } else if (chord == lastScoredChord) {
+                            Log.d("GamePlay", "⚠️ 이미 채점된 코드: $chord → 점수 미반영")
+                        }
                     }
+
                 }
         }
 
