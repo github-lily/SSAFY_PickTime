@@ -96,12 +96,18 @@ fun PracticeChordChangeScreen(
     // 맞힌 노트 개수 계산
     var correctCount by remember { mutableStateOf(0) }
 
-    // 코드 정답 여부 확인
-    LaunchedEffect(chordCheckViewModel) {
-        snapshotFlow { chordCheckViewModel.isCorrect }
-            .collect { correct ->
-                if (correct && currentChord != null) {
+    // 점수 증가 중복 방지
+    var lastScoredChord by remember { mutableStateOf<String?>(null) }
+
+
+    // 코드 정답여부 확인
+    LaunchedEffect(Unit) {
+        snapshotFlow { Pair(chordCheckViewModel.isCorrect, currentChord) }
+            .collect { (correct, chord) ->
+                if (correct && chord != null && chord != lastScoredChord) {
                     correctCount++
+                    lastScoredChord = chord
+                    Log.d("Practice", "✅ 정답 코드 = $chord, 점수 = $correctCount")
                 }
             }
     }

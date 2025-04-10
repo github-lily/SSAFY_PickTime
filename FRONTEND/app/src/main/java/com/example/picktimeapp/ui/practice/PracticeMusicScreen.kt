@@ -29,6 +29,7 @@ import com.example.picktimeapp.ui.components.PauseDialogCustom
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
@@ -88,11 +89,30 @@ fun PracticeMusicScreen(
     // 맞힌 노트 개수 계산
     var correctCount by remember { mutableStateOf(0) }
 
+    // 현재 코드
+    var currentChord by remember { mutableStateOf<String?>(null) }
+
+    // 점수 증가 중복 방지
+    var lastScoredChord by remember { mutableStateOf<String?>(null) }
+
     LaunchedEffect(stepId) {
         viewModel.fetchPracticeStep(stepId)
         Log.d("PracticeChordChangeScreen", "✅ 현재 전달된 stepId: $stepId")
 
     }
+
+    // 코드 정답여부 확인
+    LaunchedEffect(Unit) {
+        snapshotFlow { Pair(chordCheckViewModel.isCorrect, currentChord) }
+            .collect { (correct, chord) ->
+                if (correct && chord != null && chord != lastScoredChord) {
+                    correctCount++
+                    lastScoredChord = chord
+                    Log.d("Practice", "✅ 정답 코드 = $chord, 점수 = $correctCount")
+                }
+            }
+    }
+
 
     BoxWithConstraints (
         modifier = Modifier
@@ -208,10 +228,10 @@ fun PracticeMusicScreen(
                     if (newIndex < totalChords) {
                         if (newIndex != currentChordIndex.value) {
                             currentChordIndex.value = newIndex
-                            // ✅ 일단 기본으로 false 추가해보기
-                            val currentChord = allChords[newIndex]
-                            if (currentChord != "X") {
-                                correctCount++
+                            val newChord = allChords[newIndex]
+                            if (newChord != "X") {
+                                chordCheckViewModel.setChordName(newChord)// 코드 네임 바꿈
+                                currentChord = newChord
                                 Log.d("PracticeMusicScreen", "🎯 코드 바뀜! index=$newIndex, 코드=$currentChord → false 추가됨")
                                 Log.d("PracticeMusicScreen", "🧠 AI에게 요청할 코드: $currentChord")
                             }
