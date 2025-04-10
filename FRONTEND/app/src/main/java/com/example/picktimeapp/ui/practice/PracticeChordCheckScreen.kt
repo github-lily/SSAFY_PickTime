@@ -159,6 +159,8 @@ fun PracticeChordCheckScreen(
                             IconButton(
                                 onClick = {
                                     val chordSoundUri = viewModel.stepData.value?.chords?.firstOrNull()?.chordSoundUri
+//                                    Log.d("ChordPress", "사운드 URI: $chordSoundUri")
+
                                     if (!chordSoundUri.isNullOrBlank()) {
                                         try {
                                             val uri = Uri.parse(chordSoundUri)
