@@ -92,10 +92,10 @@ class CameraAnalyzerViewModel @Inject constructor(
 
             try {
                 val response = chordDetectApi.sendFrames(sessionId, parts)
-                Log.d("ANALYZE", "10장 분석 결과: $response")
+                Log.d("ANALYZE", "5장 분석 결과: $response")
                 onResult(response)
             } catch (e: Exception) {
-                Log.e("ANALYZE", "10장 분석 중 오류: ${e.message}")
+                Log.e("ANALYZE", "5장 분석 중 오류: ${e.message}")
             }
         }
     }

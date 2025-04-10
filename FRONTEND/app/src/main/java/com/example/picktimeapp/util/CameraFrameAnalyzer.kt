@@ -109,7 +109,7 @@ class CameraFrameAnalyzer(
                         context = context,
                         onResult = { response ->
                             // 받은 응답을 처리 (여기선 단순 로그 출력 가능)
-                            Log.d(TAG, "10장 응답 결과: ${response.detectionDone}, fingers = ${response.fingerPositions}")
+                            Log.d(TAG, "${targetFrameCount}장 응답 결과: ${response.detectionDone}, fingers = ${response.fingerPositions}")
                         }
                     )
 

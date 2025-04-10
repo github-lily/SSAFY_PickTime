@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -28,9 +29,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.picktimeapp.ui.theme.Brown40
 import com.example.picktimeapp.ui.theme.Brown80
 import com.example.picktimeapp.ui.theme.Gray50
+import com.example.picktimeapp.util.CameraAnalyzerViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 
 @Composable
 fun PauseDialogCustom(
@@ -113,8 +117,13 @@ fun PauseDialogCustom(
                         }
 
                         // 종료하기 버튼
+                        val cameraAnalyzerViewModel : CameraAnalyzerViewModel = hiltViewModel()
+                        val context = LocalContext.current
                         Button(
-                            onClick = onExit,
+                            onClick = {
+                                cameraAnalyzerViewModel.deleteSession(context)
+                                onExit()
+                            },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Brown40
                             ),
