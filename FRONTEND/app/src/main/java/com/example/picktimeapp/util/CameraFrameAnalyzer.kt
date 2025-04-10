@@ -32,6 +32,7 @@ class CameraFrameAnalyzer(
     private var isCapturing = false
     private var frameCount = 0
     private val targetFrameCount = 5  // 예: n 프레임을 10개로 설정
+    private var estimatedChord = ""
     private val TAG = "CameraFrameAnalyzer"
 
     // 저장한 이미지들을 임시로 보관할 리스트 (옵션)
@@ -56,14 +57,16 @@ class CameraFrameAnalyzer(
     }
 
     // 외부에서 캡처 시작을 요청하는 함수(연주 감지 시 ViewModel에서 호출)
-    fun startCapture() {
+    fun startCapture(analyzedChord : String) {
         isCapturing = true
         frameCount = 0
         capturedBitmaps.clear()
+        estimatedChord = analyzedChord
     }
 
     fun stopCapture() {
         isCapturing = false
+        estimatedChord = ""
     }
 
     // 프레임 전송 속도

@@ -1,6 +1,5 @@
 package com.example.picktimeapp.ui.camera
 
-import android.Manifest
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
@@ -13,24 +12,18 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.picktimeapp.audio.AudioComm
-import com.example.picktimeapp.controller.FeedbackController
+import com.example.picktimeapp.controller.AudioCaptureController
 import com.example.picktimeapp.util.CameraAnalyzerViewModel
 import com.example.picktimeapp.util.CameraFrameAnalyzer
 import com.example.picktimeapp.util.ChordCheckViewModel
 import com.example.picktimeapp.util.Utils
-import com.example.picktimeapp.util.getSessionId
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -102,7 +95,7 @@ fun CameraPreview(
 
     // FeedbackController 생성: AudioComm 이벤트가 발생하면 cameraFrameAnalyzer.startCapture() 호출
     remember {
-        FeedbackController(cameraAnalyzer)
+        AudioCaptureController(cameraAnalyzer)
     }
 
     //val coroutineScope = rememberCoroutineScope()
