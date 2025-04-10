@@ -69,6 +69,10 @@ fun PracticeMusicScreen(
         isStarted.value = true // 끝나면 시작하자
     }
 
+    // 점수 계산 중 모달 상태
+    var isCalculatingScore by remember { mutableStateOf(false) }
+
+
     // 노래 불러오기 위해
     val context = LocalContext.current
     val mediaPlayer = remember { MediaPlayer() }
@@ -247,6 +251,10 @@ fun PracticeMusicScreen(
             if (!hasSentResult  && totalChords > 0 ) {
                 hasSentResult = true
 
+                isCalculatingScore = true
+
+                delay(2000) // ✅ 판별 반영을 기다리는 시간 (2초)
+
                 val totalCount = allChords.count { it != "X" } // 실제 연습한 코드 개수
                 val rawScore = if (totalCount > 0) ((correctCount.toFloat() / totalCount) * 100).toInt() else 0
                 stepFourScore = when (rawScore) {
@@ -256,6 +264,7 @@ fun PracticeMusicScreen(
                     else -> 0
                 }
 
+                isCalculatingScore = false
                 showScoreDialog = true
                 Log.d("PracticePlayScreen", "🎯 연습모드 끝났습니다. 점수 = $stepFourScore")
                 viewModel.sendPracticeFourResult(stepId, stepFourScore,
@@ -397,8 +406,8 @@ fun PracticeMusicScreen(
                         screenWidth = screenWidth,
                         onDismiss = {
                             showScoreDialog = false
-                            navController.navigate("practice/$stepId") {
-                                popUpTo("practice/$stepId") { inclusive = true } // 현재 화면 제거 후 재시작하겠다.
+                            navController.navigate("practicemusic/$stepId") {
+                                popUpTo("practicemusic/$stepId") { inclusive = true } // 현재 화면 제거 후 재시작하겠다.
                             }
                         },
                         onExit = {
@@ -435,6 +444,23 @@ fun PracticeMusicScreen(
                             .size(600.dp) // 크기는 원하는 대로 조절
                     )
                 }
+            }
+        }
+
+        // 점수 계산 중 표시 모달
+        if (isCalculatingScore) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.5f)), // 반투명 배경
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.girini_score),
+                    contentDescription = "점수계산중",
+                    modifier = Modifier
+                        .size(600.dp) // 크기는 원하는 대로 조절
+                )
             }
         }
 
