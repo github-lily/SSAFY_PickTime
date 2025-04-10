@@ -56,6 +56,7 @@ fun CameraPreview(
         CameraFrameAnalyzer(
             context = context,
             viewModel = cameraViewModel,
+            chordCheckViewModel = chordCheckViewModel,
 
             // 📌 실시간 1장 전송용 콜백 (detection_done == false 일 때만 호출됨)
             onResult = { bitmap ->
@@ -63,7 +64,6 @@ fun CameraPreview(
                     chordCheckViewModel.handleAiResponse(
                         fingerPositions = response.fingerPositions,
                         detectionDoneFromServer = response.detectionDone,
-                        audioOk = chordCheckViewModel.audioResult == true
                     )
                 }
             },
@@ -82,7 +82,6 @@ fun CameraPreview(
                             chordCheckViewModel.handleAiResponse(
                                 fingerPositions = response.fingerPositions,
                                 detectionDoneFromServer = response.detectionDone,
-                                audioOk = chordCheckViewModel.audioResult == true
                             )
                         }
                     )
@@ -95,7 +94,10 @@ fun CameraPreview(
 
     // FeedbackController 생성: AudioComm 이벤트가 발생하면 cameraFrameAnalyzer.startCapture() 호출
     remember {
-        AudioCaptureController(cameraAnalyzer)
+        AudioCaptureController(
+            cameraFrameAnalyzer = cameraAnalyzer,
+            chordCheckViewModel = chordCheckViewModel
+        )
     }
 
     //val coroutineScope = rememberCoroutineScope()

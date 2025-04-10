@@ -24,6 +24,7 @@ class CameraFrameAnalyzer(
     // Context를 생성자로 전달하여 파일 저장 시 사용
     private val context: Context,
     private val viewModel: CameraAnalyzerViewModel,
+    private val chordCheckViewModel : ChordCheckViewModel,
     private val onResult: (Bitmap) -> Unit,     // 1장 실시간 전송용
     private val shouldRun: () -> Boolean        // detection_done 상태 판단
 ) : ImageAnalysis.Analyzer {
@@ -31,7 +32,7 @@ class CameraFrameAnalyzer(
     // 캡처 모드용 내부 상태
     private var isCapturing = false
     private var frameCount = 0
-    private val targetFrameCount = 5  // 예: n 프레임을 10개로 설정
+    private val targetFrameCount = 3  // 예: n 프레임을 10개로 설정
     private var estimatedChord = ""
     private val TAG = "CameraFrameAnalyzer"
 
@@ -111,7 +112,10 @@ class CameraFrameAnalyzer(
                         parts = parts,
                         context = context,
                         onResult = { response ->
-                            // 받은 응답을 처리 (여기선 단순 로그 출력 가능)
+                            chordCheckViewModel.handleAiResponse(
+                                fingerPositions = response.fingerPositions,
+                                detectionDoneFromServer = response.detectionDone
+                            )
                             Log.d(TAG, "${targetFrameCount}장 응답 결과: ${response.detectionDone}, fingers = ${response.fingerPositions}")
                         }
                     )
