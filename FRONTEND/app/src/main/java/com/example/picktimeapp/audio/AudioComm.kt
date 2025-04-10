@@ -14,7 +14,7 @@ interface AudioEventListener {
 
 object AudioComm {
 
-    const val amplitudeThreshold = 1000.0
+    const val amplitudeThreshold = 1800.0
     private var targetChord = ""
     private var onReady = false;
 

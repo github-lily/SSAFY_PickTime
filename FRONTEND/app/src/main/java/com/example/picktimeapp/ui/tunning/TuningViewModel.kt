@@ -98,7 +98,7 @@ class TuningViewModel @Inject constructor() : ViewModel() {
     private val audioPlayer = AudioPlayer()
 
     // 임계값/디바운싱 등은 그대로 두거나, 수정 가능
-    private val amplitudeThreshold = 700.0
+    private val amplitudeThreshold = 1800.0
     private var lastUpdateTime = 0L
     private val updateIntervalMillis = 300L // 예: 300ms 단위로 업데이트
     private val frequencyUpdateThreshold = 2.0 // 예: 2Hz 이내면 무시
