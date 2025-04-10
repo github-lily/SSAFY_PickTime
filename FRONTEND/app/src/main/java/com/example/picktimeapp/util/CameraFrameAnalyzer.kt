@@ -31,7 +31,7 @@ class CameraFrameAnalyzer(
     // 캡처 모드용 내부 상태
     private var isCapturing = false
     private var frameCount = 0
-    private val targetFrameCount = 5  // 예: n 프레임을 10개로 설정
+    private val targetFrameCount = 3  // 예: n 프레임을 10개로 설정
     private var estimatedChord = ""
     private val TAG = "CameraFrameAnalyzer"
 
