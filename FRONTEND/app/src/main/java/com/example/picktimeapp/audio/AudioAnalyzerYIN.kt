@@ -122,8 +122,20 @@ object AudioAnalyzerYIN {
         return "$noteName$octave"
     }
 
-    fun checkNote(freq: Double, targetNote: String) : Boolean{
-        return (frequencyToNoteName(freq).equals(targetNote))
+    fun detectChordName(audioData: ShortArray): String {
+        // 1. 주파수 분석
+        val freq = AudioAnalyzerYIN.analyzeFrequency(audioData)
+        if (freq <= 0.0) return "Unknown"
+
+        // 2. 노트 이름으로 변환 (예: "E4")
+        val noteName = AudioAnalyzerYIN.frequencyToNoteName(freq)
+
+        // 3. 옥타브 제거해서 루트 노트 추출 (예: "E4" -> "E", "C#3" -> "C#")
+        val root = noteName.filter { it.isLetter() || it == '#' }
+
+        // 4. 유효 코드면 반환
+        val validRoots = listOf("C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B")
+        return if (root in validRoots) root else "Unknown"
     }
 
 }
