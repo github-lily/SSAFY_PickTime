@@ -126,7 +126,7 @@ fun PickDaysGrid(
         val selectedPickDay = pickDays.find { it.completedDate == selectedTooltipKey }
         if (selectedPickDay != null) {
             Popup(
-                offset = IntOffset(x = 250, y = -85),
+                offset = IntOffset(x = 300, y = -110),
                 properties = PopupProperties(focusable = false)
             ) {
                 TooltipBalloon(
