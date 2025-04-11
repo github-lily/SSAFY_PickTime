@@ -1,0 +1,1087 @@
+[{
+  "_id": 1,
+  "chordName": "G",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 2,
+        "fret": 3,
+        "strings": [
+          6
+        ]
+      },
+      {
+        "finger": 1,
+        "fret": 2,
+        "strings": [
+          5
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 3,
+        "strings": [
+          1
+        ]
+      }
+    ],
+    "openStrings": [
+      2,
+      3,
+      4
+    ],
+    "muteStrings": []
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/G_chord.mp3"
+},
+{
+  "_id": 2,
+  "chordName": "D",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 2,
+        "strings": [
+          3
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 2,
+        "strings": [
+          1
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 3,
+        "strings": [
+          2
+        ]
+      }
+    ],
+    "openStrings": [
+      4
+    ],
+    "muteStrings": [
+      5,
+      6
+    ]
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/D_chord.mp3"
+},
+{
+  "_id": 3,
+  "chordName": "Em",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 2,
+        "fret": 2,
+        "strings": [
+          5
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 2,
+        "strings": [
+          4
+        ]
+      }
+    ],
+    "openStrings": [
+      1,
+      2,
+      3,
+      6
+    ],
+    "muteStrings": []
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/Em_chord.mp3"
+},
+{
+  "_id": 4,
+  "chordName": "C",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 1,
+        "strings": [
+          2
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 2,
+        "strings": [
+          4
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 3,
+        "strings": [
+          5
+        ]
+      }
+    ],
+    "openStrings": [
+      1,
+      3
+    ],
+    "muteStrings": [
+      6
+    ]
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/C_chord.mp3"
+},
+{
+  "_id": 5,
+  "chordName": "A",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 2,
+        "strings": [
+          4
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 2,
+        "strings": [
+          3
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 2,
+        "strings": [
+          2
+        ]
+      }
+    ],
+    "openStrings": [
+      1,
+      5
+    ],
+    "muteStrings": [
+      6
+    ]
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/A_chord.mp3"
+},
+{
+  "_id": 6,
+  "chordName": "E",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 1,
+        "strings": [
+          3
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 2,
+        "strings": [
+          5
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 2,
+        "strings": [
+          4
+        ]
+      }
+    ],
+    "openStrings": [
+      1,
+      2,
+      6
+    ],
+    "muteStrings": []
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/E_chord.mp3"
+},
+{
+  "_id": 7,
+  "chordName": "Am",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 1,
+        "strings": [
+          2
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 2,
+        "strings": [
+          4
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 2,
+        "strings": [
+          3
+        ]
+      }
+    ],
+    "openStrings": [
+      1,
+      5
+    ],
+    "muteStrings": [
+      6
+    ]
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/Am_chord.mp3"
+},
+{
+  "_id": 8,
+  "chordName": "Dm",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 1,
+        "strings": [
+          1
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 2,
+        "strings": [
+          3
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 3,
+        "strings": [
+          2
+        ]
+      }
+    ],
+    "openStrings": [
+      4
+    ],
+    "muteStrings": [
+      5,
+      6
+    ]
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/Dm_chord.mp3"
+},
+{
+  "_id": 9,
+  "chordName": "F",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 1,
+        "strings": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 2,
+        "strings": [
+          3
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 3,
+        "strings": [
+          5
+        ]
+      },
+      {
+        "finger": 4,
+        "fret": 3,
+        "strings": [
+          4
+        ]
+      }
+    ],
+    "openStrings": [],
+    "muteStrings": []
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/F_chord.mp3"
+},
+{
+  "_id": 10,
+  "chordName": "Bm",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 2,
+        "strings": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 3,
+        "strings": [
+          2
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 4,
+        "strings": [
+          4
+        ]
+      },
+      {
+        "finger": 4,
+        "fret": 4,
+        "strings": [
+          3
+        ]
+      }
+    ],
+    "openStrings": [],
+    "muteStrings": [
+      6
+    ]
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/Bm_chord.mp3"
+},
+{
+  "_id": 11,
+  "chordName": "E7",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 1,
+        "strings": [
+          3
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 2,
+        "strings": [
+          5
+        ]
+      }
+    ],
+    "openStrings": [
+      1,
+      2,
+      4,
+      6
+    ],
+    "muteStrings": []
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/E7_chord.mp3"
+},
+{
+  "_id": 12,
+  "chordName": "A7",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 2,
+        "strings": [
+          4
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 2,
+        "strings": [
+          2
+        ]
+      }
+    ],
+    "openStrings": [
+      1,
+      3,
+      5
+    ],
+    "muteStrings": [
+      6
+    ]
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/A7_chord.mp3"
+},
+{
+  "_id": 13,
+  "chordName": "B7",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 1,
+        "strings": [
+          4
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 2,
+        "strings": [
+          5
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 2,
+        "strings": [
+          3
+        ]
+      },
+      {
+        "finger": 4,
+        "fret": 2,
+        "strings": [
+          1
+        ]
+      }
+    ],
+    "openStrings": [
+      2
+    ],
+    "muteStrings": [
+      6
+    ]
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/B7_chord.mp3"
+},
+{
+  "_id": 14,
+  "chordName": "D7",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 1,
+        "strings": [
+          2
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 2,
+        "strings": [
+          3
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 2,
+        "strings": [
+          1
+        ]
+      }
+    ],
+    "openStrings": [
+      4
+    ],
+    "muteStrings": [
+      5,
+      6
+    ]
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/D7_chord.mp3"
+},
+{
+  "_id": 15,
+  "chordName": "C7",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 1,
+        "strings": [
+          1
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 2,
+        "strings": [
+          4
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 3,
+        "strings": [
+          5
+        ]
+      }
+    ],
+    "openStrings": [
+      2,
+      3
+    ],
+    "muteStrings": [
+      6
+    ]
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/C7_chord.mp3"
+},
+{
+  "_id": 16,
+  "chordName": "G7",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 1,
+        "strings": [
+          1
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 2,
+        "strings": [
+          5
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 3,
+        "strings": [
+          6
+        ]
+      }
+    ],
+    "openStrings": [
+      2,
+      3,
+      4
+    ],
+    "muteStrings": []
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/G7_chord.mp3"
+},
+{
+  "_id": 17,
+  "chordName": "F#m",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 2,
+        "strings": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 4,
+        "strings": [
+          5
+        ]
+      },
+      {
+        "finger": 4,
+        "fret": 4,
+        "strings": [
+          4
+        ]
+      }
+    ],
+    "openStrings": [],
+    "muteStrings": []
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/F#m_chord.mp3"
+},
+{
+  "_id": 18,
+  "chordName": "C#m",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 4,
+        "strings": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 6,
+        "strings": [
+          4
+        ]
+      },
+      {
+        "finger": 4,
+        "fret": 6,
+        "strings": [
+          3
+        ]
+      }
+    ],
+    "openStrings": [],
+    "muteStrings": [
+      6
+    ]
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/C#m_chord.mp3"
+},
+{
+  "_id": 19,
+  "chordName": "Bm7",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 2,
+        "strings": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 2,
+        "strings": [
+          5
+        ]
+      }
+    ],
+    "openStrings": [],
+    "muteStrings": [
+      6
+    ]
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/Bm7_chord.mp3"
+},
+{
+  "_id": 20,
+  "chordName": "F#m7",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 2,
+        "strings": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 2,
+        "strings": [
+          5
+        ]
+      }
+    ],
+    "openStrings": [],
+    "muteStrings": []
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/F#m7_chord.mp3"
+},
+{
+  "_id": 21,
+  "chordName": "Em7",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 2,
+        "fret": 2,
+        "strings": [
+          5
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 2,
+        "strings": [
+          4
+        ]
+      }
+    ],
+    "openStrings": [
+      1,
+      2,
+      3,
+      6
+    ],
+    "muteStrings": []
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/Em7_chord.mp3"
+},
+{
+  "_id": 22,
+  "chordName": "Am7",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 1,
+        "strings": [
+          2
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 2,
+        "strings": [
+          4
+        ]
+      }
+    ],
+    "openStrings": [
+      1,
+      3,
+      5
+    ],
+    "muteStrings": [
+      6
+    ]
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/Am7_chord.mp3"
+},
+{
+  "_id": 23,
+  "chordName": "Dsus4",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 2,
+        "strings": [
+          3
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 3,
+        "strings": [
+          1
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 3,
+        "strings": [
+          2
+        ]
+      }
+    ],
+    "openStrings": [
+      4
+    ],
+    "muteStrings": [
+      5,
+      6
+    ]
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/Dsus4_chord.mp3"
+},
+{
+  "_id": 24,
+  "chordName": "Asus4",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 2,
+        "strings": [
+          4
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 2,
+        "strings": [
+          3
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 3,
+        "strings": [
+          2
+        ]
+      }
+    ],
+    "openStrings": [
+      1,
+      5
+    ],
+    "muteStrings": [
+      6
+    ]
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/Asus4_chord.mp3"
+},
+{
+  "_id": 25,
+  "chordName": "Cadd9",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 2,
+        "strings": [
+          4
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 3,
+        "strings": [
+          5
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 3,
+        "strings": [
+          2
+        ]
+      },
+      {
+        "finger": 4,
+        "fret": 3,
+        "strings": [
+          1
+        ]
+      }
+    ],
+    "openStrings": [
+      3
+    ],
+    "muteStrings": [
+      6
+    ]
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/Cadd9_chord.mp3"
+},
+{
+  "_id": 26,
+  "chordName": "Gadd9",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 2,
+        "strings": [
+          3
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 2,
+        "strings": [
+          5
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 3,
+        "strings": [
+          6
+        ]
+      },
+      {
+        "finger": 4,
+        "fret": 3,
+        "strings": [
+          1
+        ]
+      }
+    ],
+    "openStrings": [
+      2,
+      4
+    ],
+    "muteStrings": []
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/Gadd9_chord.mp3"
+},
+{
+  "_id": 27,
+  "chordName": "Fmaj7",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 1,
+        "strings": [
+          2
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 2,
+        "strings": [
+          3
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 3,
+        "strings": [
+          4
+        ]
+      }
+    ],
+    "openStrings": [
+      1
+    ],
+    "muteStrings": [
+      5,
+      6
+    ]
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/Fmaj7_chord.mp3"
+},
+{
+  "_id": 28,
+  "chordName": "Emaj7",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 1,
+        "strings": [
+          1,
+          3
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 2,
+        "strings": [
+          5
+        ]
+      },
+      {
+        "finger": 4,
+        "fret": 2,
+        "strings": [
+          4
+        ]
+      }
+    ],
+    "openStrings": [
+      2,
+      6
+    ],
+    "muteStrings": []
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/Emaj7_chord.mp3"
+},
+{
+  "_id": 29,
+  "chordName": "C#m7",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 4,
+        "strings": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "finger": 2,
+        "fret": 5,
+        "strings": [
+          2
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 6,
+        "strings": [
+          4
+        ]
+      }
+    ],
+    "openStrings": [],
+    "muteStrings": [
+      6
+    ]
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/C#m7_chord.mp3"
+},
+{
+  "_id": 30,
+  "chordName": "G#m7",
+  "chordFingering": {
+    "positions": [
+      {
+        "finger": 1,
+        "fret": 4,
+        "strings": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "finger": 3,
+        "fret": 4,
+        "strings": [
+          5
+        ]
+      }
+    ],
+    "openStrings": [],
+    "muteStrings": []
+  },
+  "chordSoundUri": "https://b101-picktime-bucket.s3.ap-northeast-2.amazonaws.com/picktime/G#m7_chord.mp3"
+}]
