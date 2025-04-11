@@ -78,6 +78,7 @@ class TuningViewModel @Inject constructor() : ViewModel() {
 
         val rms = calculateRMS(audioData)
         if (rms < amplitudeThreshold) {
+            Log.e("TUNNING", "소리가 작아요ㅡ")
             return@AudioCapture
         }
         // 튜닝 처리
@@ -98,7 +99,7 @@ class TuningViewModel @Inject constructor() : ViewModel() {
     private val audioPlayer = AudioPlayer()
 
     // 임계값/디바운싱 등은 그대로 두거나, 수정 가능
-    private val amplitudeThreshold = 700.0
+    private val amplitudeThreshold = 300.0
     private var lastUpdateTime = 0L
     private val updateIntervalMillis = 300L // 예: 300ms 단위로 업데이트
     private val frequencyUpdateThreshold = 2.0 // 예: 2Hz 이내면 무시
@@ -133,12 +134,16 @@ class TuningViewModel @Inject constructor() : ViewModel() {
             if (targetFrequency > 0 && targetNoteName.isNotEmpty()) {
                 val difference = newFreq - targetFrequency
                 val tolerance = 1.0
-
                 _tuningFeedback.value = when {
-                    difference > tolerance -> "$targetNoteName - 음이 높습니다."
-                    difference < -tolerance -> "$targetNoteName - 음이 낮습니다."
-                    else -> "$targetNoteName - 음이 맞습니다."
+                    difference > tolerance -> "음이 높습니다."
+                    difference < -tolerance -> "음이 낮습니다."
+                    else -> "음이 맞습니다."
                 }
+//                _tuningFeedback.value = when {
+//                    difference > tolerance -> "$targetNoteName - 음이 높습니다."
+//                    difference < -tolerance -> "$targetNoteName - 음이 낮습니다."
+//                    else -> "$targetNoteName - 음이 맞습니다."
+//                }
             }
         }
         // 만약 newFreq가 0.0 이하이면 기존 noteName 값을 유지 (업데이트하지 않음)

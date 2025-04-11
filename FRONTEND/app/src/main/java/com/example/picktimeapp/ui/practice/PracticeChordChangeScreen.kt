@@ -455,7 +455,7 @@ fun PracticeChordChangeScreen(
                 // 점수창 띄우기 ------------------------------
                 if (showScoreDialog) {
                     NextScoreDialogCustom(
-                        score = stepThreeScore,
+                        score = 3,
                         screenWidth = screenWidth,
                         onDismiss = {
                             showScoreDialog = false

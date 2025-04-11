@@ -1,4 +1,4 @@
-package com.example.picktimeapp.audio
+package com.example.picktimeapp.ui.tunning
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -21,7 +21,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.picktimeapp.R
-import com.example.picktimeapp.ui.tunning.TuningViewModel
 
 @Composable
 fun AudioVisualizerBar(
