@@ -86,7 +86,7 @@ class ChordCheckViewModel @Inject constructor(
         if (fingers != null && audioOk != null) {
             val expected = standardMap[currentChordName] ?: return
             val comparisonResult = checkFingerMatch(expected, fingers)
-
+            Log.d("ChordCheck", "✔️ tryFinalCheck 실행됨 / audioResult=$audioResult, fingers=${fingerPositions.value}, chord=$currentChordName")
 
 
             if (comparisonResult && audioOk) {

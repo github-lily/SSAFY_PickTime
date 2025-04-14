@@ -91,6 +91,7 @@ class CameraFrameAnalyzer(
         if (isCapturing && frameCount < targetFrameCount) {
             // 수정된 saveBitmapToFile 함수를 사용하여 파일 저장 (Context 전달)
             capturedBitmaps.add(bitmap)
+
             //saveBitmapToFile(bitmap, "capture_frame_${frameCount}.jpg", context)
             // 예: onResult(bitmap)
             frameCount++
@@ -112,6 +113,7 @@ class CameraFrameAnalyzer(
                         parts = parts,
                         context = context,
                         onResult = { response ->
+                            Log.d(TAG, "AI 응답 결과 = ${response.detectionDone}, fingers = ${response.fingerPositions}")
                             chordCheckViewModel.handleAiResponse(
                                 fingerPositions = response.fingerPositions,
                                 detectionDoneFromServer = response.detectionDone

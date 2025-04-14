@@ -63,8 +63,6 @@ fun PracticeChordCheckScreen(
     val context = LocalContext.current
     val mediaPlayer = remember { MediaPlayer() }
 
-    // 맞힌 노트 개수 계산
-    var correctCount by remember { mutableStateOf(0) }
 
 
     // ✅ BE API 호출
