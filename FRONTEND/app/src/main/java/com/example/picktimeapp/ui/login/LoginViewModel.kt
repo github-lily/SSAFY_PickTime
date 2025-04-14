@@ -69,7 +69,8 @@ class LoginViewModel @Inject constructor(
                     val token = response.headers()["Authorization"]
                     if (token != null) {
                         tokenManager.saveAccessToken(token)
-                        Log.d("LoginViewModel", "✅ 로그인 성공 - 토큰: $token")
+                        Log.d("LoginViewModel", "✅ 로그인 성공")
+//                        Log.d("LoginViewModel", "✅ 로그인 성공 - 토큰: $token")
                         onSuccess() // 👉 로그인 성공 후 안전하게 화면 전환
                     } else {
                         val error = response.errorBody()?.string()
