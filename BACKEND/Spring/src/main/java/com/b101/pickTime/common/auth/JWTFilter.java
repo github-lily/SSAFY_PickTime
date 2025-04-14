@@ -1,7 +1,6 @@
 package com.b101.pickTime.common.auth;
 
 import com.b101.pickTime.common.util.JWTUtil;
-import com.b101.pickTime.db.entity.User;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -13,7 +12,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -27,12 +25,13 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 요청 헤더에 담긴 access키의 토큰을 꺼냄
         String accessToken = request.getHeader("Authorization");
-
         // 토큰이 없다면 다음 필터로 넘김
         if (accessToken == null) {
             filterChain.doFilter(request, response);
             return;
         }
+
+        accessToken = jwtUtil.substringToken(accessToken);
 
         // 토큰 만료 여부 확인
         try {

@@ -5,7 +5,6 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +14,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -26,17 +27,18 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-            String username = obtainUsername(request);
-            String password = obtainPassword(request);
+        String username = obtainUsername(request);
+        String password = obtainPassword(request);
 
-            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
 
-            return authenticationManager.authenticate(authToken);
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
+
+        return authenticationManager.authenticate(authToken);
     }
 
     @Override
     // 성공시 실행
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
         String username = customUserDetails.getUsername();
@@ -53,16 +55,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String refresh = jwtUtil.createJwt("refresh", userId, username, role, JWTUtil.REFRESH_TOKEN_VALIDITY_TIME);
 
         // 응답 설정
-        response.setHeader("access", access);
+        response.setHeader("Authorization", JWTUtil.BEARER_PREFIX +access);
         response.addCookie(createCookie("refresh", refresh));
-        response.setStatus(HttpStatus.OK.value());
+        responseWrite("login success", HttpStatus.OK, response);
     }
 
     @Override
     // 실패시 실행
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-        System.out.println("인증 실패");
-        response.setStatus(401);
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
+        responseWrite("login failed", HttpStatus.UNAUTHORIZED, response);
     }
 
     // 쿠키 생성 메서드
@@ -72,5 +73,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         cookie.setHttpOnly(true);
 
         return cookie;
+    }
+
+    private void responseWrite(String message,  HttpStatus status, HttpServletResponse response) throws IOException {
+        PrintWriter writer = response.getWriter();
+        writer.println(message);
+        response.setStatus(status.value());
     }
 }

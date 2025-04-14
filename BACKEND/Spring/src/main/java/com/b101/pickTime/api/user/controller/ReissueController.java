@@ -22,7 +22,7 @@ public class ReissueController {
    @PostMapping
    public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
         String newAccessToken = reissueService.reissue(request);
-        response.setHeader("access", newAccessToken);
+        response.setHeader("Authorization", newAccessToken);
         return ResponseEntity.status(HttpStatus.OK).body("new access token is reissued successfully");
    }
 }

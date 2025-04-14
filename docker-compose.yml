@@ -71,18 +71,27 @@ services:
 
       # JWT
       JWT_AUTH_KEY: ${JWT_AUTH_KEY}
+
+      # Mail
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_PORT: ${MAIL_PORT}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+
     networks:
       - app-network
 
-#  fastapi-app:
-#    build:
-#      context: ./BACKEND/FastAPI
-#      dockerfile: Dockerfile
-#    image: ${FASTAPI_IMAGE_NAME}:latest
-#    container_name: ${FASTAPI_CONTAINER_NAME}
-#    restart: always
-#    networks:
-#      - app-network
+  fastapi-app:
+    build:
+      context: ./BACKEND/FastAPI
+      dockerfile: Dockerfile
+    image: ${FASTAPI_IMAGE_NAME}:latest
+    container_name: ${FASTAPI_CONTAINER_NAME}
+    ports:
+      - "${FASTAPI_PORT}:${FASTAPI_CONTAINER_PORT}"
+    restart: always
+    networks:
+      - app-network
 
 networks:
   app-network:

@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+python-multipart
+numpy
+opencv-python
+mediapipe
+ultralytics
+
+# fastapi==0.95.2
+# uvicorn==0.22.0
+# numpy
+# opencv-python
+# mediapipe
+# ultralytics

@@ -3,6 +3,7 @@ package com.b101.pickTime.api.practice.service.impl;
 import com.b101.pickTime.api.chord.response.ChordDataResDto;
 import com.b101.pickTime.api.chord.service.ChordDataService;
 import com.b101.pickTime.api.completedstep.service.CompletedStepService;
+import com.b101.pickTime.api.game.response.SongGameResDto;
 import com.b101.pickTime.api.game.service.SongDataService;
 import com.b101.pickTime.api.practice.response.CurriculumResDto;
 import com.b101.pickTime.api.practice.response.PracticeResDto;
@@ -44,7 +45,7 @@ public class PracticeApplicationServiceImpl implements PracticeApplicationServic
                 }
             }
 
-            stage.setIsClear(isClear);     // 추후 수정
+            stage.setIsClear(isClear);
         }
 
         double clearRate = completedStepService.getProgress(userId);
@@ -57,7 +58,9 @@ public class PracticeApplicationServiceImpl implements PracticeApplicationServic
         StepInfoResDto stepInfo = stepService.getStepInfo(stepId);
         PracticeResDto step = new PracticeResDto();
 
-        switch (stepInfo.getStepType()){
+        step.setStepType(stepInfo.getStepType());
+
+        switch (step.getStepType()){
             case 1:
                 ChordDataResDto chord = chordDataService.getChord(stepInfo.getChordId());
                 List<ChordDataResDto> chordForPractice = List.of(chord);
@@ -76,7 +79,9 @@ public class PracticeApplicationServiceImpl implements PracticeApplicationServic
                 break;
 
             case 3:
-                step.setSong(songDataService.getSong(stepInfo.getSongId()));
+                SongGameResDto songForGame = songDataService.getSong(stepInfo.getSongId());
+                songForGame.setOrganizedChords(stepInfo.getDescription().split(" "));
+                step.setSong(songForGame);
                 break;
         }
 

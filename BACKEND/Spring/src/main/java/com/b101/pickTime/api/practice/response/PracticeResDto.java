@@ -14,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class PracticeResDto {
 
+    Integer stepType ;
     List<ChordDataResDto> chords;
     SongGameResDto song;
 

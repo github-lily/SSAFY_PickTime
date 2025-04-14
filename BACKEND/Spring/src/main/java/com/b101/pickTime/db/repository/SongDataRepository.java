@@ -10,7 +10,7 @@ public interface SongDataRepository extends MongoRepository<SongData, Integer> {
 
     @Query(
             value = "{ '_id': ?0 }",
-            fields = "{ 'title': 1, 'bpm': 1, 'timeSignature': 1, 'chordProgression': 1, 'songUri': 1 }"
+            fields = "{ 'title': 1, 'bpm': 1, 'artist': 1, 'durationSec' : 1,'timeSignature': 1, 'chordProgression': 1, 'songUri': 1 }"
     )
     SongGameResDto findSongGameResDtoBySongDataId(Integer songId);
 

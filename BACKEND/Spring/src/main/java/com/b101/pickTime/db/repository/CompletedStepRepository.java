@@ -1,12 +1,14 @@
 package com.b101.pickTime.db.repository;
 
 import com.b101.pickTime.api.completedactivities.response.CompletedActivitiesResDto;
+import com.b101.pickTime.db.entity.CompletedSong;
 import com.b101.pickTime.db.entity.CompletedStep;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CompletedStepRepository extends JpaRepository<CompletedStep, Integer> {
 
@@ -19,4 +21,6 @@ public interface CompletedStepRepository extends JpaRepository<CompletedStep, In
             "WHERE c.user.userId = :userId " +
             "GROUP BY c.createdAt")
     List<CompletedActivitiesResDto> countCompletedStepsGroupedByCreatedAt(@Param("userId") Integer userId);
+
+    Optional<CompletedStep> findByUserUserIdAndStepStepId(Integer userId, Integer songId);
 }
